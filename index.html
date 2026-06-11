@@ -59,8 +59,8 @@ body.light .btn-secondary { background: #cfd8dc; color: #333; }
 body.light .tab { background: #e0e0e0; color: #333; }
 .grid-btn.tab-style.active { background: #9575cd; color: #ffffff; }
 body.light .grid-btn.tab-style.active { background: #b39ddb; color: #ffffff; }
-body.violet .grid-btn.tab-style.active { background: #b39ddb; }
-body.violet.light .grid-btn.tab-style.active { background: #ce93d8; }
+{ background: #b39ddb; }
+{ background: #ce93d8; }
 .list-item { background: #1e1e1e; padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: grab; box-shadow: 0 2px 4px rgba(0,0,0,0.3); min-height: 60px; touch-action: manipulation; transition: opacity 0.2s, transform 0.2s; }
 body.light .list-item { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .list-item:active { transform: scale(0.98); }
@@ -1334,88 +1334,124 @@ list.appendChild(div);
 }
 
 function setupSwipe() {
-let startX = 0, startY = 0, tracking = false, currentPageId = null;
-
-function getCurrentPageId() {
-const active = document.querySelector('.page.active');
-return active ? active.id : null;
-}
-
-document.addEventListener('touchstart', (e) => {
-if (e.target.closest('.modal')) return;
-if (e.target.closest('.list-item')) return;
-if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-startX = e.touches[0].clientX;
-startY = e.touches[0].clientY;
-tracking = true;
-currentPageId = getCurrentPageId();
-}, { passive: true });
-
-document.addEventListener('touchend', (e) => {
-if (!tracking) return;
-tracking = false;
-const diffX = startX - e.changedTouches[0].clientX;
-const diffY = startY - e.changedTouches[0].clientY;
-if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-handleSwipe(diffX, currentPageId);
-}
-}, { passive: true });
-
-document.addEventListener('mousedown', (e) => {
-if (e.target.closest('.modal')) return;
-if (e.target.closest('.list-item')) return;
-if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-startX = e.clientX;
-startY = e.clientY;
-tracking = true;
-currentPageId = getCurrentPageId();
-});
-
-document.addEventListener('mouseup', (e) => {
-if (!tracking) return;
-tracking = false;
-const diffX = startX - e.clientX;
-const diffY = startY - e.clientY;
-if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-handleSwipe(diffX, currentPageId);
-}
-});
-
-function handleSwipe(diffX, pageId) {
-if (pageId === 'page-song-view') {
-if (currentSlId) {
-const sl = setlists.find(x => x.id === currentSlId);
-if (!sl) return;
-const idx = sl.songs.findIndex(x => x.id === currentSongId);
-const isLastSong = (idx === sl.songs.length - 1);
-const isFirstSong = (idx === 0);
-
-if (diffX > 0) {
-if (isLastSong) {
-goBackFromSong();
-} else {
-nextSong();
-}
-} else {
-if (isFirstSong) {
-goBackFromSong();
-} else {
-prevSong();
-}
-}
-} else {
-if (diffX < 0) goBackFromSong();
-}
-} else if (pageId === 'page-home') {
-if (diffX > 0) {
-if (currentHomeView === 'songs') switchHomeView('setlists');
-} else {
-if (currentHomeView === 'setlists') switchHomeView('songs');
-}
-} else if (pageId === 'page-setlist-detail') {
-if (diffX < 0) goBackFromSetlistDetail();
-}
-}
+  let startX = 0, startY = 0, tracking = false, currentPageId = null;
+  let isClick = false;
+  
+  function getCurrentPageId() { 
+    const active = document.querySelector('.page.active'); 
+    return active ? active.id : null; 
+  }
+  
+  document.addEventListener('touchstart', (e) => {
+    // Игнорируем только модальные окна и поля ввода
+    if (e.target.closest('.modal')) return;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+    
+    startX = e.touches[0].clientX; 
+    startY = e.touches[0].clientY; 
+    tracking = true; 
+    isClick = true;
+    currentPageId = getCurrentPageId();
+  }, { passive: true });
+  
+  document.addEventListener('touchmove', (e) => {
+    if (!tracking) return;
+    const diffX = Math.abs(startX - e.touches[0].clientX);
+    const diffY = Math.abs(startY - e.touches[0].clientY);
+    
+    // Если движение больше 10px - это уже не клик
+    if (diffX > 10 || diffY > 10) {
+      isClick = false;
+    }
+  }, { passive: true });
+  
+  document.addEventListener('touchend', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    
+    // Если это был клик - не обрабатываем свайп
+    if (isClick) return;
+    
+    const diffX = startX - e.changedTouches[0].clientX;
+    const diffY = startY - e.changedTouches[0].clientY;
+    
+    // Свайп должен быть горизонтальным и больше 50px
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      handleSwipe(diffX, currentPageId);
+    }
+  }, { passive: true });
+  
+  // Для мыши (компьютер)
+  document.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.modal')) return;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+    
+    startX = e.clientX; 
+    startY = e.clientY; 
+    tracking = true; 
+    isClick = true;
+    currentPageId = getCurrentPageId();
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!tracking) return;
+    const diffX = Math.abs(startX - e.clientX);
+    const diffY = Math.abs(startY - e.clientY);
+    
+    if (diffX > 10 || diffY > 10) {
+      isClick = false;
+    }
+  });
+  
+  document.addEventListener('mouseup', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    
+    if (isClick) return;
+    
+    const diffX = startX - e.clientX;
+    const diffY = startY - e.clientY;
+    
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      handleSwipe(diffX, currentPageId);
+    }
+  });
+  
+  function handleSwipe(diffX, pageId) {
+    if (pageId === 'page-song-view') {
+      if (currentSlId) {
+        const sl = setlists.find(x => x.id === currentSlId);
+        if (!sl) return;
+        const idx = sl.songs.findIndex(x => x.id === currentSongId);
+        const isLastSong = (idx === sl.songs.length - 1);
+        const isFirstSong = (idx === 0);
+        
+        if (diffX > 0) {
+          if (isLastSong) {
+            goBackFromSong();
+          } else {
+            nextSong();
+          }
+        } else {
+          if (isFirstSong) {
+            goBackFromSong();
+          } else {
+            prevSong();
+          }
+        }
+      } else {
+        if (diffX < 0) goBackFromSong();
+      }
+    } else if (pageId === 'page-home') {
+      if (diffX > 0) { 
+        if (currentHomeView === 'songs') switchHomeView('setlists'); 
+      } else { 
+        if (currentHomeView === 'setlists') switchHomeView('songs'); 
+      }
+    } else if (pageId === 'page-setlist-detail') {
+      if (diffX < 0) goBackFromSetlistDetail();
+    }
+  }
 }
 
 function openSongView(id, slId) {
