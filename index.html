@@ -1,7 +1,4 @@
-<fsWrite>
-<path>worship_app/index.html
-</path>
-<content><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -179,6 +176,8 @@ font-weight: bold;
 font-family: 'Courier New', monospace;
 margin-bottom: 1px;
 letter-spacing: 0.5px;
+white-space: pre-wrap;
+word-wrap: break-word;
 }
 body.light .chords-above {
 color: #0d47a1;
@@ -238,7 +237,7 @@ background: rgba(126, 87, 194, 0.15);
 .section-block { margin-bottom: 2px; padding-bottom: 1px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; }
 .section-block:last-child { margin-bottom: 0; padding-bottom: 0; }
 .main-content { flex: 1; min-width: 0; }
-.lyrics-below { color: #ddd; line-height: 1.2; }
+.lyrics-below { color: #ddd; line-height: 1.2; white-space: pre-wrap; word-wrap: break-word; }
 body.light .lyrics-below { color: #333; }
 .right-note {
 background: rgba(144, 202, 249, 0.2);
@@ -710,7 +709,6 @@ const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 
 const CHORD_RE = /^[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?$/i;
 const REPEAT_RE = /^(x\d+|\d+[рpx])$/i;
 const SECTION_RE = /^(\d+\s+)?(КУПЛЕТ|VERSE|ПРИПЕВ|CHORUS|BRIDGE|БРИДЖ|INTRO|ИНТРО|КОДА|CODA|ФИНАЛ|OUTRO|ЗАПЕВ|ПЕРЕХОД|PRECHORUS|ПРЕДПРИПЕВ|ПРЕД-ПРИПЕВ|ПРОИГРЫШ|ИНСТРУМЕНТАЛ|INSTRUMENTAL|INTERLUDE|SOLO)(\s*\d+)?:/i;
-const PUNCT_ONLY_RE = /^[.,;:!?|()\-—–·\s]+$/;
 
 function convertBtoH(chord) {
 if (chord.includes('/')) {
@@ -722,14 +720,13 @@ return chord;
 }
 
 function cleanWordForChordCheck(word) {
-return word.replace(/^[.,;:!?|()\-—–·]+|[.,;:!?|()\-—–·]+$/g, '');
+return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, '');
 }
 
 function parseMixedLine(line) {
 const words = line.trim().split(/\s+/);
 const chordWords = [], textWords = [];
 let foundText = false, rightNote = '';
-let leadingPunct = '';
 
 for (let i = 0; i < words.length; i++) {
 const w = words[i];
@@ -739,17 +736,10 @@ for (let j = i + 1; j < words.length; j++) rightNote += ' ' + words[j];
 break;
 }
 
-if (PUNCT_ONLY_RE.test(w) && !foundText) {
-if (chordWords.length === 0) leadingPunct += w;
-continue;
-}
-
 const cleaned = cleanWordForChordCheck(w);
 const normalized = convertBtoH(cleaned);
 
-if (!foundText && CHORD_RE.test(normalized)) {
-chordWords.push(w);
-} else if (!foundText && REPEAT_RE.test(w) && chordWords.length > 0) {
+if (!foundText && (CHORD_RE.test(normalized) || REPEAT_RE.test(w))) {
 chordWords.push(w);
 } else {
 foundText = true;
@@ -757,17 +747,9 @@ textWords.push(w);
 }
 }
 
-const chordsText = chordWords.map(w => {
-const cleaned = cleanWordForChordCheck(w);
-const normalized = convertBtoH(cleaned);
-if (CHORD_RE.test(normalized)) return normalized;
-if (REPEAT_RE.test(w)) return w;
-return w;
-}).join(' ');
-
 return {
-chords: chordsText,
-text: (leadingPunct ? leadingPunct + ' ' : '') + textWords.join(' '),
+chords: chordWords.join(' '),
+text: textWords.join(' '),
 rightNote: rightNote
 };
 }
@@ -849,6 +831,7 @@ document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon);
 }
 
 function toggleColorTheme() {
+const btn = document.querySelector('.vl-worship-btn');
 if (document.body.classList.contains('violet')) {
 document.body.classList.remove('violet');
 localStorage.setItem('clc_color', 'blue');
@@ -940,7 +923,6 @@ const q = document.querySelector('#home-view-songs .search-box').value.toLowerCa
 const list = document.getElementById('songs-list');
 list.innerHTML = '';
 const filtered = songs.filter(s => s.title.toLowerCase().includes(q) || (s.chordpro && s.chordpro.toLowerCase().includes(q)) || (s.author && s.author.toLowerCase().includes(q)));
-// Сортировка: новые сверху (по createdAt)
 filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 filtered.forEach(s => {
 const keyLabel = s.key ? ` <span style="color:#90caf9; font-size:12px;">[${s.key}]</span>` : '';
@@ -1327,7 +1309,6 @@ const q = document.getElementById('add-song-search').value.toLowerCase();
 const sl = setlists.find(x => x.id === currentSlId);
 const list = document.getElementById('add-song-list');
 list.innerHTML = '';
-// Поиск по названию, автору И тексту песни (chordpro)
 const filtered = songs.filter(s => !sl.songs.find(x => x.id === s.id) && (
 s.title.toLowerCase().includes(q) ||
 (s.chordpro && s.chordpro.toLowerCase().includes(q)) ||
@@ -1360,16 +1341,10 @@ const active = document.querySelector('.page.active');
 return active ? active.id : null;
 }
 
-function shouldIgnoreSwipe(target) {
-// Игнорируем только поля ввода, модальные окна и элементы списка (для drag-and-drop)
-if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return true;
-if (target.closest('.modal')) return true;
-if (target.closest('.list-item')) return true;
-return false;
-}
-
 document.addEventListener('touchstart', (e) => {
-if (shouldIgnoreSwipe(e.target)) return;
+if (e.target.closest('.modal')) return;
+if (e.target.closest('.list-item')) return;
+if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
 startX = e.touches[0].clientX;
 startY = e.touches[0].clientY;
 tracking = true;
@@ -1387,7 +1362,9 @@ handleSwipe(diffX, currentPageId);
 }, { passive: true });
 
 document.addEventListener('mousedown', (e) => {
-if (shouldIgnoreSwipe(e.target)) return;
+if (e.target.closest('.modal')) return;
+if (e.target.closest('.list-item')) return;
+if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
 startX = e.clientX;
 startY = e.clientY;
 tracking = true;
@@ -1414,18 +1391,16 @@ const isLastSong = (idx === sl.songs.length - 1);
 const isFirstSong = (idx === 0);
 
 if (diffX > 0) {
-// 👈 Свайп влево
 if (isLastSong) {
-goBackFromSong(); // последняя песня → сет-лист
+goBackFromSong();
 } else {
-nextSong(); // следующая песня
+nextSong();
 }
 } else {
-// 👉 Свайп вправо
 if (isFirstSong) {
-goBackFromSong(); // первая песня → сет-лист
+goBackFromSong();
 } else {
-prevSong(); // предыдущая песня
+prevSong();
 }
 }
 } else {
@@ -2038,5 +2013,3 @@ navigator.serviceWorker.register('/sw.js')
 </script>
 </body>
 </html>
-</content>
-</fsWrite>
