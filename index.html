@@ -410,6 +410,70 @@ body.light .grid-btn.tab-style { background: #e0e0e0; color: #333; }
 .btn-subtext { font-size: 10px; display: block; margin-top: 4px; line-height: 1; font-weight: normal; }
 body.dark .btn-subtext { color: #ffffff; }
 body.light .btn-subtext { color: #333333; }
+.song-image-container {
+margin: 0;
+padding: 0;
+background: transparent;
+border: none;
+border-radius: 0;
+text-align: center;
+position: relative;
+width: 100%;
+}
+body.light .song-image-container {
+background: transparent;
+}
+.song-image-container img {
+width: 100%;
+height: auto;
+border-radius: 0;
+margin: 0;
+padding: 0;
+cursor: pointer;
+display: block;
+}
+.song-image-upload {
+display: inline-block;
+padding: 12px 24px;
+background: #9575cd;
+color: white;
+border-radius: 8px;
+cursor: pointer;
+font-size: 15px;
+font-weight: bold;
+}
+body.light .song-image-upload {
+background: #b39ddb;
+color: #333;
+}
+.song-image-upload input[type="file"] {
+display: none;
+}
+.song-image-comment {
+margin: 0 0 10px 0;
+padding: 8px;
+background: rgba(144, 202, 249, 0.1);
+border: 1px solid rgba(144, 202, 249, 0.4);
+border-radius: 6px;
+font-size: 12px;
+color: #90caf9;
+font-style: italic;
+}
+body.light .song-image-comment {
+background: rgba(25, 118, 210, 0.1);
+border-color: rgba(25, 118, 210, 0.4);
+color: #1976D2;
+}
+body.violet .song-image-comment {
+background: rgba(179, 157, 219, 0.1);
+border-color: rgba(179, 157, 219, 0.4);
+color: #b39ddb;
+}
+body.violet.light .song-image-comment {
+background: rgba(126, 87, 194, 0.1);
+border-color: rgba(126, 87, 194, 0.4);
+color: #7e57c2;
+}
 @media (max-width: 480px) {
 body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
 .header h1.app-title { font-size: 12px; }
@@ -434,52 +498,6 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 @media (max-width: 768px) and (min-width: 481px) {
 .song-columns-2 { column-count: 2; }
 }
-  .song-image-container {
-    margin: 15px 0;
-    padding: 15px;
-    background: #1e1e1e;
-    border: 2px dashed #444;
-    border-radius: 10px;
-    text-align: center;
-  }
-  body.light .song-image-container {
-    background: #f5f5f5;
-    border-color: #ddd;
-  }
-  .song-image-container img {
-    max-width: 100%;
-    max-height: 400px;
-    border-radius: 8px;
-    margin-top: 10px;
-  }
-  .song-image-upload {
-    display: inline-block;
-    padding: 12px 24px;
-    background: #9575cd;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: bold;
-  }
-  body.light .song-image-upload {
-    background: #b39ddb;
-    color: #333;
-  }
-  .song-image-upload input[type="file"] {
-    display: none;
-  }
-  .song-image-remove {
-    display: block;
-    margin: 10px auto 0;
-    padding: 8px 16px;
-    background: #ef5350;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-  }
 </style>
 </head>
 <body class="dark">
@@ -627,7 +645,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="modal-content">
 <h2 id="modal-song-edit-title">Редактор песни</h2>
 <div class="help-box">
-<b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Текст в скобках: <b>(аллилуйя)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Повтор: <b>G C D x2</b><br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ 2:</b> <b>ПРЕД-ПРИПЕВ:</b><br>• Пустая строка = разделитель
+<b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Текст в скобках: <b>(аллилуйя)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Повтор: <b>G C D x2</b><br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ 2:</b> <b>ПРЕД-ПРИПЕВ:</b><br>• Пустая строка = разделитель<br>• Картинка: <b>Картинка:</b> (отдельной строкой для добавления фото)<br>• Формат с разделителями: <b>| C | G | Am |</b>
 </div>
 <label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label>
 <input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
@@ -644,7 +662,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label>
 <input type="number" id="edit-bpm" placeholder="Например: 120" min="10" max="300" autocomplete="off">
 <label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label>
-<textarea id="edit-text" placeholder="G C D&#10;Текст песни (аллилуйя) *повторить&#10;&#10;1 КУПЛЕТ:&#10;Hm C G&#10;Текст куплета" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+<textarea id="edit-text" placeholder="G C D&#10;Текст песни (аллилуйя) *повторить&#10;&#10;1 КУПЛЕТ:&#10;Hm C G&#10;Текст куплета&#10;&#10;Картинка:&#10;Комментарий к картинке" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
 <div class="modal-actions">
 <button class="btn-secondary" onclick="closeModal('modal-song-edit')">Отмена</button>
 <button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button>
@@ -722,6 +740,17 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 </div>
 </div>
 
+<div id="modal-image-delete" class="modal">
+<div class="modal-content" style="text-align: center;">
+<h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2>
+<p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button>
+<button class="btn-cancel-confirm" onclick="closeModal('modal-image-delete')">Отмена</button>
+</div>
+</div>
+</div>
+
 <script>
 function formatDate(dateString) {
 const date = new Date(dateString);
@@ -748,6 +777,7 @@ let isLocalEdit = false;
 let pendingSetlistAction = null;
 let sectionNotes = {};
 let isInlineEditing = false;
+let currentImageKey = null;
 
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'H'];
 const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'H'];
@@ -785,7 +815,7 @@ break;
 const cleaned = cleanWordForChordCheck(w);
 const normalized = convertBtoH(cleaned);
 
-if (!foundText && (CHORD_RE.test(normalized) || REPEAT_RE.test(w))) {
+if (!foundText && (CHORD_RE.test(normalized) || REPEAT_RE.test(w) || w === '|')) {
 chordWords.push(w);
 } else {
 foundText = true;
@@ -824,7 +854,7 @@ return line.split(/\s+/).map(w => {
 const cleaned = cleanWordForChordCheck(w);
 const normalized = convertBtoH(cleaned);
 if (CHORD_RE.test(normalized)) return transposeChord(normalized, fromKey, toKey);
-if (REPEAT_RE.test(w)) return w;
+if (REPEAT_RE.test(w) || w === '|') return w;
 return w;
 }).join(' ');
 }
@@ -1380,124 +1410,119 @@ list.appendChild(div);
 }
 
 function setupSwipe() {
-  let startX = 0, startY = 0, tracking = false, currentPageId = null;
-  let isClick = false;
-  
-  function getCurrentPageId() { 
-    const active = document.querySelector('.page.active'); 
-    return active ? active.id : null; 
-  }
-  
-  document.addEventListener('touchstart', (e) => {
-    // Игнорируем только модальные окна и поля ввода
-    if (e.target.closest('.modal')) return;
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-    
-    startX = e.touches[0].clientX; 
-    startY = e.touches[0].clientY; 
-    tracking = true; 
-    isClick = true;
-    currentPageId = getCurrentPageId();
-  }, { passive: true });
-  
-  document.addEventListener('touchmove', (e) => {
-    if (!tracking) return;
-    const diffX = Math.abs(startX - e.touches[0].clientX);
-    const diffY = Math.abs(startY - e.touches[0].clientY);
-    
-    // Если движение больше 10px - это уже не клик
-    if (diffX > 10 || diffY > 10) {
-      isClick = false;
-    }
-  }, { passive: true });
-  
-  document.addEventListener('touchend', (e) => {
-    if (!tracking) return;
-    tracking = false;
-    
-    // Если это был клик - не обрабатываем свайп
-    if (isClick) return;
-    
-    const diffX = startX - e.changedTouches[0].clientX;
-    const diffY = startY - e.changedTouches[0].clientY;
-    
-    // Свайп должен быть горизонтальным и больше 50px
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-      handleSwipe(diffX, currentPageId);
-    }
-  }, { passive: true });
-  
-  // Для мыши (компьютер)
-  document.addEventListener('mousedown', (e) => {
-    if (e.target.closest('.modal')) return;
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-    
-    startX = e.clientX; 
-    startY = e.clientY; 
-    tracking = true; 
-    isClick = true;
-    currentPageId = getCurrentPageId();
-  });
-  
-  document.addEventListener('mousemove', (e) => {
-    if (!tracking) return;
-    const diffX = Math.abs(startX - e.clientX);
-    const diffY = Math.abs(startY - e.clientY);
-    
-    if (diffX > 10 || diffY > 10) {
-      isClick = false;
-    }
-  });
-  
-  document.addEventListener('mouseup', (e) => {
-    if (!tracking) return;
-    tracking = false;
-    
-    if (isClick) return;
-    
-    const diffX = startX - e.clientX;
-    const diffY = startY - e.clientY;
-    
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-      handleSwipe(diffX, currentPageId);
-    }
-  });
-  
-  function handleSwipe(diffX, pageId) {
-    if (pageId === 'page-song-view') {
-      if (currentSlId) {
-        const sl = setlists.find(x => x.id === currentSlId);
-        if (!sl) return;
-        const idx = sl.songs.findIndex(x => x.id === currentSongId);
-        const isLastSong = (idx === sl.songs.length - 1);
-        const isFirstSong = (idx === 0);
-        
-        if (diffX > 0) {
-          if (isLastSong) {
-            goBackFromSong();
-          } else {
-            nextSong();
-          }
-        } else {
-          if (isFirstSong) {
-            goBackFromSong();
-          } else {
-            prevSong();
-          }
-        }
-      } else {
-        if (diffX < 0) goBackFromSong();
-      }
-    } else if (pageId === 'page-home') {
-      if (diffX > 0) { 
-        if (currentHomeView === 'songs') switchHomeView('setlists'); 
-      } else { 
-        if (currentHomeView === 'setlists') switchHomeView('songs'); 
-      }
-    } else if (pageId === 'page-setlist-detail') {
-      if (diffX < 0) goBackFromSetlistDetail();
-    }
-  }
+let startX = 0, startY = 0, tracking = false, currentPageId = null;
+let isClick = false;
+
+function getCurrentPageId() {
+const active = document.querySelector('.page.active');
+return active ? active.id : null;
+}
+
+document.addEventListener('touchstart', (e) => {
+if (e.target.closest('.modal')) return;
+if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+startX = e.touches[0].clientX;
+startY = e.touches[0].clientY;
+tracking = true;
+isClick = true;
+currentPageId = getCurrentPageId();
+}, { passive: true });
+
+document.addEventListener('touchmove', (e) => {
+if (!tracking) return;
+const diffX = Math.abs(startX - e.touches[0].clientX);
+const diffY = Math.abs(startY - e.touches[0].clientY);
+
+if (diffX > 10 || diffY > 10) {
+isClick = false;
+}
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+if (!tracking) return;
+tracking = false;
+
+if (isClick) return;
+
+const diffX = startX - e.changedTouches[0].clientX;
+const diffY = startY - e.changedTouches[0].clientY;
+
+if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+handleSwipe(diffX, currentPageId);
+}
+}, { passive: true });
+
+document.addEventListener('mousedown', (e) => {
+if (e.target.closest('.modal')) return;
+if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+startX = e.clientX;
+startY = e.clientY;
+tracking = true;
+isClick = true;
+currentPageId = getCurrentPageId();
+});
+
+document.addEventListener('mousemove', (e) => {
+if (!tracking) return;
+const diffX = Math.abs(startX - e.clientX);
+const diffY = Math.abs(startY - e.clientY);
+
+if (diffX > 10 || diffY > 10) {
+isClick = false;
+}
+});
+
+document.addEventListener('mouseup', (e) => {
+if (!tracking) return;
+tracking = false;
+
+if (isClick) return;
+
+const diffX = startX - e.clientX;
+const diffY = startY - e.clientY;
+
+if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+handleSwipe(diffX, currentPageId);
+}
+});
+
+function handleSwipe(diffX, pageId) {
+if (pageId === 'page-song-view') {
+if (currentSlId) {
+const sl = setlists.find(x => x.id === currentSlId);
+if (!sl) return;
+const idx = sl.songs.findIndex(x => x.id === currentSongId);
+const isLastSong = (idx === sl.songs.length - 1);
+const isFirstSong = (idx === 0);
+
+if (diffX > 0) {
+if (isLastSong) {
+goBackFromSong();
+} else {
+nextSong();
+}
+} else {
+if (isFirstSong) {
+goBackFromSong();
+} else {
+prevSong();
+}
+}
+} else {
+if (diffX < 0) goBackFromSong();
+}
+} else if (pageId === 'page-home') {
+if (diffX > 0) {
+if (currentHomeView === 'songs') switchHomeView('setlists');
+} else {
+if (currentHomeView === 'setlists') switchHomeView('songs');
+}
+} else if (pageId === 'page-setlist-detail') {
+if (diffX < 0) goBackFromSetlistDetail();
+}
+}
 }
 
 function openSongView(id, slId) {
@@ -1717,95 +1742,119 @@ saveToStorage();
 }
 
 function renderSongContent(text, fromKey, toKey, capo) {
-  const lines = text.split('\n');
-  const columnsClass = currentColumns === 2 ? 'song-columns-2' : 'song-columns-1';
-  let html = `<div class="${columnsClass}">`;
-  let currentSection = null;
-  let sectionContent = '';
-  let sectionIdx = 0;
-  const songId = currentSongId;
-  
-  function flushSection() {
-    if (sectionContent) {
-      const noteValue = (sectionNotes[songId] && sectionNotes[songId][sectionIdx]) || '';
-      html += `<div class="song-section">
-        <input type="text" class="section-note-input" maxlength="7" value="${noteValue.replace(/"/g, '&quot;')}" 
-          oninput="saveSectionNote(${songId}, ${sectionIdx}, this.value)" 
-          placeholder="..." />
-        ${sectionContent}
-      </div>`;
-      sectionContent = '';
-      sectionIdx++;
-    }
-  }
-  
-  lines.forEach(line => {
-    const trimmed = line.trim();
-    
-    // Проверяем, не является ли строка триггером для картинки
-    if (trimmed.toLowerCase() === 'картинка:' || trimmed.toLowerCase() === 'image:') {
-      flushSection();
-      const imageKey = `img_${songId}_${sectionIdx}`;
-      const savedImage = localStorage.getItem(imageKey);
-      
-      if (savedImage) {
-        html += `<div class="song-image-container">
-          <img src="${savedImage}" alt="Изображение">
-          <button class="song-image-remove" onclick="removeSongImage('${imageKey}')">🗑️ Удалить изображение</button>
-        </div>`;
-      } else {
-        html += `<div class="song-image-container">
-          <label class="song-image-upload">
-             Загрузить изображение
-            <input type="file" accept="image/*" onchange="uploadSongImage(this, '${imageKey}')">
-          </label>
-        </div>`;
-      }
-      sectionIdx++;
-      return;
-    }
-    
-    const sectionMatch = trimmed.match(SECTION_RE);
-    if (sectionMatch) {
-      flushSection();
-      currentSection = trimmed.toUpperCase();
-      sectionContent += `<div class="section-label" style="font-size: ${fontSize}px;">${currentSection}</div>`;
-    } else if (trimmed !== '') {
-      const parsed = parseMixedLine(trimmed);
-      if (parsed.chords || parsed.text || parsed.rightNote) {
-        sectionContent += '<div class="section-block"><div class="main-content">';
-        if (parsed.chords) {
-          let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
-          if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
-          sectionContent += `<div class="chords-above" style="font-size: ${fontSize}px">${displayChords}</div>`;
-        }
-        if (parsed.text) sectionContent += `<div class="lyrics-below" style="font-size: ${fontSize}px;">${parsed.text}</div>`;
-        sectionContent += '</div>';
-        if (parsed.rightNote) sectionContent += `<div class="right-note" style="font-size: ${fontSize}px;">${parsed.rightNote}</div>`;
-        sectionContent += '</div>';
-      }
-    }
-  });
-  flushSection();
-  html += '</div>';
-  document.getElementById('song-view-content').innerHTML = html;
+const lines = text.split('\n');
+const columnsClass = currentColumns === 2 ? 'song-columns-2' : 'song-columns-1';
+let html = `<div class="${columnsClass}">`;
+let currentSection = null;
+let sectionContent = '';
+let sectionIdx = 0;
+const songId = currentSongId;
+
+function flushSection() {
+if (sectionContent) {
+const noteValue = (sectionNotes[songId] && sectionNotes[songId][sectionIdx]) || '';
+html += `<div class="song-section">
+<input type="text" class="section-note-input" maxlength="7" value="${noteValue.replace(/"/g, '&quot;')}"
+oninput="saveSectionNote(${songId}, ${sectionIdx}, this.value)"
+placeholder="..." />
+${sectionContent}
+</div>`;
+sectionContent = '';
+sectionIdx++;
 }
-function uploadSongImage(input, imageKey) {
-  const file = input.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const imageData = e.target.result;
-    localStorage.setItem(imageKey, imageData);
-    openSongView(currentSongId, currentSlId);
-  };
-  reader.readAsDataURL(file);
 }
 
-function removeSongImage(imageKey) {
-  localStorage.removeItem(imageKey);
-  openSongView(currentSongId, currentSlId);
+lines.forEach(line => {
+const trimmed = line.trim();
+
+if (trimmed.toLowerCase() === 'картинка:' || trimmed.toLowerCase() === 'image:') {
+flushSection();
+const imageKey = `img_${songId}_${sectionIdx}`;
+const savedImage = localStorage.getItem(imageKey);
+const commentKey = `img_${songId}_${sectionIdx}_comment`;
+const savedComment = localStorage.getItem(commentKey) || '';
+
+if (savedImage) {
+html += `<div class="song-image-container">
+${savedComment ? `<div class="song-image-comment">${savedComment}</div>` : ''}
+<img src="${savedImage}" alt="Изображение" onclick="showImageDeleteModal('${imageKey}')">
+</div>`;
+} else {
+html += `<div class="song-image-container">
+<input type="text" class="section-note-input" placeholder="Комментарий..."
+value="${savedComment}"
+onchange="saveImageComment('${commentKey}', this.value)"
+style="position: static; width: 100%; margin-bottom: 10px; text-align: center;" />
+<label class="song-image-upload">
+Загрузить изображение
+<input type="file" accept="image/*" onchange="uploadSongImage(this, '${imageKey}')">
+</label>
+</div>`;
+}
+sectionIdx++;
+return;
+}
+
+const sectionMatch = trimmed.match(SECTION_RE);
+if (sectionMatch) {
+flushSection();
+currentSection = trimmed.toUpperCase();
+sectionContent += `<div class="section-label" style="font-size: ${fontSize}px;">${currentSection}</div>`;
+} else if (trimmed !== '') {
+const parsed = parseMixedLine(trimmed);
+if (parsed.chords || parsed.text || parsed.rightNote) {
+sectionContent += '<div class="section-block"><div class="main-content">';
+if (parsed.chords) {
+let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
+if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
+sectionContent += `<div class="chords-above" style="font-size: ${fontSize}px">${displayChords}</div>`;
+}
+if (parsed.text) sectionContent += `<div class="lyrics-below" style="font-size: ${fontSize}px;">${parsed.text}</div>`;
+sectionContent += '</div>';
+if (parsed.rightNote) sectionContent += `<div class="right-note" style="font-size: ${fontSize}px;">${parsed.rightNote}</div>`;
+sectionContent += '</div>';
+}
+}
+});
+flushSection();
+html += '</div>';
+document.getElementById('song-view-content').innerHTML = html;
+}
+
+function uploadSongImage(input, imageKey) {
+const file = input.files[0];
+if (!file) return;
+
+const reader = new FileReader();
+reader.onload = (e) => {
+const imageData = e.target.result;
+localStorage.setItem(imageKey, imageData);
+openSongView(currentSongId, currentSlId);
+};
+reader.readAsDataURL(file);
+}
+
+function saveImageComment(commentKey, value) {
+if (value.trim() === '') {
+localStorage.removeItem(commentKey);
+} else {
+localStorage.setItem(commentKey, value.trim());
+}
+}
+
+function showImageDeleteModal(imageKey) {
+currentImageKey = imageKey;
+document.getElementById('modal-image-delete').classList.add('show');
+document.getElementById('btn-confirm-delete-image').onclick = () => {
+if (currentImageKey) {
+localStorage.removeItem(currentImageKey);
+const commentKey = currentImageKey + '_comment';
+localStorage.removeItem(commentKey);
+openSongView(currentSongId, currentSlId);
+closeModal('modal-image-delete');
+currentImageKey = null;
+}
+};
 }
 
 function changeFontSize(d) {
