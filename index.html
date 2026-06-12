@@ -86,7 +86,7 @@ body.light .btn-save-all { background: rgba(25, 118, 210, 0.1); color: #1976D2; 
 .song-columns-2 { column-count: 2; column-gap: 15px; }
 .song-section { background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 8px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); break-inside: avoid; width: 100%; display: inline-block; position: relative; }
 body.light .song-section { background: white; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.chords-above { color: #90caf9; font-weight: bold; font-family: 'Courier New', monospace; margin-bottom: 1px; letter-spacing: 0.5px; white-space: pre-wrap; word-wrap: break-word; }
+.chords-above { color: #90caf9; font-weight: bold; font-family: 'Courier New', monospace; margin-bottom: 1px; letter-spacing: 0.5px; white-space: pre; overflow-x: auto; }
 body.light .chords-above { color: #0d47a1; font-weight: bold; }
 .section-label { font-weight: bold; color: #90caf9; letter-spacing: 1px; margin-bottom: 4px; margin-top: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
 body.light .section-label { color: #0d47a1; font-weight: bold; }
@@ -156,45 +156,13 @@ body.light .grid-btn.tab-style { background: #e0e0e0; color: #333; }
 body.dark .btn-subtext { color: #ffffff; }
 body.light .btn-subtext { color: #333333; }
 
-.song-image-container {
-margin: 0 0 15px 0;
-padding: 0;
-background: transparent;
-border: none;
-border-radius: 0;
-text-align: center;
-position: relative;
-width: 100%;
-}
+.song-image-container { margin: 0 0 15px 0; padding: 0; background: transparent; border: none; border-radius: 0; text-align: center; position: relative; width: 100%; }
 body.light .song-image-container { background: transparent; }
-.song-image-container img {
-width: 100%;
-height: auto;
-border-radius: 0;
-margin: 0;
-padding: 0;
-cursor: pointer;
-display: block;
-}
+.song-image-container img { width: 100%; height: auto; border-radius: 0; margin: 0; padding: 0; cursor: pointer; display: block; }
 .song-image-upload { display: inline-block; padding: 12px 24px; background: #9575cd; color: white; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; }
 body.light .song-image-upload { background: #b39ddb; color: #333; }
 .song-image-upload input[type="file"] { display: none; }
-.song-image-comment {
-margin: 0;
-padding: 8px;
-background: rgba(144, 202, 249, 0.1);
-border: 1px solid rgba(144, 202, 249, 0.4);
-border-radius: 6px;
-font-size: 12px;
-color: #90caf9;
-font-style: italic;
-cursor: text;
-user-select: text;
--webkit-user-select: text;
-outline: none;
-min-height: 20px;
-text-align: center;
-}
+.song-image-comment { margin: 0; padding: 8px; background: rgba(144, 202, 249, 0.1); border: 1px solid rgba(144, 202, 249, 0.4); border-radius: 6px; font-size: 12px; color: #90caf9; font-style: italic; cursor: text; user-select: text; -webkit-user-select: text; outline: none; min-height: 20px; text-align: center; }
 body.light .song-image-comment { background: rgba(25, 118, 210, 0.1); border-color: rgba(25, 118, 210, 0.4); color: #1976D2; }
 .song-image-comment:focus { background: rgba(144, 202, 249, 0.2); border-color: rgba(144, 202, 249, 0.8); }
 body.light .song-image-comment:focus { background: rgba(25, 118, 210, 0.2); border-color: rgba(25, 118, 210, 0.8); }
@@ -233,19 +201,19 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button></div>
 </div>
 <div class="setlist-grid">
-<div class="grid-btn tab-style active" id="home-tab-songs" onclick="switchHomeView('songs')"> Песни</div>
-<div class="grid-btn tab-style" id="home-tab-setlists" onclick="switchHomeView('setlists')"> Сет-листы</div>
+<div class="grid-btn tab-style active" id="home-tab-songs" onclick="switchHomeView('songs')">🎵 Песни</div>
+<div class="grid-btn tab-style" id="home-tab-setlists" onclick="switchHomeView('setlists')">📋 Сет-листы</div>
 </div>
 <div id="home-view-songs">
-<input type="text" class="search-box" placeholder="🔍 Поиск песен..." oninput="renderSongs()">
+<input type="text" class="search-box" placeholder=" Поиск песен..." oninput="renderSongs()">
 <div class="home-actions-row">
 <button class="btn-secondary" onclick="openMainSongEditor()">+ Добавить песню</button>
-<button class="btn-secondary" onclick="document.getElementById('import-song-input').click()"> Загрузить</button>
+<button class="btn-secondary" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
 </div>
 <input type="file" id="import-song-input" accept=".clcsong" style="display: none;" onchange="handleImportSong(event)">
 <div class="home-actions-row">
 <button class="btn-secondary" onclick="exportDatabase()">📤 Экспорт базы</button>
-<button class="btn-secondary" onclick="document.getElementById('import-database-input').click()">📥 Импорт базы</button>
+<button class="btn-secondary" onclick="document.getElementById('import-database-input').click()"> Импорт базы</button>
 </div>
 <input type="file" id="import-database-input" accept=".clcdb" style="display: none;" onchange="handleImportDatabase(event)">
 <h2 style="margin-bottom: 10px;">Все песни</h2>
@@ -254,7 +222,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="home-view-setlists" style="display: none;">
 <div class="setlist-grid">
 <button class="grid-btn btn-main-style" onclick="openSetlistModal()">+ Создать сет-лист</button>
-<button class="grid-btn btn-secondary-style" onclick="document.getElementById('import-setlist-input').click()"> Загрузить сет-лист</button>
+<button class="grid-btn btn-secondary-style" onclick="document.getElementById('import-setlist-input').click()">📥 Загрузить сет-лист</button>
 <div class="grid-btn tab-style active" onclick="switchTab('current', this)">Актуальные<span class="btn-subtext">сет-листы</span></div>
 <div class="grid-btn tab-style" onclick="switchTab('archive', this)">Архив<span class="btn-subtext">сет-листов</span></div>
 </div>
@@ -268,11 +236,11 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header">
 <div class="header-left"><button class="btn-back" onclick="goBackFromSetlistDetail()">←</button></div>
 <div class="header-center"><div class="header-subtitle" id="sl-subtitle">Сет-лист</div><h1 id="sl-detail-title" style="font-size: 14px;"></h1></div>
-<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
+<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()"></button></div>
 </div>
 <div class="setlist-actions-row">
 <button class="btn-add-song-top" onclick="openAddSongToSlModal()">+ Добавить песню</button>
-<button class="btn-edit-sl" onclick="openEditSetlistModal(currentSlId)">✏️ Редактировать</button>
+<button class="btn-edit-sl" onclick="openEditSetlistModal(currentSlId)">️ Редактировать</button>
 </div>
 <div class="setlist-actions-row">
 <button class="btn-archive-sl" onclick="archiveCurrentSetlist()">📦 В архив</button>
@@ -323,7 +291,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="modal-song-edit" class="modal">
 <div class="modal-content">
 <h2 id="modal-song-edit-title">Редактор песни</h2>
-<div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Текст в скобках: <b>(аллилуйя)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Повтор: <b>G C D x2</b><br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ 2:</b> <b>ПРЕД-ПРИПЕВ:</b><br>• Пустая строка = разделитель<br>• Картинка: <b>Картинка:</b> (отдельной строкой для добавления фото)<br>• Формат с разделителями: <b>| C | G | Am |</b></div>
+<div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Текст в скобках: <b>(аллилуйя)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Повтор: <b>G C D x2</b><br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ 2:</b> <b>ПРЕД-ПРИПЕВ:</b><br>• Пустая строка = разделитель<br>• Картинка: <b>Картинка:</b> (отдельной строкой для добавления фото)<br>• Формат с разделителями: <b>| C | G | Am |</b><br>• Сохраняются все пробелы между аккордами</div>
 <label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label>
 <input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
 <label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label>
@@ -455,17 +423,23 @@ function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.spl
 function cleanWordForChordCheck(word) { return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, ''); }
 
 function parseMixedLine(line) {
-const words = line.trim().split(/\s+/);
+const trimmed = line.trim();
 const chordWords = [], textWords = [];
 let foundText = false, rightNote = '';
-for (let i = 0; i < words.length; i++) {
-const w = words[i];
-if (w.startsWith('*')) { rightNote = w.substring(1); for (let j = i + 1; j < words.length; j++) rightNote += ' ' + words[j]; break; }
+const tokens = trimmed.split(/(\s+)/);
+const chordTokens = [];
+
+for (let i = 0; i < tokens.length; i++) {
+const w = tokens[i];
+if (w === '') continue;
+if (/^\s+$/.test(w)) { chordTokens.push(w); continue; }
+if (w.startsWith('*')) { rightNote = w.substring(1); for (let j = i + 1; j < tokens.length; j++) rightNote += tokens[j]; break; }
 const cleaned = cleanWordForChordCheck(w);
 const normalized = convertBtoH(cleaned);
-if (!foundText && (CHORD_RE.test(normalized) || REPEAT_RE.test(w) || w === '|')) { chordWords.push(w); } else { foundText = true; textWords.push(w); }
+if (!foundText && (CHORD_RE.test(normalized) || REPEAT_RE.test(w) || w === '|')) { chordTokens.push(w); }
+else { foundText = true; textWords.push(w); }
 }
-return { chords: chordWords.join(' '), text: textWords.join(' '), rightNote: rightNote };
+return { chords: chordTokens.join(''), text: textWords.join(' '), rightNote: rightNote };
 }
 
 function transposeChord(chord, fromKey, toKey) {
@@ -482,13 +456,15 @@ try { const newIdx = ((scale.indexOf(root) + interval) % 12 + 12) % 12; return s
 }
 
 function transposeLine(line, fromKey, toKey) {
-return line.split(/\s+/).map(w => {
+const tokens = line.split(/(\s+)/);
+return tokens.map(w => {
+if (/^\s+$/.test(w)) return w;
 const cleaned = cleanWordForChordCheck(w);
 const normalized = convertBtoH(cleaned);
 if (CHORD_RE.test(normalized)) return transposeChord(normalized, fromKey, toKey);
 if (REPEAT_RE.test(w) || w === '|') return w;
 return w;
-}).join(' ');
+}).join('');
 }
 
 function transposeChordproText(text, fromKey, toKey) {
@@ -584,7 +560,7 @@ const authorHtml = s.author ? `<div class="item-sub">${s.author}</div>` : '';
 const div = document.createElement('div');
 div.className = 'list-item';
 div.style.cursor = 'default';
-div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1;"><div class="item-title">${s.title}${keyLabel}</div>${authorHtml}</div><div class="item-actions" style="display: flex; gap: 4px; flex-direction: row; align-items: center;"><button class="btn-icon" onclick="event.stopPropagation(); openMainSongEditor(${s.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); confirmDeleteSong(${s.id}, '${s.title.replace(/'/g, "\\'")}')">🗑️</button></div>`;
+div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1;"><div class="item-title">${s.title}${keyLabel}</div>${authorHtml}</div><div class="item-actions" style="display: flex; gap: 4px; flex-direction: row; align-items: center;"><button class="btn-icon" onclick="event.stopPropagation(); openMainSongEditor(${s.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); confirmDeleteSong(${s.id}, '${s.title.replace(/'/g, "\\'")}')">️</button></div>`;
 div.onclick = () => openSongView(s.id, null);
 list.appendChild(div);
 });
@@ -614,7 +590,7 @@ const sl = setlists.find(x => x.id === currentSlId);
 const item = sl.songs.find(x => x.id === id);
 title = s.title; key = s.key || ''; author = s.author || ''; bpm = s.bpm || '';
 if (item && item.chordpro) { chordpro = item.chordpro; document.getElementById('modal-song-edit-title').innerText = '✏️ Локальное редактирование'; }
-else { chordpro = s.chordpro; document.getElementById('modal-song-edit-title').innerText = '✏️ Создать локальную версию'; }
+else { chordpro = s.chordpro; document.getElementById('modal-song-edit-title').innerText = '️ Создать локальную версию'; }
 } else if (id) {
 const s = songs.find(x => x.id === id);
 if (s) { title = s.title; chordpro = s.chordpro; key = s.key || ''; author = s.author || ''; bpm = s.bpm || ''; }
@@ -939,7 +915,7 @@ if (!s) return;
 let chordpro = s.chordpro, key = s.key;
 if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { if (item.chordpro) chordpro = item.chordpro; if (item.key) key = item.key; if (item.capo && item.capo > 0 && key) { key = NOTES_SHARP[((NOTES_SHARP.indexOf(key) + item.capo) % 12 + 12) % 12]; chordpro = transposeChordproText(chordpro, s.key, key); } } }
 let bodyHtml = '';
-chordpro.split('\n').forEach(line => { const trimmed = line.trim(); const sectionMatch = trimmed.match(SECTION_RE); if (sectionMatch) bodyHtml += `<h2 style="color: #1976D2; text-transform: uppercase; margin-top: 20px; margin-bottom: 10px; font-size: 18px;">${trimmed.toUpperCase()}</h2>`; else if (trimmed === '') bodyHtml += '<br>'; else { const parsed = parseMixedLine(trimmed); if (parsed.chords) bodyHtml += `<div style="color: #1976D2; font-family: 'Courier New', monospace; font-weight: bold; font-size: 16px; margin-bottom: 4px;">${parsed.chords}</div>`; if (parsed.text) bodyHtml += `<div style="font-size: 16px; margin-bottom: 8px; line-height: 1.4;">${parsed.text}</div>`; if (parsed.rightNote) bodyHtml += `<div style="display: inline-block; border: 2px solid #1976D2; padding: 4px 10px; font-weight: bold; color: #1976D2; margin-left: 10px;">${parsed.rightNote}</div>`; } });
+chordpro.split('\n').forEach(line => { const trimmed = line.trim(); const sectionMatch = trimmed.match(SECTION_RE); if (sectionMatch) bodyHtml += `<h2 style="color: #1976D2; text-transform: uppercase; margin-top: 20px; margin-bottom: 10px; font-size: 18px;">${trimmed.toUpperCase()}</h2>`; else if (trimmed === '') bodyHtml += '<br>'; else { const parsed = parseMixedLine(trimmed); if (parsed.chords) bodyHtml += `<div style="color: #1976D2; font-family: 'Courier New', monospace; font-weight: bold; font-size: 16px; margin-bottom: 4px; white-space: pre;">${parsed.chords}</div>`; if (parsed.text) bodyHtml += `<div style="font-size: 16px; margin-bottom: 8px; line-height: 1.4;">${parsed.text}</div>`; if (parsed.rightNote) bodyHtml += `<div style="display: inline-block; border: 2px solid #1976D2; padding: 4px 10px; font-weight: bold; color: #1976D2; margin-left: 10px;">${parsed.rightNote}</div>`; } });
 const printWindow = window.open('', '_blank');
 printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${s.title}</title><style>body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; } h1 { color: #1976D2; text-align: center; margin-bottom: 5px; } .meta { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }</style></head><body><h1>${s.title}</h1><div class="meta">${s.author ? `Автор: ${s.author}<br>` : ''}Тональность: ${key || '—'}</div>${bodyHtml}<script>window.onload = function() { window.print(); };<\/script></body></html>`);
 printWindow.document.close();
@@ -965,7 +941,7 @@ reader.readAsText(file); event.target.value = '';
 
 function exportSong() { const s = songs.find(x => x.id === currentSongId); if (!s) return; let chordpro = s.chordpro, key = s.key; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { if (item.chordpro) chordpro = item.chordpro; if (item.capo && item.capo > 0 && key) { key = NOTES_SHARP[((NOTES_SHARP.indexOf(key) + item.capo) % 12 + 12) % 12]; chordpro = transposeChordproText(chordpro, s.key, key); } } } shareFile({ version: 1, type: 'song', app: 'Worship SetUP', data: { title: s.title, author: s.author || '', key: s.key, bpm: s.bpm || '', chordpro: chordpro } }, `${s.title}.clcsong`); }
 
-function handleImportSong(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'song' || !data.data) { alert('❌ Это не файл песни'); return; } const songData = data.data; const existing = songs.find(s => s.title.toLowerCase() === songData.title.toLowerCase()); if (existing) { if (!confirm(`Песня "${songData.title}" уже существует. Заменить её?`)) return; existing.author = songData.author || existing.author; existing.key = songData.key; existing.bpm = songData.bpm || ''; existing.chordpro = songData.chordpro; } else { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: songData.title, author: songData.author || '', key: songData.key, bpm: songData.bpm || '', chordpro: songData.chordpro, createdAt: Date.now() }); } saveToStorage(); renderSongs(); alert(`✅ Песня "${songData.title}" импортирована!`); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
+function handleImportSong(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'song' || !data.data) { alert(' Это не файл песни'); return; } const songData = data.data; const existing = songs.find(s => s.title.toLowerCase() === songData.title.toLowerCase()); if (existing) { if (!confirm(`Песня "${songData.title}" уже существует. Заменить её?`)) return; existing.author = songData.author || existing.author; existing.key = songData.key; existing.bpm = songData.bpm || ''; existing.chordpro = songData.chordpro; } else { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: songData.title, author: songData.author || '', key: songData.key, bpm: songData.bpm || '', chordpro: songData.chordpro, createdAt: Date.now() }); } saveToStorage(); renderSongs(); alert(`✅ Песня "${songData.title}" импортирована!`); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 
 function exportDatabase() { const database = { version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs: songs, setlists: setlists, sectionNotes: sectionNotes } }; shareFile(database, `WorshipDatabase_${getCurrentDate()}.clcdb`); }
 
