@@ -150,7 +150,7 @@ appearance: none;
 }
 .toolbar-select-item select option { background: #1e1e1e; color: #eee; }
 body.light .toolbar-select-item select option { background: white; color: #333; }
-.btn-save-all { background: rgba(129, 212, 250, 0.3); color: #81D4FA; border: 2px solid rgba(129, 212, 250, 0.6); padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; min-height: 48px; touch-action: manipulation; display: none; }
+.btn-save-all { background: rgba(129, 212, 250, 0.3); color: #81D4FA; border: 2px solid rgba(129, 212, 250, 0.6); padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; min-height: 48px; touch-action: manipulation; display: none; margin-top: 8px; }
 body.violet .btn-save-all { color: #b39ddb; border-color: rgba(179, 157, 219, 0.6); background: rgba(179, 157, 219, 0.3); }
 body.light .btn-save-all { background: rgba(25, 118, 210, 0.1); color: #1976D2; border: 2px solid rgba(25, 118, 210, 0.6); }
 body.violet.light .btn-save-all { background: rgba(126, 87, 194, 0.1); color: #7e57c2; border: 2px solid rgba(126, 87, 194, 0.6); }
@@ -450,7 +450,7 @@ color: #333;
 display: none;
 }
 .song-image-comment {
-margin: 0 0 10px 0;
+margin: 0;
 padding: 8px;
 background: rgba(144, 202, 249, 0.1);
 border: 1px solid rgba(144, 202, 249, 0.4);
@@ -458,6 +458,9 @@ border-radius: 6px;
 font-size: 12px;
 color: #90caf9;
 font-style: italic;
+cursor: text;
+user-select: text;
+-webkit-user-select: text;
 }
 body.light .song-image-comment {
 background: rgba(25, 118, 210, 0.1);
@@ -608,7 +611,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 </div>
 <button class="toolbar-btn-item" onclick="downloadPdf()" title="PDF">📄 PDF</button>
 </div>
-<div class="toolbar-row">
+<div class="toolbar-row" style="margin-top: 8px;">
 <button class="toolbar-btn-item" onclick="changeFontSize(-2)" title="Уменьшить шрифт">A-</button>
 <button class="toolbar-btn-item" onclick="changeFontSize(2)" title="Увеличить шрифт">A+</button>
 <button class="toolbar-btn-item" onclick="exportSong()" title="Поделиться">
@@ -1776,15 +1779,16 @@ const savedComment = localStorage.getItem(commentKey) || '';
 
 if (savedImage) {
 html += `<div class="song-image-container">
-${savedComment ? `<div class="song-image-comment">${savedComment}</div>` : ''}
+<div class="song-image-comment" contenteditable="true"
+onblur="saveImageComment('${commentKey}', this.innerText)"
+onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${savedComment || 'Комментарий...'}</div>
 <img src="${savedImage}" alt="Изображение" onclick="showImageDeleteModal('${imageKey}')">
 </div>`;
 } else {
 html += `<div class="song-image-container">
-<input type="text" class="section-note-input" placeholder="Комментарий..."
-value="${savedComment}"
-onchange="saveImageComment('${commentKey}', this.value)"
-style="position: static; width: 100%; margin-bottom: 10px; text-align: center;" />
+<div class="song-image-comment" contenteditable="true"
+onblur="saveImageComment('${commentKey}', this.innerText)"
+onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">Комментарий...</div>
 <label class="song-image-upload">
 Загрузить изображение
 <input type="file" accept="image/*" onchange="uploadSongImage(this, '${imageKey}')">
@@ -1835,7 +1839,7 @@ reader.readAsDataURL(file);
 }
 
 function saveImageComment(commentKey, value) {
-if (value.trim() === '') {
+if (value.trim() === '' || value === 'Комментарий...') {
 localStorage.removeItem(commentKey);
 } else {
 localStorage.setItem(commentKey, value.trim());
