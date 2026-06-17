@@ -272,7 +272,6 @@ body.light .song-image-comment { background: rgba(25, 118, 210, 0.1); border-col
 .song-image-comment:focus { background: rgba(144, 202, 249, 0.2); border-color: rgba(144, 202, 249, 0.8); }
 body.light .song-image-comment:focus { background: rgba(25, 118, 210, 0.2); border-color: rgba(25, 118, 210, 0.8); }
 
-/* === ИНСТРУКЦИЯ === */
 .instruction-content {
   display: flex;
   flex-direction: column;
@@ -476,7 +475,8 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card">
 <div class="instruction-card-header"><span class="instruction-card-icon">📤</span><span class="instruction-card-title">Экспорт и импорт</span></div>
 <div class="instruction-card-text">
-• <b>Экспорт базы</b> — все песни в один файл <code>.clcdb</code><br>
+• <b>📤 Экспорт базы</b> — все песни в один файл <code>.clcdb</code> (можно задать имя)<br>
+• <b>📥 Импорт базы</b> — добавит новые песни из файла <code>.clcdb</code><br>
 • <b>📤 поделиться</b> на странице песни — файл одной песни <code>.clcsong</code><br>
 • <b>📤 Поделиться</b> в сет-листе — сет-лист со всеми песнями <code>.clcsetlist</code>
 </div>
@@ -493,7 +493,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card-header"><span class="instruction-card-icon">🎨</span><span class="instruction-card-title">Темы оформления</span></div>
 <div class="instruction-card-text">
 • <b>🌙 / ☀️</b> — переключение тёмной и светлой темы<br>
-• Кнопка ниже — смена цветовой схемы (синяя ↔ фиолетовая)<br>
+• Кнопка <b>VL</b> — инструкция, долгое нажатие — смена цветовой схемы (синяя ↔ фиолетовая)<br>
 • Настройки сохраняются между запусками
 </div>
 </div>
@@ -501,9 +501,9 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card">
 <div class="instruction-card-header"><span class="instruction-card-icon">⚡</span><span class="instruction-card-title">Быстрые жесты</span></div>
 <div class="instruction-card-text">
-• <b>Долгое нажатие на VL</b> (эту кнопку) — быстрая смена цвета<br>
 • <b>Перетаскивание</b> песен в сет-листе — меняет порядок<br>
-• <b>Поле №</b> слева от песни — можно вписать номер вручную
+• <b>Поле №</b> слева от песни — можно вписать номер вручную<br>
+• <b>Долгое нажатие на VL</b> (800мс) — быстрая смена цвета
 </div>
 </div>
 
@@ -1361,7 +1361,7 @@ if (parsed.chords && parsed.text) {
   sectionContent += '</div>';
   if (parsed.rightNote) sectionContent += `<div class="right-note" style="font-size: ${fontSize}px;">${parsed.rightNote}</div>`;
   if (parsed.inlineComment) {
-    sectionContent += `<input type="text" class="inline-comment-input" maxlength="12" value="${savedComment.replace(/"/g, '&quot;')}" oninput="saveInlineComment(${songId}, ${sectionIdx}, ${lineIdx}, this.value)" placeholder="коммент." />`;
+    sectionContent += `<input type="text" class="inline-comment-input" maxlength="12" value="${savedComment.replace(/"/g, '&quot;')}" oninput="saveInlineComment(${songId}, ${sectionIdx}, ${lineIdx}, this.value)" placeholder="..." />`;
   }
   sectionContent += '</div>';
   lineIdx++;
@@ -1478,34 +1478,35 @@ if (body.classList.contains('dark')) { body.classList.remove('dark'); body.class
 else { body.classList.remove('light'); body.classList.add('dark'); updateThemeButtons('🌙'); localStorage.setItem('clc_theme', 'dark'); }
 }
 
+// 🔧 ИСПРАВЛЕНА ФУНКЦИЯ PDF — теперь корректно работает 2 колонки на мобильных устройствах
 function downloadPdf() {
 const s = songs.find(x => x.id === currentSongId);
 if (!s) return;
 let chordpro = s.chordpro, key = s.key;
 if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { if (item.chordpro) chordpro = item.chordpro; if (item.key) key = item.key; if (item.capo && item.capo > 0 && key) { key = NOTES_SHARP[((NOTES_SHARP.indexOf(key) + item.capo) % 12 + 12) % 12]; chordpro = transposeChordproText(chordpro, s.key, key); } } }
 
-let bodyHtml = '<div style="column-count: 2; column-gap: 20px; font-family: Arial, sans-serif; font-size: 10px; color: #000;">';
+let bodyHtml = '<div class="pdf-body">';
 const lines = chordpro.split('\n');
 let i = 0;
 while (i < lines.length) {
   const trimmed = lines[i].trim();
   const sectionMatch = trimmed.match(SECTION_RE);
   if (sectionMatch) {
-    bodyHtml += `<div style="font-size: 12px; font-weight: bold; color: #000; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; break-after: avoid;">${trimmed.toUpperCase()}</div>`;
+    bodyHtml += `<div class="pdf-section">${trimmed.toUpperCase()}</div>`;
     i++;
   } else if (trimmed === '') {
     i++;
   } else {
     const parsed = parseMixedLine(trimmed);
     if (parsed.chords && parsed.text) {
-      bodyHtml += `<div style="font-size: 10px; line-height: 1.3; margin-bottom: 4px;"><b style="color: #000;">${parsed.chords}</b> ${parsed.text}</div>`;
+      bodyHtml += `<div class="pdf-line"><b>${parsed.chords}</b> ${parsed.text}</div>`;
     } else if (parsed.chords) {
-      bodyHtml += `<div style="font-size: 10px; font-weight: bold; color: #000; line-height: 1.2; margin-bottom: 4px;">${parsed.chords}</div>`;
+      bodyHtml += `<div class="pdf-chords">${parsed.chords}</div>`;
     } else if (parsed.text) {
-      bodyHtml += `<div style="font-size: 10px; line-height: 1.2; margin-bottom: 4px;">${parsed.text}</div>`;
+      bodyHtml += `<div class="pdf-text">${parsed.text}</div>`;
     }
     if (parsed.rightNote) {
-      bodyHtml += `<div style="font-size: 10px; display: inline-block; border: 1px solid #000; padding: 2px 6px; font-weight: bold; color: #000; margin-left: 8px;">${parsed.rightNote}</div>`;
+      bodyHtml += `<div class="pdf-note">${parsed.rightNote}</div>`;
     }
     i++;
   }
@@ -1513,7 +1514,134 @@ while (i < lines.length) {
 bodyHtml += '</div>';
 
 const printWindow = window.open('', '_blank');
-printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${s.title}</title><style>@page { margin: 10mm; size: A4; } body { font-family: Arial, sans-serif; padding: 10mm; max-width: 100%; margin: 0; } h1 { font-size: 14px; color: #000; text-align: center; margin: 0 0 4px 0; } .meta { text-align: center; color: #000; margin-bottom: 8px; font-size: 10px; }</style></head><body><h1>${s.title}</h1><div class="meta">${s.author ? `Автор: ${s.author}<br>` : ''}Тональность: ${key || '—'}${s.bpm ? `<br>BPM: ${s.bpm}` : ''}</div>${bodyHtml}<script>window.onload = function() { window.print(); window.close(); };<\/script></body></html>`);
+if (!printWindow) { alert('⚠️ Разрешите всплывающие окна для печати PDF'); return; }
+
+const printHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${s.title}</title>
+<style>
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.pdf-header {
+  text-align: center;
+  margin-bottom: 8mm;
+  page-break-after: avoid;
+}
+.pdf-header h1 {
+  font-size: 16px;
+  margin: 0 0 3px 0;
+  color: #000;
+}
+.pdf-header .meta {
+  font-size: 11px;
+  color: #333;
+  margin: 0;
+}
+.pdf-body {
+  /* 🔧 КЛЮЧЕВОЕ: явная ширина + все префиксы колонок */
+  width: 190mm;
+  max-width: 190mm;
+  margin: 0 auto;
+  
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+  
+  -webkit-column-gap: 8mm;
+  -moz-column-gap: 8mm;
+  column-gap: 8mm;
+  
+  -webkit-column-fill: auto;
+  -moz-column-fill: auto;
+  column-fill: auto;
+  
+  font-size: 11px;
+  line-height: 1.35;
+}
+.pdf-section {
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  text-transform: uppercase;
+  margin-top: 3mm;
+  margin-bottom: 1mm;
+  page-break-after: avoid;
+  break-after: avoid;
+  -webkit-column-break-after: avoid;
+}
+.pdf-line {
+  margin-bottom: 1.5mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.pdf-line b {
+  color: #000;
+  font-weight: bold;
+}
+.pdf-chords {
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 1.5mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.pdf-text {
+  margin-bottom: 1.5mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.pdf-note {
+  display: inline-block;
+  border: 1px solid #000;
+  padding: 1px 5px;
+  font-weight: bold;
+  font-size: 10px;
+  margin-left: 3mm;
+}
+@media print {
+  body { margin: 0; padding: 0; }
+  .pdf-body {
+    width: 190mm !important;
+    -webkit-column-count: 2 !important;
+    column-count: 2 !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="pdf-header">
+  <h1>${s.title}</h1>
+  <p class="meta">${s.author ? `Автор: ${s.author}<br>` : ''}Тональность: ${key || '—'}${s.bpm ? ` · BPM: ${s.bpm}` : ''}</p>
+</div>
+${bodyHtml}
+<script>
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    window.focus();
+    window.print();
+  }, 300);
+});
+<\/script>
+</body>
+</html>`;
+
+printWindow.document.open();
+printWindow.document.write(printHtml);
 printWindow.document.close();
 }
 
@@ -1539,8 +1667,13 @@ function exportSong() { const s = songs.find(x => x.id === currentSongId); if (!
 
 function handleImportSong(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'song' || !data.data) { alert('❌ Это не файл песни'); return; } const songData = data.data; const existing = songs.find(s => s.title.toLowerCase() === songData.title.toLowerCase()); if (existing) { if (!confirm(`Песня "${songData.title}" уже существует. Заменить её?`)) return; existing.author = songData.author || existing.author; existing.key = songData.key; existing.bpm = songData.bpm || ''; existing.chordpro = songData.chordpro; } else { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: songData.title, author: songData.author || '', key: songData.key, bpm: songData.bpm || '', chordpro: songData.chordpro, createdAt: Date.now(), columns: currentColumns, fontSize: fontSize }); } saveToStorage(); renderSongs(); alert(`✅ Песня "${songData.title}" импортирована!`); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 
-// 🔧 ИЗМЕНЕНО: экспорт базы теперь выгружает только песни (без сет-листов)
 function exportDatabase() {
+  const defaultName = `WorshipDatabase_${getCurrentDate()}`;
+  const fileName = prompt('Имя файла для экспорта:', defaultName);
+  if (fileName === null) return;
+  const cleanName = fileName.trim() || defaultName;
+  const finalName = cleanName.toLowerCase().endsWith('.clcdb') ? cleanName : cleanName + '.clcdb';
+  
   const database = {
     version: 1,
     type: 'database',
@@ -1552,14 +1685,67 @@ function exportDatabase() {
       inlineComments: inlineComments
     }
   };
-  shareFile(database, `WorshipDatabase_${getCurrentDate()}.clcdb`);
+  shareFile(database, finalName);
 }
 
 function handleImportDatabase(event) {
 const file = event.target.files[0]; if (!file) return;
 const reader = new FileReader();
-reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Это не файл базы данных Worship SetUP'); return; } const db = data.data; let songsAdded = 0, songsSkipped = 0, setlistsAdded = 0, setlistsSkipped = 0; if (db.songs && Array.isArray(db.songs)) { db.songs.forEach(importedSong => { const exists = songs.find(s => s.title.toLowerCase() === importedSong.title.toLowerCase()); if (!exists) { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: importedSong.title, author: importedSong.author || '', key: importedSong.key || 'C', bpm: importedSong.bpm || '', chordpro: importedSong.chordpro || '', columns: importedSong.columns || currentColumns, fontSize: importedSong.fontSize || fontSize, createdAt: importedSong.createdAt || Date.now() }); songsAdded++; } else { songsSkipped++; } }); } if (db.setlists && Array.isArray(db.setlists)) { db.setlists.forEach(importedSetlist => { const exists = setlists.find(sl => sl.name === importedSetlist.name && sl.date === importedSetlist.date); if (!exists) { const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; setlists.push({ id: newId, date: importedSetlist.date, name: importedSetlist.name, isArchived: importedSetlist.isArchived || false, songs: importedSetlist.songs || [] }); setlistsAdded++; } else { setlistsSkipped++; } }); } if (db.sectionNotes && typeof db.sectionNotes === 'object') { Object.keys(db.sectionNotes).forEach(songId => { if (!sectionNotes[songId]) sectionNotes[songId] = {}; Object.assign(sectionNotes[songId], db.sectionNotes[songId]); }); } if (db.inlineComments && typeof db.inlineComments === 'object') { Object.keys(db.inlineComments).forEach(songId => { if (!inlineComments[songId]) inlineComments[songId] = {}; Object.assign(inlineComments[songId], db.inlineComments[songId]); }); } saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); let msg = `✅ База данных импортирована!\n\nДобавлено песен: ${songsAdded}\nПропущено (уже есть): ${songsSkipped}`; if (setlistsAdded > 0 || setlistsSkipped > 0) { msg += `\n\nДобавлено сет-листов: ${setlistsAdded}\nПропущено (уже есть): ${setlistsSkipped}`; } alert(msg); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } };
-reader.readAsText(file); event.target.value = '';
+reader.onload = (e) => { 
+  try { 
+    const data = JSON.parse(e.target.result); 
+    if (data.type !== 'database' || !data.data) { 
+      alert('❌ Это не файл базы данных Worship SetUP'); 
+      return; 
+    } 
+    const db = data.data; 
+    let songsAdded = 0, songsSkipped = 0; 
+    
+    if (db.songs && Array.isArray(db.songs)) { 
+      db.songs.forEach(importedSong => { 
+        const exists = songs.find(s => s.title.toLowerCase() === importedSong.title.toLowerCase()); 
+        if (!exists) { 
+          const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; 
+          songs.push({ 
+            id: newId, 
+            title: importedSong.title, 
+            author: importedSong.author || '', 
+            key: importedSong.key || 'C', 
+            bpm: importedSong.bpm || '', 
+            chordpro: importedSong.chordpro || '', 
+            columns: importedSong.columns || currentColumns, 
+            fontSize: importedSong.fontSize || fontSize, 
+            createdAt: importedSong.createdAt || Date.now() 
+          }); 
+          songsAdded++; 
+        } else { 
+          songsSkipped++; 
+        } 
+      }); 
+    } 
+    
+    if (db.sectionNotes && typeof db.sectionNotes === 'object') { 
+      Object.keys(db.sectionNotes).forEach(songId => { 
+        if (!sectionNotes[songId]) sectionNotes[songId] = {}; 
+        Object.assign(sectionNotes[songId], db.sectionNotes[songId]); 
+      }); 
+    } 
+    if (db.inlineComments && typeof db.inlineComments === 'object') { 
+      Object.keys(db.inlineComments).forEach(songId => { 
+        if (!inlineComments[songId]) inlineComments[songId] = {}; 
+        Object.assign(inlineComments[songId], db.inlineComments[songId]); 
+      }); 
+    } 
+    
+    saveToStorage(); 
+    if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); 
+    alert(`✅ База песен импортирована!\n\nДобавлено песен: ${songsAdded}\nПропущено (уже есть): ${songsSkipped}`); 
+  } catch (err) { 
+    alert('❌ Ошибка при чтении файла: ' + err.message); 
+  } 
+};
+reader.readAsText(file); 
+event.target.value = '';
 }
 
 loadFromStorage();
