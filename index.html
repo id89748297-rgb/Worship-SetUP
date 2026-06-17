@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Worship SetUP">
 <meta name="application-name" content="Worship SetUP">
 <meta name="description" content="Worship SetUP - приложение для богослужебных песен">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiV29yc2hpcCBTZXRVUCIsInNob3J0X25hbWUiOiJXb3JzaGlwIFNldFVQIiwiZGVzY3JpcHRpb24iOiJXb3JzaGlwIFNldFVQIC0gYXBwIGRseWEgYm9nb3NsdXplYm55aCBwZXNlbiIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMTIxMjEyIiwidGhlbWVfY29sb3IiOiIjOTU3NWNkIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCJ9">
 <link rel="apple-touch-icon" href="icon.svg">
 <title>Worship SetUP</title>
 <style>
@@ -114,7 +114,6 @@ body.light .song-section { background: white; border: 1px solid #e0e0e0; box-sha
   line-height: 1.4;
   white-space: pre-wrap;
   max-width: 100%;
-  display: block;
 }
 body.light .chords-above { color: #0d47a1; font-weight: bold; }
 .section-label { font-weight: bold; color: #90caf9; letter-spacing: 1px; margin-bottom: 4px; margin-top: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
@@ -174,7 +173,8 @@ body.light .inline-comment-input { color: #0d47a1; border-color: rgba(25, 118, 2
   margin-bottom: 10px; 
 }
 body.light .inline-edit-area { background: white; color: #333; border-color: #7e57c2; }
-.inline-edit-actions { display: flex; gap: 10px; margin-bottom: 15px; }
+.inline-edit-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+.inline-edit-actions .row { display: flex; gap: 10px; }
 .inline-edit-actions button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 15px; font-weight: bold; cursor: pointer; min-height: 48px; }
 .inline-save-btn { background: #4caf50; color: white; }
 .inline-cancel-btn { background: #78909c; color: white; }
@@ -271,6 +271,77 @@ text-align: center;
 body.light .song-image-comment { background: rgba(25, 118, 210, 0.1); border-color: rgba(25, 118, 210, 0.4); color: #1976D2; }
 .song-image-comment:focus { background: rgba(144, 202, 249, 0.2); border-color: rgba(144, 202, 249, 0.8); }
 body.light .song-image-comment:focus { background: rgba(25, 118, 210, 0.2); border-color: rgba(25, 118, 210, 0.8); }
+
+/* === ИНСТРУКЦИЯ === */
+.instruction-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.instruction-card {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.instruction-card:active { transform: scale(0.98); }
+body.light .instruction-card {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.instruction-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.instruction-card-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.instruction-card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #90caf9;
+}
+body.light .instruction-card-title {
+  color: #0d47a1;
+}
+.instruction-card-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ddd;
+  user-select: text;
+  -webkit-user-select: text;
+}
+body.light .instruction-card-text {
+  color: #333;
+}
+.instruction-card-text code {
+  background: rgba(144, 202, 249, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  color: #90caf9;
+  font-weight: bold;
+}
+body.light .instruction-card-text code {
+  background: rgba(25, 118, 210, 0.1);
+  color: #0d47a1;
+}
+.instruction-footer {
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+.instruction-hint {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  margin-top: 15px;
+  font-style: italic;
+}
 @media (max-width: 480px) {
 body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
 .header h1.app-title { font-size: 12px; }
@@ -291,6 +362,9 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 .side-nav-btn { width: 44px; height: 70px; font-size: 24px; }
 .grid-btn { font-size: 13px; padding: 12px 6px; min-height: 48px; }
 .order-input { width: 36px; height: 32px; font-size: 13px; }
+.instruction-card { padding: 14px; }
+.instruction-card-title { font-size: 15px; }
+.instruction-card-text { font-size: 13px; }
 }
 @media (max-width: 768px) and (min-width: 481px) {
 .song-columns-2 { column-count: 2; }
@@ -301,23 +375,23 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 
 <div id="page-home" class="page active">
 <div class="header">
-<div class="header-left"><button class="vl-worship-btn" onclick="toggleColorTheme()" title="Сменить цвет">VL</button></div>
+<div class="header-left"><button class="vl-worship-btn" onclick="showInstruction(true)" title="Инструкция">VL</button></div>
 <div class="header-center"><h1 class="app-title">Worship SetUP</h1><div id="home-page-subtitle" class="app-subtitle">песни</div></div>
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button></div>
 </div>
 <div class="setlist-grid">
 <div class="grid-btn tab-style active" id="home-tab-songs" onclick="switchHomeView('songs')">🎵 Песни</div>
-<div class="grid-btn tab-style" id="home-tab-setlists" onclick="switchHomeView('setlists')">📋 Сет-листы</div>
+<div class="grid-btn tab-style" id="home-tab-setlists" onclick="switchHomeView('setlists')"> Сет-листы</div>
 </div>
 <div id="home-view-songs">
-<input type="text" class="search-box" placeholder="🔍 Поиск песен..." oninput="renderSongs()">
+<input type="text" class="search-box" placeholder=" Поиск песен..." oninput="renderSongs()">
 <div class="home-actions-row">
 <button class="btn-secondary" onclick="openMainSongEditor()">+ Добавить песню</button>
-<button class="btn-secondary" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
+<button class="btn-secondary" onclick="document.getElementById('import-song-input').click()"> Загрузить</button>
 </div>
 <input type="file" id="import-song-input" accept=".clcsong" style="display: none;" onchange="handleImportSong(event)">
 <div class="home-actions-row">
-<button class="btn-secondary" onclick="exportDatabase()"> Экспорт базы</button>
+<button class="btn-secondary" onclick="exportDatabase()">📤 Экспорт базы</button>
 <button class="btn-secondary" onclick="document.getElementById('import-database-input').click()">📥 Импорт базы</button>
 </div>
 <input type="file" id="import-database-input" accept=".clcdb" style="display: none;" onchange="handleImportDatabase(event)">
@@ -327,13 +401,117 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="home-view-setlists" style="display: none;">
 <div class="setlist-grid">
 <button class="grid-btn btn-main-style" onclick="openSetlistModal()">+ Создать сет-лист</button>
-<button class="grid-btn btn-secondary-style" onclick="document.getElementById('import-setlist-input').click()">📥 Загрузить сет-лист</button>
+<button class="grid-btn btn-secondary-style" onclick="document.getElementById('import-setlist-input').click()"> Загрузить сет-лист</button>
 <div class="grid-btn tab-style active" onclick="switchTab('current', this)">Актуальные<span class="btn-subtext">сет-листы</span></div>
 <div class="grid-btn tab-style" onclick="switchTab('archive', this)">Архив<span class="btn-subtext">сет-листов</span></div>
 </div>
 <input type="file" id="import-setlist-input" accept=".clcsetlist" style="display: none;" onchange="handleImportSetlist(event)">
 <input type="text" class="search-box" placeholder="🔍 Поиск сет-листа..." oninput="renderSetlists()">
 <div id="setlists-list"></div>
+</div>
+</div>
+
+<div id="page-instruction" class="page">
+<div class="header">
+<div class="header-left"><button class="btn-back" onclick="showInstruction(false)">←</button></div>
+<div class="header-center">
+<h1 class="app-title">Worship SetUP</h1>
+<div class="app-subtitle">инструкция</div>
+</div>
+<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
+</div>
+<div class="instruction-content">
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">👆</span><span class="instruction-card-title">Свайпы для навигации</span></div>
+<div class="instruction-card-text">
+• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе<br>
+• На <b>главной</b>: свайп переключает «Песни» ↔ «Сет-листы»<br>
+• <b>Свайп влево</b> = вернуться назад (со страницы песни, сет-листа, инструкции)
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">💬</span><span class="instruction-card-title">Комментарии к строкам</span></div>
+<div class="instruction-card-text">
+Поставьте <code>**</code> в конце строки с аккордами или текстом — справа появится поле для короткого комментария (до 12 символов). Удобно отмечать динамику, подсказки для группы.
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">🖼️</span><span class="instruction-card-title">Картинки в песнях</span></div>
+<div class="instruction-card-text">
+Напишите <code>Картинка:</code> на отдельной строке в тексте песни — появится кнопка загрузки изображения. Под картинкой можно оставить комментарий (нажмите на серый текст).
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">✏️</span><span class="instruction-card-title">Редактирование блоков</span></div>
+<div class="instruction-card-text">
+<b>Нажмите и удерживайте палец 1 секунду</b> на любом блоке (куплет, припев, бридж) — откроется редактор именно этого блока. Можно менять заголовок и содержимое, не трогая остальную песню.
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">🎵</span><span class="instruction-card-title">Локальные изменения в сет-листе</span></div>
+<div class="instruction-card-text">
+Внутри сет-листа можно менять <b>тональность</b>, <b>Capo</b> и даже <b>текст песни</b> — эти изменения сохранятся только для этого сет-листа, оригинал в базе не пострадает. Помечается бейджем «(лок.)».
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">📝</span><span class="instruction-card-title">Заметки на секциях</span></div>
+<div class="instruction-card-text">
+В правом верхнем углу каждого блока (куплет, припев) есть маленькое поле — туда можно вписать короткую заметку (до 12 символов): номер повтора, подсказку для аранжировки.
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">🎸</span><span class="instruction-card-title">Capo и транспонирование</span></div>
+<div class="instruction-card-text">
+Меняйте тональность в верхнем меню — все аккорды пересчитаются автоматически. <b>Capo</b> тоже транспонирует аккорды (как если бы каподастр был на указанном ладу). Работает даже с аккордами вида <code>D/F#</code>.
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">📤</span><span class="instruction-card-title">Экспорт и импорт</span></div>
+<div class="instruction-card-text">
+• <b>Экспорт базы</b> — все песни в один файл <code>.clcdb</code><br>
+• <b>📤 поделиться</b> на странице песни — файл одной песни <code>.clcsong</code><br>
+• <b>📤 Поделиться</b> в сет-листе — сет-лист со всеми песнями <code>.clcsetlist</code>
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div>
+<div class="instruction-card-text">
+Кнопка <b>📄 PDF</b> открывает диалог печати — можно сохранить песню как PDF или распечатать на бумаге. Аккорды и текст форматируются автоматически в две колонки.
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">🎨</span><span class="instruction-card-title">Темы оформления</span></div>
+<div class="instruction-card-text">
+• <b>🌙 / ☀️</b> — переключение тёмной и светлой темы<br>
+• Кнопка ниже — смена цветовой схемы (синяя ↔ фиолетовая)<br>
+• Настройки сохраняются между запусками
+</div>
+</div>
+
+<div class="instruction-card">
+<div class="instruction-card-header"><span class="instruction-card-icon">⚡</span><span class="instruction-card-title">Быстрые жесты</span></div>
+<div class="instruction-card-text">
+• <b>Долгое нажатие на VL</b> (эту кнопку) — быстрая смена цвета<br>
+• <b>Перетаскивание</b> песен в сет-листе — меняет порядок<br>
+• <b>Поле №</b> слева от песни — можно вписать номер вручную
+</div>
+</div>
+
+</div>
+<div class="instruction-footer">
+<button class="btn-main" onclick="showInstruction(false)">← Назад</button>
+<button class="btn-secondary" onclick="toggleColorTheme()" style="width: 100%;">🎨 Сменить цветовую схему</button>
+<div class="instruction-hint">← Свайп влево, чтобы вернуться</div>
 </div>
 </div>
 
@@ -383,10 +561,14 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="inline-edit-container" style="display: none;">
 <textarea id="inline-edit-textarea" class="inline-edit-area"></textarea>
 <div class="inline-edit-actions">
-<button class="inline-cancel-btn" onclick="resizeInlineEdit(-2)">A-</button>
-<button class="inline-cancel-btn" onclick="resizeInlineEdit(2)">A+</button>
+<div class="row">
 <button class="inline-cancel-btn" onclick="cancelInlineEdit()">Отмена</button>
 <button class="inline-save-btn" onclick="saveInlineEdit()">💾 Сохранить</button>
+</div>
+<div class="row">
+<button class="inline-cancel-btn" onclick="resizeInlineEdit(-2)">A-</button>
+<button class="inline-cancel-btn" onclick="resizeInlineEdit(2)">A+</button>
+</div>
 </div>
 </div>
 <div id="swipe-hint" class="swipe-hint" style="display:none;">👆 Свайп влево/вправо для переключения песни</div>
@@ -460,7 +642,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="modal-add-song" class="modal">
 <div class="modal-content">
 <h2>Добавить песню в сет-лист</h2>
-<input type="text" class="search-box" id="add-song-search" placeholder=" Поиск по названию или тексту..." oninput="renderAddSongList()" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+<input type="text" class="search-box" id="add-song-search" placeholder="🔍 Поиск по названию или тексту..." oninput="renderAddSongList()" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
 <div id="add-song-list" class="add-song-list"></div>
 <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-add-song')" style="width: 100%;">Закрыть</button></div>
 </div>
@@ -484,7 +666,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p>
 <div style="display: flex; flex-direction: column; gap: 12px;">
 <button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button>
-<button class="btn-danger-confirm" onclick="deleteSetlistChoice()">🗑️ Удалить навсегда</button>
+<button class="btn-danger-confirm" onclick="deleteSetlistChoice()">️ Удалить навсегда</button>
 <button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button>
 </div>
 </div>
@@ -534,6 +716,8 @@ let inlineComments = {};
 let isInlineEditing = false;
 let currentImageKey = null;
 let editingSectionIdx = null;
+let editingSectionStartLine = -1;
+let editingSectionEndLine = -1;
 
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'H'];
 const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'H'];
@@ -599,7 +783,7 @@ try { const newIdx = ((scale.indexOf(root) + interval) % 12 + 12) % 12; return s
 }
 
 function transposeLine(line, fromKey, toKey) {
-  const chordRegex = /\b[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?\b/gi;
+  const chordRegex = /\b[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?(?=\s|$|[^A-Ha-h#b])/gi;
   return line.replace(chordRegex, m => {
     const n = convertBtoH(m);
     return CHORD_RE.test(n) ? transposeChord(n, fromKey, toKey) : m;
@@ -607,7 +791,7 @@ function transposeLine(line, fromKey, toKey) {
 }
 
 function transposeChordproText(text, fromKey, toKey) {
-const chordRegex = /\b[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?\b/gi;
+const chordRegex = /\b[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?(?=\s|$|[^A-Ha-h#b])/gi;
 return text.split('\n').map(line => line.replace(chordRegex, match => { const normalized = convertBtoH(match); if (CHORD_RE.test(normalized)) return transposeChord(normalized, fromKey, toKey); return match; })).join('\n');
 }
 
@@ -676,6 +860,20 @@ document.getElementById(id).classList.add('active');
 if(id === 'page-home') { if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); }
 window.scrollTo(0, 0);
 saveAppState();
+}
+
+function showInstruction(show) {
+  if (show) {
+    showPage('page-instruction');
+  } else {
+    currentHomeView = 'songs';
+    document.getElementById('home-tab-songs').classList.add('active');
+    document.getElementById('home-tab-setlists').classList.remove('active');
+    document.getElementById('home-view-songs').style.display = 'block';
+    document.getElementById('home-view-setlists').style.display = 'none';
+    showPage('page-home');
+    renderSongs();
+  }
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -833,7 +1031,7 @@ setlists.filter(sl => (currentTab === 'archive' ? sl.isArchived : !sl.isArchived
 const div = document.createElement('div');
 div.className = 'list-item';
 div.style.cursor = 'default';
-let actions = sl.isArchived ? `<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">️</button>` : `<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
+let actions = sl.isArchived ? `<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">️</button>` : `<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">️</button>`;
 div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1;"><div class="item-title">${sl.name}</div><div class="item-sub" style="color: ${dateColor};">${formatSetlistDate(sl.date)}</div><div class="item-sub">${sl.songs.length} песен</div></div><div class="item-actions" style="display: flex; gap: 4px; flex-direction: row; align-items: center;">${actions}</div>`;
 div.onclick = () => openSetlistDetail(sl.id);
 list.appendChild(div);
@@ -930,7 +1128,44 @@ else { if (isFirstSong) { goBackFromSong(); } else { prevSong(); } }
 } else { if (diffX < 0) goBackFromSong(); }
 } else if (pageId === 'page-home') { if (diffX > 0) { if (currentHomeView === 'songs') switchHomeView('setlists'); } else { if (currentHomeView === 'setlists') switchHomeView('songs'); } }
 else if (pageId === 'page-setlist-detail') { if (diffX < 0) goBackFromSetlistDetail(); }
+else if (pageId === 'page-instruction') { if (diffX > 0) showInstruction(false); }
 }
+}
+
+function setupVlButton() {
+  const vlBtn = document.querySelector('.vl-worship-btn');
+  if (!vlBtn) return;
+  let longPressTimer = null;
+  let longPressed = false;
+  
+  const startPress = (e) => {
+    longPressed = false;
+    longPressTimer = setTimeout(() => {
+      longPressed = true;
+      toggleColorTheme();
+      if (navigator.vibrate) navigator.vibrate(30);
+    }, 800);
+  };
+  
+  const cancelPress = () => {
+    clearTimeout(longPressTimer);
+  };
+  
+  const endPress = (e) => {
+    clearTimeout(longPressTimer);
+    if (longPressed) {
+      e.preventDefault();
+      e.stopPropagation();
+      longPressed = false;
+    }
+  };
+  
+  vlBtn.addEventListener('touchstart', startPress, { passive: true });
+  vlBtn.addEventListener('touchend', endPress);
+  vlBtn.addEventListener('touchcancel', cancelPress);
+  vlBtn.addEventListener('mousedown', startPress);
+  vlBtn.addEventListener('mouseup', endPress);
+  vlBtn.addEventListener('mouseleave', cancelPress);
 }
 
 function openSongView(id, slId) {
@@ -1052,16 +1287,19 @@ let currentSection = null;
 let sectionContent = '';
 let sectionIdx = 0;
 let lineIdx = 0;
+let sectionStartLine = -1;
 const songId = currentSongId;
+
 function flushSection() {
 if (sectionContent) {
 const noteValue = (sectionNotes[songId] && sectionNotes[songId][sectionIdx]) || '';
-html += `<div class="song-section" data-section-idx="${sectionIdx}"><input type="text" class="section-note-input" maxlength="12" value="${noteValue.replace(/"/g, '&quot;')}" oninput="saveSectionNote(${songId}, ${sectionIdx}, this.value)" placeholder="..." />${sectionContent}</div>`;
+html += `<div class="song-section" data-section-idx="${sectionIdx}" data-start-line="${sectionStartLine}"><input type="text" class="section-note-input" maxlength="12" value="${noteValue.replace(/"/g, '&quot;')}" oninput="saveSectionNote(${songId}, ${sectionIdx}, this.value)" placeholder="..." />${sectionContent}</div>`;
 sectionContent = '';
 sectionIdx++;
 }
 }
-lines.forEach(line => {
+
+lines.forEach((line, lineNum) => {
 const trimmed = line.trim();
 if (trimmed.toLowerCase() === 'картинка:' || trimmed.toLowerCase() === 'image:') {
 flushSection();
@@ -1092,26 +1330,33 @@ sectionIdx++;
 return;
 }
 const sectionMatch = trimmed.match(SECTION_RE);
-if (sectionMatch) { flushSection(); currentSection = trimmed.toUpperCase(); sectionContent += `<div class="section-label" style="font-size: ${fontSize}px;">${currentSection}</div>`; lineIdx = 0; }
+if (sectionMatch) { 
+  flushSection(); 
+  sectionStartLine = lineNum;
+  currentSection = trimmed.toUpperCase(); 
+  sectionContent += `<div class="section-label" style="font-size: ${fontSize}px;">${currentSection}</div>`; 
+  lineIdx = 0; 
+}
 else if (trimmed !== '') {
-const parsed = parseMixedLine(trimmed);
+if (sectionStartLine === -1) sectionStartLine = lineNum;
+const parsed = parseMixedLine(line); 
+  
 if (parsed.chords || parsed.text || parsed.rightNote) {
   const commentKey = `${sectionIdx}_${lineIdx}`;
   const savedComment = (inlineComments[songId] && inlineComments[songId][commentKey]) || '';
-  sectionContent += '<div class="section-block"><div class="main-content">';
+  sectionContent += '<div class="section-block"><div class="main-content" style="white-space: pre-wrap;">';
   
-  if (parsed.chords && parsed.text) {
-    let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
-    if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
-    sectionContent += `<div class="chords-above" style="font-size: ${fontSize}px;">${displayChords}</div>`;
-    sectionContent += `<div class="lyrics-below" style="font-size: ${fontSize}px;">${parsed.text}</div>`;
-  } else if (parsed.chords) {
-    let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
-    if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
-    sectionContent += `<div class="chords-above" style="font-size: ${fontSize}px;">${displayChords}</div>`;
-  } else if (parsed.text) {
-    sectionContent += `<div class="lyrics-below" style="font-size: ${fontSize}px;">${parsed.text}</div>`;
-  }
+if (parsed.chords && parsed.text) {
+  let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
+  if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
+  sectionContent += `<span class="chords-above" style="font-size: ${fontSize}px;"><b>${displayChords}</b></span> <span class="lyrics-below" style="font-size: ${fontSize}px; display: inline;">${parsed.text}</span>`;
+} else if (parsed.chords) {
+  let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
+  if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
+  sectionContent += `<span class="chords-above" style="font-size: ${fontSize}px;"><b>${displayChords}</b></span>`;
+} else if (parsed.text) {
+  sectionContent += `<span class="lyrics-below" style="font-size: ${fontSize}px; display: inline;">${parsed.text}</span>`;
+}
   
   sectionContent += '</div>';
   if (parsed.rightNote) sectionContent += `<div class="right-note" style="font-size: ${fontSize}px;">${parsed.rightNote}</div>`;
@@ -1129,13 +1374,14 @@ document.getElementById('song-view-content').innerHTML = html;
 
 document.querySelectorAll('.song-section').forEach(section => {
   let pressTimer;
-  const sectionIdx = section.dataset.sectionIdx;
+  const startLine = parseInt(section.dataset.startLine);
   
   const startPress = (e) => {
     if (e.target.tagName === 'INPUT') return;
     pressTimer = setTimeout(() => {
-      openSectionEditor(parseInt(sectionIdx));
-    }, 3000);
+      openSectionEditorByLine(startLine);
+      if (navigator.vibrate) navigator.vibrate(20);
+    }, 1000);
   };
   
   const cancelPress = () => {
@@ -1151,40 +1397,34 @@ document.querySelectorAll('.song-section').forEach(section => {
 });
 }
 
-function openSectionEditor(sectionIdx) {
+function openSectionEditorByLine(startLine) {
   const s = songs.find(x => x.id === currentSongId);
   if (!s) return;
   let textToEdit = s.chordpro;
-  if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item && item.chordpro) textToEdit = item.chordpro; }
-  
-  const lines = textToEdit.split('\n');
-  let currentSectionIdx = 0;
-  let sectionLines = [];
-  let sectionLabel = '';
-  let startIdx = -1;
-  let endIdx = -1;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i].trim();
-    const sectionMatch = trimmed.match(SECTION_RE);
-    
-    if (sectionMatch) {
-      if (currentSectionIdx === sectionIdx) {
-        endIdx = i;
-        break;
-      }
-      currentSectionIdx++;
-      sectionLabel = trimmed;
-      sectionLines = [];
-      startIdx = i;
-    } else if (currentSectionIdx === sectionIdx && trimmed !== '') {
-      sectionLines.push(lines[i]);
-    }
+  if (currentSlId) { 
+    const sl = setlists.find(x => x.id === currentSlId); 
+    const item = sl.songs.find(x => x.id === currentSongId); 
+    if (item && item.chordpro) textToEdit = item.chordpro; 
   }
   
-  if (endIdx === -1) endIdx = lines.length;
+  const lines = textToEdit.split('\n');
+  let sectionLines = [];
+  let sectionLabel = '';
+  let endIdx = lines.length;
   
-  editingSectionIdx = sectionIdx;
+  sectionLabel = lines[startLine].trim();
+  
+  for (let i = startLine + 1; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (trimmed.match(SECTION_RE)) {
+      endIdx = i;
+      break;
+    }
+    sectionLines.push(lines[i]);
+  }
+  
+  editingSectionStartLine = startLine;
+  editingSectionEndLine = endIdx;
   document.getElementById('section-edit-label').value = sectionLabel;
   document.getElementById('section-edit-content').value = sectionLines.join('\n');
   document.getElementById('modal-section-edit').classList.add('show');
@@ -1194,39 +1434,34 @@ function saveSectionEdit() {
   const s = songs.find(x => x.id === currentSongId);
   if (!s) return;
   let textToEdit = s.chordpro;
-  if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item && item.chordpro) textToEdit = item.chordpro; }
-  
-  const lines = textToEdit.split('\n');
-  let currentSectionIdx = 0;
-  let startIdx = -1;
-  let endIdx = -1;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i].trim();
-    const sectionMatch = trimmed.match(SECTION_RE);
-    
-    if (sectionMatch) {
-      if (currentSectionIdx === editingSectionIdx) {
-        startIdx = i;
-      } else if (currentSectionIdx === editingSectionIdx + 1) {
-        endIdx = i;
-        break;
-      }
-      currentSectionIdx++;
-    }
+  if (currentSlId) { 
+    const sl = setlists.find(x => x.id === currentSlId); 
+    const item = sl.songs.find(x => x.id === currentSongId); 
+    if (item && item.chordpro) textToEdit = item.chordpro; 
   }
   
-  if (endIdx === -1) endIdx = lines.length;
-  
+  const lines = textToEdit.split('\n');
   const newLabel = document.getElementById('section-edit-label').value.trim();
   const newContent = document.getElementById('section-edit-content').value;
   
+  if (editingSectionStartLine < 0 || editingSectionEndLine < editingSectionStartLine) {
+    alert(' Ошибка: не удалось определить границы блока');
+    return;
+  }
+  
   const newLines = [...lines];
-  newLines.splice(startIdx, endIdx - startIdx, newLabel, newContent);
+  newLines.splice(editingSectionStartLine, editingSectionEndLine - editingSectionStartLine, newLabel, newContent);
   const newText = newLines.join('\n');
   
-  if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newText; saveToStorage(); } }
-  else { s.chordpro = newText; saveToStorage(); }
+  if (currentSlId) { 
+    const sl = setlists.find(x => x.id === currentSlId); 
+    const item = sl.songs.find(x => x.id === currentSongId); 
+    if (item) { item.chordpro = newText; saveToStorage(); } 
+  }
+  else { 
+    s.chordpro = newText; 
+    saveToStorage(); 
+  }
   
   closeModal('modal-section-edit');
   openSongView(currentSongId, currentSlId);
@@ -1282,7 +1517,7 @@ printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><ti
 printWindow.document.close();
 }
 
-function downloadJson(data, filename) { const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click; document.body.removeChild(a); URL.revokeObjectURL(url); }
+function downloadJson(data, filename) { const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
 async function shareFile(data, filename) { const file = new File([JSON.stringify(data, null, 2)], filename, { type: 'application/json' }); if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: filename, text: `Файл для Worship SetUP: ${filename}` }); return; } catch (err) { if (err.name !== 'AbortError') downloadJson(data, filename); } } else { downloadJson(data, filename); } }
 
 function exportSetlist() {
@@ -1296,7 +1531,7 @@ shareFile({ version: 1, type: 'setlist', app: 'Worship SetUP', data: { date: sl.
 function handleImportSetlist(event) {
 const file = event.target.files[0]; if (!file) return;
 const reader = new FileReader();
-reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'setlist' || !data.data) { alert('❌ Это не файл сет-листа'); return; } const slData = data.data; const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; const newSongs = []; slData.songs.forEach(songData => { let existingSong = songs.find(s => s.title.toLowerCase() === songData.title.toLowerCase()); const songKeyToSave = songData.originalKey || songData.key; if (existingSong) { newSongs.push({ id: existingSong.id, capo: 0, key: songData.key, chordpro: null, columns: currentColumns, fontSize: fontSize }); } else { const newSongId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newSongId, title: songData.title, author: songData.author || '', key: songKeyToSave, bpm: songData.bpm || '', chordpro: songData.chordpro, createdAt: Date.now(), columns: currentColumns, fontSize: fontSize }); newSongs.push({ id: newSongId, capo: 0, key: songData.key, chordpro: null, columns: currentColumns, fontSize: fontSize }); } }); setlists.push({ id: newSlId, date: slData.date, name: slData.name, isArchived: false, songs: newSongs }); saveToStorage(); renderSetlists(); alert(`✅ Сет-лист "${slData.name}" импортирован!\nДобавлено песен: ${slData.songs.length}`); } catch (err) { alert(' Ошибка при чтении файла: ' + err.message); } };
+reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'setlist' || !data.data) { alert('❌ Это не файл сет-листа'); return; } const slData = data.data; const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; const newSongs = []; slData.songs.forEach(songData => { let existingSong = songs.find(s => s.title.toLowerCase() === songData.title.toLowerCase()); const songKeyToSave = songData.originalKey || songData.key; if (existingSong) { newSongs.push({ id: existingSong.id, capo: 0, key: songData.key, chordpro: null, columns: currentColumns, fontSize: fontSize }); } else { const newSongId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newSongId, title: songData.title, author: songData.author || '', key: songKeyToSave, bpm: songData.bpm || '', chordpro: songData.chordpro, createdAt: Date.now(), columns: currentColumns, fontSize: fontSize }); newSongs.push({ id: newSongId, capo: 0, key: songData.key, chordpro: null, columns: currentColumns, fontSize: fontSize }); } }); setlists.push({ id: newSlId, date: slData.date, name: slData.name, isArchived: false, songs: newSongs }); saveToStorage(); renderSetlists(); alert(`✅ Сет-лист "${slData.name}" импортирован!\nДобавлено песен: ${slData.songs.length}`); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } };
 reader.readAsText(file); event.target.value = '';
 }
 
@@ -1304,18 +1539,33 @@ function exportSong() { const s = songs.find(x => x.id === currentSongId); if (!
 
 function handleImportSong(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'song' || !data.data) { alert('❌ Это не файл песни'); return; } const songData = data.data; const existing = songs.find(s => s.title.toLowerCase() === songData.title.toLowerCase()); if (existing) { if (!confirm(`Песня "${songData.title}" уже существует. Заменить её?`)) return; existing.author = songData.author || existing.author; existing.key = songData.key; existing.bpm = songData.bpm || ''; existing.chordpro = songData.chordpro; } else { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: songData.title, author: songData.author || '', key: songData.key, bpm: songData.bpm || '', chordpro: songData.chordpro, createdAt: Date.now(), columns: currentColumns, fontSize: fontSize }); } saveToStorage(); renderSongs(); alert(`✅ Песня "${songData.title}" импортирована!`); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 
-function exportDatabase() { const database = { version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs: songs, setlists: setlists, sectionNotes: sectionNotes, inlineComments: inlineComments } }; shareFile(database, `WorshipDatabase_${getCurrentDate()}.clcdb`); }
+// 🔧 ИЗМЕНЕНО: экспорт базы теперь выгружает только песни (без сет-листов)
+function exportDatabase() {
+  const database = {
+    version: 1,
+    type: 'database',
+    app: 'Worship SetUP',
+    exportDate: new Date().toISOString(),
+    data: {
+      songs: songs,
+      sectionNotes: sectionNotes,
+      inlineComments: inlineComments
+    }
+  };
+  shareFile(database, `WorshipDatabase_${getCurrentDate()}.clcdb`);
+}
 
 function handleImportDatabase(event) {
 const file = event.target.files[0]; if (!file) return;
 const reader = new FileReader();
-reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Это не файл базы данных Worship SetUP'); return; } const db = data.data; let songsAdded = 0, songsSkipped = 0, setlistsAdded = 0, setlistsSkipped = 0; if (db.songs && Array.isArray(db.songs)) { db.songs.forEach(importedSong => { const exists = songs.find(s => s.title.toLowerCase() === importedSong.title.toLowerCase()); if (!exists) { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: importedSong.title, author: importedSong.author || '', key: importedSong.key || 'C', bpm: importedSong.bpm || '', chordpro: importedSong.chordpro || '', columns: importedSong.columns || currentColumns, fontSize: importedSong.fontSize || fontSize, createdAt: importedSong.createdAt || Date.now() }); songsAdded++; } else { songsSkipped++; } }); } if (db.setlists && Array.isArray(db.setlists)) { db.setlists.forEach(importedSetlist => { const exists = setlists.find(sl => sl.name === importedSetlist.name && sl.date === importedSetlist.date); if (!exists) { const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; setlists.push({ id: newId, date: importedSetlist.date, name: importedSetlist.name, isArchived: importedSetlist.isArchived || false, songs: importedSetlist.songs || [] }); setlistsAdded++; } else { setlistsSkipped++; } }); } if (db.sectionNotes && typeof db.sectionNotes === 'object') { Object.keys(db.sectionNotes).forEach(songId => { if (!sectionNotes[songId]) sectionNotes[songId] = {}; Object.assign(sectionNotes[songId], db.sectionNotes[songId]); }); } if (db.inlineComments && typeof db.inlineComments === 'object') { Object.keys(db.inlineComments).forEach(songId => { if (!inlineComments[songId]) inlineComments[songId] = {}; Object.assign(inlineComments[songId], db.inlineComments[songId]); }); } saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ База данных импортирована!\n\nДобавлено песен: ${songsAdded}\nПропущено (уже есть): ${songsSkipped}\n\nДобавлено сет-листов: ${setlistsAdded}\nПропущено (уже есть): ${setlistsSkipped}`); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } };
+reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Это не файл базы данных Worship SetUP'); return; } const db = data.data; let songsAdded = 0, songsSkipped = 0, setlistsAdded = 0, setlistsSkipped = 0; if (db.songs && Array.isArray(db.songs)) { db.songs.forEach(importedSong => { const exists = songs.find(s => s.title.toLowerCase() === importedSong.title.toLowerCase()); if (!exists) { const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: newId, title: importedSong.title, author: importedSong.author || '', key: importedSong.key || 'C', bpm: importedSong.bpm || '', chordpro: importedSong.chordpro || '', columns: importedSong.columns || currentColumns, fontSize: importedSong.fontSize || fontSize, createdAt: importedSong.createdAt || Date.now() }); songsAdded++; } else { songsSkipped++; } }); } if (db.setlists && Array.isArray(db.setlists)) { db.setlists.forEach(importedSetlist => { const exists = setlists.find(sl => sl.name === importedSetlist.name && sl.date === importedSetlist.date); if (!exists) { const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; setlists.push({ id: newId, date: importedSetlist.date, name: importedSetlist.name, isArchived: importedSetlist.isArchived || false, songs: importedSetlist.songs || [] }); setlistsAdded++; } else { setlistsSkipped++; } }); } if (db.sectionNotes && typeof db.sectionNotes === 'object') { Object.keys(db.sectionNotes).forEach(songId => { if (!sectionNotes[songId]) sectionNotes[songId] = {}; Object.assign(sectionNotes[songId], db.sectionNotes[songId]); }); } if (db.inlineComments && typeof db.inlineComments === 'object') { Object.keys(db.inlineComments).forEach(songId => { if (!inlineComments[songId]) inlineComments[songId] = {}; Object.assign(inlineComments[songId], db.inlineComments[songId]); }); } saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); let msg = `✅ База данных импортирована!\n\nДобавлено песен: ${songsAdded}\nПропущено (уже есть): ${songsSkipped}`; if (setlistsAdded > 0 || setlistsSkipped > 0) { msg += `\n\nДобавлено сет-листов: ${setlistsAdded}\nПропущено (уже есть): ${setlistsSkipped}`; } alert(msg); } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } };
 reader.readAsText(file); event.target.value = '';
 }
 
 loadFromStorage();
 renderSongs();
 setupSwipe();
+setupVlButton();
 </script>
 
 <script>
