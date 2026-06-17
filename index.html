@@ -86,92 +86,24 @@ body.light .btn-save-all { background: rgba(25, 118, 210, 0.1); color: #1976D2; 
 .song-content { max-width: 1400px; margin: 0 auto; }
 .song-columns-1 { column-count: 1; column-gap: 15px; }
 .song-columns-2 { column-count: 2; column-gap: 15px; }
-.song-section { 
-  background: #1e1e1e; 
-  border: 1px solid #444; 
-  border-radius: 10px; 
-  padding: 8px; 
-  margin-bottom: 8px; 
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
-  break-inside: avoid; 
-  width: 100%; 
-  display: inline-block; 
-  position: relative;
-  overflow: hidden;
-  max-width: 100%;
-}
+.song-section { background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 8px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); break-inside: avoid; width: 100%; display: inline-block; position: relative; overflow: hidden; max-width: 100%; }
 body.light .song-section { background: white; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.chords-above { 
-  color: #90caf9; 
-  font-weight: bold; 
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  margin: 0 !important;
-  padding: 0 !important;
-  letter-spacing: 0;
-  word-wrap: break-word; 
-  overflow-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
-  white-space: pre-wrap;
-  max-width: 100%;
-}
+.chords-above { color: #90caf9; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; margin: 0 !important; padding: 0 !important; letter-spacing: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; line-height: 1.4; white-space: pre-wrap; max-width: 100%; }
 body.light .chords-above { color: #0d47a1; font-weight: bold; }
 .section-label { font-weight: bold; color: #90caf9; letter-spacing: 1px; margin-bottom: 4px; margin-top: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
 body.light .section-label { color: #0d47a1; font-weight: bold; }
 .section-note-input { position: absolute; top: 8px; right: 8px; width: 80px; height: 22px; border-radius: 6px; border: 1px solid rgba(144, 202, 249, 0.6); background: rgba(144, 202, 249, 0.2); color: #90caf9; font-size: 11px; font-weight: bold; text-align: center; padding: 2px 4px; outline: none; z-index: 10; }
 body.light .section-note-input { color: #0d47a1; border-color: rgba(25, 118, 210, 0.6); background: rgba(25, 118, 210, 0.15); }
-.section-block { 
-  margin-bottom: 2px; 
-  padding-bottom: 1px; 
-  display: flex; 
-  flex-wrap: wrap; 
-  align-items: baseline; 
-  gap: 0;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  min-width: 0;
-}
+.section-block { margin-bottom: 2px; padding-bottom: 1px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0; overflow-wrap: break-word; word-break: break-word; min-width: 0; }
 .section-block:last-child { margin-bottom: 0; padding-bottom: 0; }
-.main-content { 
-  flex: 1; 
-  min-width: 0;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-.lyrics-below { 
-  color: #ddd; 
-  font-weight: normal;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  line-height: 1.4; 
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  margin: 0 !important; 
-  padding: 0 !important;
-  white-space: normal;
-  max-width: 100%;
-}
+.main-content { flex: 1; min-width: 0; overflow-wrap: break-word; word-break: break-word; }
+.lyrics-below { color: #ddd; font-weight: normal; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; margin: 0 !important; padding: 0 !important; white-space: normal; max-width: 100%; }
 body.light .lyrics-below { color: #333; }
 .right-note { background: rgba(144, 202, 249, 0.2); border: 2px solid rgba(144, 202, 249, 0.6); border-radius: 8px; padding: 4px 10px; font-weight: bold; color: #0d47a1; white-space: nowrap; flex-shrink: 0; }
 body.light .right-note { background: rgba(25, 118, 210, 0.1); border: 2px solid rgba(25, 118, 210, 0.6); color: #0d47a1; font-weight: bold; }
 .inline-comment-input { width: 80px; height: 22px; border-radius: 6px; border: 1px solid rgba(144, 202, 249, 0.6); background: rgba(144, 202, 249, 0.2); color: #90caf9; font-size: 11px; font-weight: bold; text-align: center; padding: 2px 4px; outline: none; flex-shrink: 0; margin-left: 8px; }
 body.light .inline-comment-input { color: #0d47a1; border-color: rgba(25, 118, 210, 0.6); background: rgba(25, 118, 210, 0.15); }
-.inline-edit-area { 
-  width: 100%; 
-  min-height: 400px; 
-  padding: 12px; 
-  border-radius: 10px; 
-  border: 2px solid #9575cd; 
-  background: #1e1e1e; 
-  color: #eee; 
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: 14px; 
-  line-height: 1.4;
-  letter-spacing: 0.5px;
-  white-space: pre-wrap;
-  resize: vertical; 
-  margin-bottom: 10px; 
-}
+.inline-edit-area { width: 100%; min-height: 400px; padding: 12px; border-radius: 10px; border: 2px solid #9575cd; background: #1e1e1e; color: #eee; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 14px; line-height: 1.4; letter-spacing: 0.5px; white-space: pre-wrap; resize: vertical; margin-bottom: 10px; }
 body.light .inline-edit-area { background: white; color: #333; border-color: #7e57c2; }
 .inline-edit-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
 .inline-edit-actions .row { display: flex; gap: 10px; }
@@ -228,119 +160,30 @@ body.light .grid-btn.tab-style { background: #e0e0e0; color: #333; }
 .btn-subtext { font-size: 10px; display: block; margin-top: 4px; line-height: 1; font-weight: normal; }
 body.dark .btn-subtext { color: #ffffff; }
 body.light .btn-subtext { color: #333333; }
-
-.song-image-container {
-margin: 0 0 15px 0;
-padding: 0;
-background: transparent;
-border: none;
-border-radius: 0;
-text-align: center;
-position: relative;
-width: 100%;
-}
+.song-image-container { margin: 0 0 15px 0; padding: 0; background: transparent; border: none; border-radius: 0; text-align: center; position: relative; width: 100%; }
 body.light .song-image-container { background: transparent; }
-.song-image-container img {
-width: 100%;
-height: auto;
-border-radius: 0;
-margin: 0;
-padding: 0;
-cursor: pointer;
-display: block;
-}
+.song-image-container img { width: 100%; height: auto; border-radius: 0; margin: 0; padding: 0; cursor: pointer; display: block; }
 .song-image-upload { display: inline-block; padding: 12px 24px; background: #9575cd; color: white; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; }
 body.light .song-image-upload { background: #b39ddb; color: #333; }
 .song-image-upload input[type="file"] { display: none; }
-.song-image-comment {
-margin: 0;
-padding: 8px;
-background: rgba(144, 202, 249, 0.1);
-border: 1px solid rgba(144, 202, 249, 0.4);
-border-radius: 6px;
-font-size: 12px;
-color: #90caf9;
-font-style: italic;
-cursor: text;
-user-select: text;
--webkit-user-select: text;
-outline: none;
-min-height: 20px;
-text-align: center;
-}
+.song-image-comment { margin: 0; padding: 8px; background: rgba(144, 202, 249, 0.1); border: 1px solid rgba(144, 202, 249, 0.4); border-radius: 6px; font-size: 12px; color: #90caf9; font-style: italic; cursor: text; user-select: text; -webkit-user-select: text; outline: none; min-height: 20px; text-align: center; }
 body.light .song-image-comment { background: rgba(25, 118, 210, 0.1); border-color: rgba(25, 118, 210, 0.4); color: #1976D2; }
 .song-image-comment:focus { background: rgba(144, 202, 249, 0.2); border-color: rgba(144, 202, 249, 0.8); }
 body.light .song-image-comment:focus { background: rgba(25, 118, 210, 0.2); border-color: rgba(25, 118, 210, 0.8); }
-
-.instruction-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-.instruction-card {
-  background: #1e1e1e;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-}
+.instruction-content { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.instruction-card { background: #1e1e1e; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: transform 0.2s; }
 .instruction-card:active { transform: scale(0.98); }
-body.light .instruction-card {
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.instruction-card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.instruction-card-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
-.instruction-card-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: #90caf9;
-}
-body.light .instruction-card-title {
-  color: #0d47a1;
-}
-.instruction-card-text {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #ddd;
-  user-select: text;
-  -webkit-user-select: text;
-}
-body.light .instruction-card-text {
-  color: #333;
-}
-.instruction-card-text code {
-  background: rgba(144, 202, 249, 0.2);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: ui-monospace, monospace;
-  color: #90caf9;
-  font-weight: bold;
-}
-body.light .instruction-card-text code {
-  background: rgba(25, 118, 210, 0.1);
-  color: #0d47a1;
-}
-.instruction-footer {
-  margin-top: 20px;
-  padding-bottom: 20px;
-}
-.instruction-hint {
-  text-align: center;
-  color: #888;
-  font-size: 13px;
-  margin-top: 15px;
-  font-style: italic;
-}
+body.light .instruction-card { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.instruction-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.instruction-card-icon { font-size: 24px; flex-shrink: 0; }
+.instruction-card-title { font-size: 16px; font-weight: bold; color: #90caf9; }
+body.light .instruction-card-title { color: #0d47a1; }
+.instruction-card-text { font-size: 14px; line-height: 1.6; color: #ddd; user-select: text; -webkit-user-select: text; }
+body.light .instruction-card-text { color: #333; }
+.instruction-card-text code { background: rgba(144, 202, 249, 0.2); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, monospace; color: #90caf9; font-weight: bold; }
+body.light .instruction-card-text code { background: rgba(25, 118, 210, 0.1); color: #0d47a1; }
+.instruction-footer { margin-top: 20px; padding-bottom: 20px; }
+.instruction-hint { text-align: center; color: #888; font-size: 13px; margin-top: 15px; font-style: italic; }
 @media (max-width: 480px) {
 body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
 .header h1.app-title { font-size: 12px; }
@@ -413,100 +256,21 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="page-instruction" class="page">
 <div class="header">
 <div class="header-left"><button class="btn-back" onclick="showInstruction(false)">←</button></div>
-<div class="header-center">
-<h1 class="app-title">Worship SetUP</h1>
-<div class="app-subtitle">инструкция</div>
-</div>
+<div class="header-center"><h1 class="app-title">Worship SetUP</h1><div class="app-subtitle">инструкция</div></div>
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
 </div>
 <div class="instruction-content">
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">👆</span><span class="instruction-card-title">Свайпы для навигации</span></div>
-<div class="instruction-card-text">
-• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе<br>
-• На <b>главной</b>: свайп переключает «Песни» ↔ «Сет-листы»<br>
-• <b>Свайп влево</b> = вернуться назад (со страницы песни, сет-листа, инструкции)
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">💬</span><span class="instruction-card-title">Комментарии к строкам</span></div>
-<div class="instruction-card-text">
-Поставьте <code>**</code> в конце строки с аккордами или текстом — справа появится поле для короткого комментария (до 12 символов). Удобно отмечать динамику, подсказки для группы.
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">🖼️</span><span class="instruction-card-title">Картинки в песнях</span></div>
-<div class="instruction-card-text">
-Напишите <code>Картинка:</code> на отдельной строке в тексте песни — появится кнопка загрузки изображения. Под картинкой можно оставить комментарий (нажмите на серый текст).
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">✏️</span><span class="instruction-card-title">Редактирование блоков</span></div>
-<div class="instruction-card-text">
-<b>Нажмите и удерживайте палец 1 секунду</b> на любом блоке (куплет, припев, бридж) — откроется редактор именно этого блока. Можно менять заголовок и содержимое, не трогая остальную песню.
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">🎵</span><span class="instruction-card-title">Локальные изменения в сет-листе</span></div>
-<div class="instruction-card-text">
-Внутри сет-листа можно менять <b>тональность</b>, <b>Capo</b> и даже <b>текст песни</b> — эти изменения сохранятся только для этого сет-листа, оригинал в базе не пострадает. Помечается бейджем «(лок.)».
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">📝</span><span class="instruction-card-title">Заметки на секциях</span></div>
-<div class="instruction-card-text">
-В правом верхнем углу каждого блока (куплет, припев) есть маленькое поле — туда можно вписать короткую заметку (до 12 символов): номер повтора, подсказку для аранжировки.
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">🎸</span><span class="instruction-card-title">Capo и транспонирование</span></div>
-<div class="instruction-card-text">
-Меняйте тональность в верхнем меню — все аккорды пересчитаются автоматически. <b>Capo</b> тоже транспонирует аккорды (как если бы каподастр был на указанном ладу). Работает даже с аккордами вида <code>D/F#</code>.
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">📤</span><span class="instruction-card-title">Экспорт и импорт</span></div>
-<div class="instruction-card-text">
-• <b>📤 Экспорт базы</b> — все песни в один файл <code>.clcdb</code> (можно задать имя)<br>
-• <b>📥 Импорт базы</b> — добавит новые песни из файла <code>.clcdb</code><br>
-• <b>📤 поделиться</b> на странице песни — файл одной песни <code>.clcsong</code><br>
-• <b>📤 Поделиться</b> в сет-листе — сет-лист со всеми песнями <code>.clcsetlist</code>
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div>
-<div class="instruction-card-text">
-Кнопка <b>📄 PDF</b> открывает диалог печати — можно сохранить песню как PDF или распечатать на бумаге. Аккорды и текст форматируются автоматически в две колонки.
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">🎨</span><span class="instruction-card-title">Темы оформления</span></div>
-<div class="instruction-card-text">
-• <b>🌙 / ☀️</b> — переключение тёмной и светлой темы<br>
-• Кнопка <b>VL</b> — инструкция, долгое нажатие — смена цветовой схемы (синяя ↔ фиолетовая)<br>
-• Настройки сохраняются между запусками
-</div>
-</div>
-
-<div class="instruction-card">
-<div class="instruction-card-header"><span class="instruction-card-icon">⚡</span><span class="instruction-card-title">Быстрые жесты</span></div>
-<div class="instruction-card-text">
-• <b>Перетаскивание</b> песен в сет-листе — меняет порядок<br>
-• <b>Поле №</b> слева от песни — можно вписать номер вручную<br>
-• <b>Долгое нажатие на VL</b> (800мс) — быстрая смена цвета
-</div>
-</div>
-
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👆</span><span class="instruction-card-title">Свайпы для навигации</span></div><div class="instruction-card-text">• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе<br>• На <b>главной</b>: свайп переключает «Песни» ↔ «Сет-листы»<br>• <b>Свайп влево</b> = вернуться назад</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">💬</span><span class="instruction-card-title">Комментарии к строкам</span></div><div class="instruction-card-text">Поставьте <code>**</code> в конце строки — справа появится поле для комментария (до 12 символов).</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🖼️</span><span class="instruction-card-title">Картинки в песнях</span></div><div class="instruction-card-text">Напишите <code>Картинка:</code> на отдельной строке — появится кнопка загрузки изображения.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">✏️</span><span class="instruction-card-title">Редактирование блоков</span></div><div class="instruction-card-text"><b>Нажмите и удерживайте 1 секунду</b> на блоке — откроется редактор именно этого блока.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎵</span><span class="instruction-card-title">Локальные изменения в сет-листе</span></div><div class="instruction-card-text">В сет-листе можно менять тональность, Capo и текст — только для этого сет-листа. Помечается «(лок.)».</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📝</span><span class="instruction-card-title">Заметки на секциях</span></div><div class="instruction-card-text">В правом верхнем углу блока — поле для короткой заметки (до 12 символов).</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎸</span><span class="instruction-card-title">Capo и транспонирование</span></div><div class="instruction-card-text">Меняйте тональность — аккорды пересчитаются. <b>Capo</b> тоже транспонирует. Работает с <code>D/F#</code>.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📤</span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> — все песни в <code>.clcdb</code> (можно задать имя)<br>• <b>📥 Импорт базы</b> — добавит новые песни<br>• <b>📤 поделиться</b> на песне — файл <code>.clcsong</code><br>• <b>📤 Поделиться</b> в сет-листе — <code>.clcsetlist</code></div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div><div class="instruction-card-text">Кнопка <b>📄 PDF</b> открывает диалог печати в 2 колонки.<br><br>📱 <b>На телефоне</b>: в диалоге печати выберите «<b>Сохранить как PDF</b>» — файл скачается в загрузки. Или «<b>Поделиться</b>» — отправить через мессенджер/почту.<br><br>💻 <b>На компьютере</b>: выберите принтер «Сохранить как PDF».</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎨</span><span class="instruction-card-title">Темы оформления</span></div><div class="instruction-card-text">• <b>🌙 / ☀️</b> — тёмная/светлая тема<br>• <b>VL</b> — инструкция, долгое нажатие — смена цвета</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">⚡</span><span class="instruction-card-title">Быстрые жесты</span></div><div class="instruction-card-text">• <b>Перетаскивание</b> песен в сет-листе — меняет порядок<br>• <b>Поле №</b> — вписать номер вручную<br>• <b>Долгое нажатие на VL</b> (800мс) — смена цвета</div></div>
 </div>
 <div class="instruction-footer">
 <button class="btn-main" onclick="showInstruction(false)">← Назад</button>
@@ -577,122 +341,23 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button id="side-next" class="side-nav-btn side-nav-right" onclick="nextSong()">›</button>
 </div>
 
-<div id="modal-song-edit" class="modal">
-<div class="modal-content">
-<h2 id="modal-song-edit-title">Редактор песни</h2>
-<div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Текст в скобках: <b>(аллилуйя)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Комментарий строки: <b>G C D Текст **</b><br>• Повтор: <b>G C D x2</b><br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ 2:</b> <b>ПРЕД-ПРИПЕВ:</b> <b>МОСТ:</b> <b>КОДА:</b> <b>ВСТУПЛЕНИЕ:</b> <b>ПРОИГРЫШ:</b> <b>ИНСТРУМЕНТАЛ:</b> <b>TAG:</b> <b>2 ПРИПЕВ:</b><br>• Пустая строка = разделитель<br>• Картинка: <b>Картинка:</b> (отдельной строкой для добавления фото)<br>• Формат с разделителями: <b>| C | G | Am |</b></div>
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label>
-<input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label>
-<div style="position: relative;">
-<input type="text" id="edit-author" placeholder="Автор" oninput="showAuthorSuggestions()" onblur="setTimeout(() => hideAuthorSuggestions(), 200)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-<div id="author-suggestions" class="author-suggestions" style="display: none;"></div>
-</div>
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">Тональность <span class="required-star">*</span></label>
-<select id="edit-key"><option value="">-- Выберите тональность --</option><option value="C">C (До)</option><option value="C#">C# / Db</option><option value="D">D (Ре)</option><option value="D#">D# / Eb</option><option value="E">E (Ми)</option><option value="F">F (Фа)</option><option value="F#">F# / Gb</option><option value="G">G (Соль)</option><option value="G#">G# / Ab</option><option value="A">A (Ля)</option><option value="A#">A# / Bb</option><option value="H">H (Си)</option></select>
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label>
-<input type="number" id="edit-bpm" placeholder="Например: 120" min="10" max="300" autocomplete="off">
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label>
-<textarea id="edit-text" placeholder="G C D&#10;Текст песни (аллилуйя) *повторить&#10;&#10;1 КУПЛЕТ:&#10;Hm C G&#10;Текст куплета&#10;&#10;Картинка:&#10;Комментарий к картинке" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
-<div class="modal-actions">
-<button class="btn-secondary" onclick="closeModal('modal-song-edit')">Отмена</button>
-<button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button>
-</div>
-</div>
-</div>
+<div id="modal-song-edit" class="modal"><div class="modal-content"><h2 id="modal-song-edit-title">Редактор песни</h2><div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Текст в скобках: <b>(аллилуйя)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Комментарий строки: <b>G C D Текст **</b><br>• Повтор: <b>G C D x2</b><br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ 2:</b> <b>ПРЕД-ПРИПЕВ:</b> <b>МОСТ:</b> <b>КОДА:</b> <b>ВСТУПЛЕНИЕ:</b> <b>ПРОИГРЫШ:</b> <b>ИНСТРУМЕНТАЛ:</b> <b>TAG:</b> <b>2 ПРИПЕВ:</b><br>• Пустая строка = разделитель<br>• Картинка: <b>Картинка:</b> (отдельной строкой)<br>• Формат с разделителями: <b>| C | G | Am |</b></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label><input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label><div style="position: relative;"><input type="text" id="edit-author" placeholder="Автор" oninput="showAuthorSuggestions()" onblur="setTimeout(() => hideAuthorSuggestions(), 200)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="author-suggestions" class="author-suggestions" style="display: none;"></div></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Тональность <span class="required-star">*</span></label><select id="edit-key"><option value="">-- Выберите тональность --</option><option value="C">C (До)</option><option value="C#">C# / Db</option><option value="D">D (Ре)</option><option value="D#">D# / Eb</option><option value="E">E (Ми)</option><option value="F">F (Фа)</option><option value="F#">F# / Gb</option><option value="G">G (Соль)</option><option value="G#">G# / Ab</option><option value="A">A (Ля)</option><option value="A#">A# / Bb</option><option value="H">H (Си)</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label><input type="number" id="edit-bpm" placeholder="Например: 120" min="10" max="300" autocomplete="off"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label><textarea id="edit-text" placeholder="G C D&#10;Текст песни (аллилуйя) *повторить&#10;&#10;1 КУПЛЕТ:&#10;Hm C G&#10;Текст куплета" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-song-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button></div></div></div>
 
-<div id="modal-section-edit" class="modal">
-<div class="modal-content">
-<h2>Редактировать блок</h2>
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">Название секции</label>
-<input type="text" id="section-edit-label" placeholder="Например: КУПЛЕТ 1">
-<label style="font-weight: bold; margin-bottom: 5px; display: block;">Содержимое блока</label>
-<textarea id="section-edit-content" style="min-height: 200px;"></textarea>
-<div class="modal-actions">
-<button class="btn-secondary" onclick="closeModal('modal-section-edit')">Отмена</button>
-<button class="btn-main" style="width: auto; margin:0;" onclick="saveSectionEdit()">Сохранить</button>
-</div>
-</div>
-</div>
+<div id="modal-section-edit" class="modal"><div class="modal-content"><h2>Редактировать блок</h2><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название секции</label><input type="text" id="section-edit-label" placeholder="Например: КУПЛЕТ 1"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Содержимое блока</label><textarea id="section-edit-content" style="min-height: 200px;"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-section-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSectionEdit()">Сохранить</button></div></div></div>
 
-<div id="modal-setlist" class="modal">
-<div class="modal-content">
-<h2>Новый сет-лист</h2>
-<label>Дата:</label><input type="date" id="sl-date">
-<label>Название мероприятия:</label><input type="text" id="sl-name" placeholder="Воскресное богослужение">
-<div class="modal-actions">
-<button class="btn-secondary" onclick="closeModal('modal-setlist')">Отмена</button>
-<button class="btn-main" style="width: auto; margin:0;" onclick="saveSetlist()">Сохранить</button>
-</div>
-</div>
-</div>
+<div id="modal-setlist" class="modal"><div class="modal-content"><h2>Новый сет-лист</h2><label>Дата:</label><input type="date" id="sl-date"><label>Название мероприятия:</label><input type="text" id="sl-name" placeholder="Воскресное богослужение"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-setlist')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSetlist()">Сохранить</button></div></div></div>
 
-<div id="modal-edit-setlist" class="modal">
-<div class="modal-content">
-<h2>Редактировать сет-лист</h2>
-<label>Дата:</label><input type="date" id="edit-sl-date">
-<label>Название:</label><input type="text" id="edit-sl-name">
-<div class="modal-actions">
-<button class="btn-secondary" onclick="closeModal('modal-edit-setlist')">Отмена</button>
-<button class="btn-main" style="width: auto; margin:0;" onclick="saveEditSetlist()">Сохранить</button>
-</div>
-</div>
-</div>
+<div id="modal-edit-setlist" class="modal"><div class="modal-content"><h2>Редактировать сет-лист</h2><label>Дата:</label><input type="date" id="edit-sl-date"><label>Название:</label><input type="text" id="edit-sl-name"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-edit-setlist')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveEditSetlist()">Сохранить</button></div></div></div>
 
-<div id="modal-add-song" class="modal">
-<div class="modal-content">
-<h2>Добавить песню в сет-лист</h2>
-<input type="text" class="search-box" id="add-song-search" placeholder="🔍 Поиск по названию или тексту..." oninput="renderAddSongList()" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-<div id="add-song-list" class="add-song-list"></div>
-<div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-add-song')" style="width: 100%;">Закрыть</button></div>
-</div>
-</div>
+<div id="modal-add-song" class="modal"><div class="modal-content"><h2>Добавить песню в сет-лист</h2><input type="text" class="search-box" id="add-song-search" placeholder="🔍 Поиск..." oninput="renderAddSongList()" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="add-song-list" class="add-song-list"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-add-song')" style="width: 100%;">Закрыть</button></div></div></div>
 
-<div id="modal-delete-confirm" class="modal">
-<div class="modal-content" style="text-align: center;">
-<h2 style="color: #ef5350; margin-bottom: 15px;">⚠️ Внимание!</h2>
-<p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Вы точно хотите удалить?<br><b>Нельзя будет вернуть!</b></p>
-<p id="delete-item-name" style="font-weight: bold; margin-bottom: 20px; color: #90caf9;"></p>
-<div style="display: flex; gap: 10px; justify-content: center;">
-<button class="btn-cancel-confirm" onclick="closeModal('modal-delete-confirm')">Отмена</button>
-<button class="btn-danger-confirm" id="btn-confirm-delete">Удалить</button>
-</div>
-</div>
-</div>
+<div id="modal-delete-confirm" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">⚠️ Внимание!</h2><p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Вы точно хотите удалить?<br><b>Нельзя будет вернуть!</b></p><p id="delete-item-name" style="font-weight: bold; margin-bottom: 20px; color: #90caf9;"></p><div style="display: flex; gap: 10px; justify-content: center;"><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-confirm')">Отмена</button><button class="btn-danger-confirm" id="btn-confirm-delete">Удалить</button></div></div></div>
 
-<div id="modal-delete-setlist-choice" class="modal">
-<div class="modal-content" style="text-align: center;">
-<h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2>
-<p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p>
-<div style="display: flex; flex-direction: column; gap: 12px;">
-<button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button>
-<button class="btn-danger-confirm" onclick="deleteSetlistChoice()">️ Удалить навсегда</button>
-<button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button>
-</div>
-</div>
-</div>
+<div id="modal-delete-setlist-choice" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2><p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button><button class="btn-danger-confirm" onclick="deleteSetlistChoice()">️ Удалить навсегда</button><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button></div></div></div>
 
-<div id="modal-archive-setlist" class="modal">
-<div class="modal-content" style="text-align: center;">
-<h2 style="color: #90caf9; margin-bottom: 15px;">Восстановить сет-лист?</h2>
-<p id="archive-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p>
-<div style="display: flex; flex-direction: column; gap: 12px;">
-<button class="btn-main" onclick="restoreSetlistChoice()">✅ Восстановить</button>
-<button class="btn-cancel-confirm" onclick="closeModal('modal-archive-setlist')">Отмена</button>
-</div>
-</div>
-</div>
+<div id="modal-archive-setlist" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Восстановить сет-лист?</h2><p id="archive-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-main" onclick="restoreSetlistChoice()">✅ Восстановить</button><button class="btn-cancel-confirm" onclick="closeModal('modal-archive-setlist')">Отмена</button></div></div></div>
 
-<div id="modal-image-delete" class="modal">
-<div class="modal-content" style="text-align: center;">
-<h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2>
-<p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p>
-<div style="display: flex; flex-direction: column; gap: 12px;">
-<button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button>
-<button class="btn-cancel-confirm" onclick="closeModal('modal-image-delete')">Отмена</button>
-</div>
-</div>
-</div>
+<div id="modal-image-delete" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2><p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button><button class="btn-cancel-confirm" onclick="closeModal('modal-image-delete')">Отмена</button></div></div></div>
 
 <script>
 function formatDate(dateString) { const date = new Date(dateString); const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']; return `${date.getDate()} ${months[date.getMonth()]}`; }
@@ -730,42 +395,16 @@ function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.spl
 function cleanWordForChordCheck(word) { return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, ''); }
 
 function parseMixedLine(line) {
-  let rightNote = '';
-  let inlineComment = '';
-  
+  let rightNote = '', inlineComment = '';
   const doubleStarMatch = line.match(/\s*\*\*\s*$/);
-  if (doubleStarMatch) {
-    inlineComment = '**';
-    line = line.substring(0, line.length - doubleStarMatch[0].length);
-  }
-  
+  if (doubleStarMatch) { inlineComment = '**'; line = line.substring(0, line.length - doubleStarMatch[0].length); }
   const starMatch = line.match(/\s+\*(.+)$/);
-  if (starMatch) {
-    rightNote = starMatch[1].trim();
-    line = line.substring(0, line.length - starMatch[0].length);
-  }
-
+  if (starMatch) { rightNote = starMatch[1].trim(); line = line.substring(0, line.length - starMatch[0].length); }
   const tokens = line.trim().split(/\s+/);
-  const allChords = tokens.length > 0 && tokens.every(t =>
-    t === '|' ||
-    REPEAT_RE.test(t) ||
-    CHORD_RE.test(convertBtoH(cleanWordForChordCheck(t)))
-  );
-
-  if (allChords) {
-    return { chords: line, text: '', rightNote, inlineComment };
-  }
-
-  const chordPartMatch = line.match(
-    /^((?:\s*(?:[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?|x\d+|\d+[рpx]|\|))+)/i
-  );
-
-  if (chordPartMatch) {
-    const chords = chordPartMatch[1];
-    const text = line.substring(chords.length).trim();
-    return { chords, text, rightNote, inlineComment };
-  }
-
+  const allChords = tokens.length > 0 && tokens.every(t => t === '|' || REPEAT_RE.test(t) || CHORD_RE.test(convertBtoH(cleanWordForChordCheck(t))));
+  if (allChords) return { chords: line, text: '', rightNote, inlineComment };
+  const chordPartMatch = line.match(/^((?:\s*(?:[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?|x\d+|\d+[рpx]|\|))+)/i);
+  if (chordPartMatch) { const chords = chordPartMatch[1]; const text = line.substring(chords.length).trim(); return { chords, text, rightNote, inlineComment }; }
   return { chords: '', text: line, rightNote, inlineComment };
 }
 
@@ -784,10 +423,7 @@ try { const newIdx = ((scale.indexOf(root) + interval) % 12 + 12) % 12; return s
 
 function transposeLine(line, fromKey, toKey) {
   const chordRegex = /\b[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*(?:\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[a-z0-9]*)?(?=\s|$|[^A-Ha-h#b])/gi;
-  return line.replace(chordRegex, m => {
-    const n = convertBtoH(m);
-    return CHORD_RE.test(n) ? transposeChord(n, fromKey, toKey) : m;
-  });
+  return line.replace(chordRegex, m => { const n = convertBtoH(m); return CHORD_RE.test(n) ? transposeChord(n, fromKey, toKey) : m; });
 }
 
 function transposeChordproText(text, fromKey, toKey) {
@@ -800,28 +436,11 @@ try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = 
 const savedTheme = localStorage.getItem('clc_theme');
 if (savedTheme === 'light') { document.body.classList.remove('dark'); document.body.classList.add('light'); updateThemeButtons('☀️'); } else { document.body.classList.add('dark'); document.body.classList.remove('light'); updateThemeButtons('🌙'); }
 const savedColor = localStorage.getItem('clc_color');
-if (savedColor === 'violet') { document.body.classList.add('violet'); } else { document.body.classList.remove('violet'); }
-
+if (savedColor === 'violet') document.body.classList.add('violet'); else document.body.classList.remove('violet');
 const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
-if (savedState.page === 'page-song-view' && savedState.songId) {
-  currentSongId = savedState.songId;
-  currentSlId = savedState.slId || null;
-  showPage('page-song-view');
-  setTimeout(() => openSongView(savedState.songId, savedState.slId), 100);
-} else if (savedState.page === 'page-setlist-detail' && savedState.slId) {
-  currentSlId = savedState.slId;
-  showPage('page-setlist-detail');
-  setTimeout(() => openSetlistDetail(savedState.slId), 100);
-} else if (savedState.page === 'page-home') {
-  if (savedState.homeView === 'setlists') {
-    switchHomeView('setlists');
-    if (savedState.tab) {
-      const tabEl = document.querySelector(`#home-view-setlists .tab-style:nth-child(${savedState.tab === 'archive' ? 2 : 1})`);
-      if (tabEl) switchTab(savedState.tab, tabEl);
-    }
-  }
-}
-
+if (savedState.page === 'page-song-view' && savedState.songId) { currentSongId = savedState.songId; currentSlId = savedState.slId || null; showPage('page-song-view'); setTimeout(() => openSongView(savedState.songId, savedState.slId), 100); }
+else if (savedState.page === 'page-setlist-detail' && savedState.slId) { currentSlId = savedState.slId; showPage('page-setlist-detail'); setTimeout(() => openSetlistDetail(savedState.slId), 100); }
+else if (savedState.page === 'page-home' && savedState.homeView === 'setlists') { switchHomeView('setlists'); if (savedState.tab) { const tabEl = document.querySelector(`#home-view-setlists .tab-style:nth-child(${savedState.tab === 'archive' ? 2 : 1})`); if (tabEl) switchTab(savedState.tab, tabEl); } }
 const savedDefaults = JSON.parse(localStorage.getItem('clc_defaults') || '{}');
 if (savedDefaults.fontSize) fontSize = savedDefaults.fontSize;
 if (savedDefaults.columns) currentColumns = savedDefaults.columns;
@@ -829,30 +448,9 @@ if (savedDefaults.columns) currentColumns = savedDefaults.columns;
 
 function saveToStorage() { localStorage.setItem('clc_songs', JSON.stringify(songs)); localStorage.setItem('clc_setlists', JSON.stringify(setlists)); localStorage.setItem('clc_section_notes', JSON.stringify(sectionNotes)); localStorage.setItem('clc_inline_comments', JSON.stringify(inlineComments)); }
 function updateThemeButtons(icon) { document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon); }
-
-function saveAppState() {
-  const activePage = document.querySelector('.page.active');
-  const state = {
-    page: activePage ? activePage.id : 'page-home',
-    songId: currentSongId,
-    slId: currentSlId,
-    homeView: currentHomeView,
-    tab: currentTab
-  };
-  localStorage.setItem('clc_state', JSON.stringify(state));
-}
-
-function saveDefaultSettings() {
-  localStorage.setItem('clc_defaults', JSON.stringify({
-    fontSize: fontSize,
-    columns: currentColumns
-  }));
-}
-
-function toggleColorTheme() {
-if (document.body.classList.contains('violet')) { document.body.classList.remove('violet'); localStorage.setItem('clc_color', 'blue'); }
-else { document.body.classList.add('violet'); localStorage.setItem('clc_color', 'violet'); }
-}
+function saveAppState() { const activePage = document.querySelector('.page.active'); const state = { page: activePage ? activePage.id : 'page-home', songId: currentSongId, slId: currentSlId, homeView: currentHomeView, tab: currentTab }; localStorage.setItem('clc_state', JSON.stringify(state)); }
+function saveDefaultSettings() { localStorage.setItem('clc_defaults', JSON.stringify({ fontSize: fontSize, columns: currentColumns })); }
+function toggleColorTheme() { if (document.body.classList.contains('violet')) { document.body.classList.remove('violet'); localStorage.setItem('clc_color', 'blue'); } else { document.body.classList.add('violet'); localStorage.setItem('clc_color', 'violet'); } }
 
 function showPage(id) {
 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -863,17 +461,8 @@ saveAppState();
 }
 
 function showInstruction(show) {
-  if (show) {
-    showPage('page-instruction');
-  } else {
-    currentHomeView = 'songs';
-    document.getElementById('home-tab-songs').classList.add('active');
-    document.getElementById('home-tab-setlists').classList.remove('active');
-    document.getElementById('home-view-songs').style.display = 'block';
-    document.getElementById('home-view-setlists').style.display = 'none';
-    showPage('page-home');
-    renderSongs();
-  }
+  if (show) { showPage('page-instruction'); }
+  else { currentHomeView = 'songs'; document.getElementById('home-tab-songs').classList.add('active'); document.getElementById('home-tab-setlists').classList.remove('active'); document.getElementById('home-view-songs').style.display = 'block'; document.getElementById('home-view-setlists').style.display = 'none'; showPage('page-home'); renderSongs(); }
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -881,13 +470,7 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 function fillKeySelect(selectId, selectedValue, showOriginal) {
 const select = document.getElementById(selectId);
 select.innerHTML = '';
-NOTES_SHARP.forEach(key => {
-const option = document.createElement('option');
-option.value = key;
-option.textContent = (showOriginal && key === originalKey) ? key + ' (Original)' : key;
-option.selected = (key === selectedValue);
-select.appendChild(option);
-});
+NOTES_SHARP.forEach(key => { const option = document.createElement('option'); option.value = key; option.textContent = (showOriginal && key === originalKey) ? key + ' (Original)' : key; option.selected = (key === selectedValue); select.appendChild(option); });
 }
 
 function showDeleteConfirm(type, id, name, callback) {
@@ -906,13 +489,7 @@ if (!value) { container.style.display = 'none'; return; }
 const authors = getUniqueAuthors().filter(a => a.toLowerCase().includes(value));
 if (authors.length === 0) { container.style.display = 'none'; return; }
 container.innerHTML = '';
-authors.forEach(author => {
-const div = document.createElement('div');
-div.className = 'author-suggestion-item';
-div.innerText = author;
-div.onmousedown = (e) => { e.preventDefault(); input.value = author; container.style.display = 'none'; };
-container.appendChild(div);
-});
+authors.forEach(author => { const div = document.createElement('div'); div.className = 'author-suggestion-item'; div.innerText = author; div.onmousedown = (e) => { e.preventDefault(); input.value = author; container.style.display = 'none'; }; container.appendChild(div); });
 container.style.display = 'block';
 }
 
@@ -956,30 +533,10 @@ function openSongEditor(id = null, isFromSetlist = false) {
 currentSongId = id;
 isLocalEdit = isFromSetlist;
 let title = '', chordpro = '', key = '', author = '', bpm = '';
-if (id === null && !isFromSetlist) {
-isLocalEdit = false;
-document.getElementById('modal-song-edit-title').innerText = '➕ Новая песня';
-document.getElementById('edit-title').value = '';
-document.getElementById('edit-author').value = '';
-document.getElementById('edit-bpm').value = '';
-document.getElementById('edit-text').value = '';
-document.getElementById('edit-key').value = '';
-document.getElementById('modal-song-edit').classList.add('show');
-return;
-}
-if (isFromSetlist && currentSlId && id) {
-const s = songs.find(x => x.id === id);
-const sl = setlists.find(x => x.id === currentSlId);
-const item = sl.songs.find(x => x.id === id);
-title = s.title; key = s.key || ''; author = s.author || ''; bpm = s.bpm || '';
-if (item && item.chordpro) { chordpro = item.chordpro; document.getElementById('modal-song-edit-title').innerText = '✏️ Локальное редактирование'; }
-else { chordpro = s.chordpro; document.getElementById('modal-song-edit-title').innerText = '✏️ Создать локальную версию'; }
-} else if (id) {
-const s = songs.find(x => x.id === id);
-if (s) { title = s.title; chordpro = s.chordpro; key = s.key || ''; author = s.author || ''; bpm = s.bpm || ''; }
-isLocalEdit = false;
-document.getElementById('modal-song-edit-title').innerText = '✏️ Глобальное редактирование';
-} else { isLocalEdit = false; document.getElementById('modal-song-edit-title').innerText = '➕ Новая песня'; }
+if (id === null && !isFromSetlist) { isLocalEdit = false; document.getElementById('modal-song-edit-title').innerText = '➕ Новая песня'; document.getElementById('edit-title').value = ''; document.getElementById('edit-author').value = ''; document.getElementById('edit-bpm').value = ''; document.getElementById('edit-text').value = ''; document.getElementById('edit-key').value = ''; document.getElementById('modal-song-edit').classList.add('show'); return; }
+if (isFromSetlist && currentSlId && id) { const s = songs.find(x => x.id === id); const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === id); title = s.title; key = s.key || ''; author = s.author || ''; bpm = s.bpm || ''; if (item && item.chordpro) { chordpro = item.chordpro; document.getElementById('modal-song-edit-title').innerText = '✏️ Локальное редактирование'; } else { chordpro = s.chordpro; document.getElementById('modal-song-edit-title').innerText = '✏️ Создать локальную версию'; } }
+else if (id) { const s = songs.find(x => x.id === id); if (s) { title = s.title; chordpro = s.chordpro; key = s.key || ''; author = s.author || ''; bpm = s.bpm || ''; } isLocalEdit = false; document.getElementById('modal-song-edit-title').innerText = '✏️ Глобальное редактирование'; }
+else { isLocalEdit = false; document.getElementById('modal-song-edit-title').innerText = '➕ Новая песня'; }
 document.getElementById('edit-title').value = title;
 document.getElementById('edit-author').value = author;
 document.getElementById('edit-bpm').value = bpm;
@@ -1000,19 +557,8 @@ if (!chordpro.trim()) { alert('Введите текст!'); return; }
 function getNextId(arr) { if (arr.length === 0) return 1; return arr.reduce((max, item) => Math.max(max, item.id), 0) + 1; }
 const existingSong = songs.find(s => s.title.toLowerCase() === title.toLowerCase() && s.id !== currentSongId);
 if (existingSong) { alert(`⚠️ Песня с названием "${title}" уже существует!`); return; }
-if (isLocalEdit && currentSlId) {
-const sl = setlists.find(x => x.id === currentSlId);
-const item = sl.songs.find(x => x.id === currentSongId);
-if (item) item.chordpro = chordpro;
-saveToStorage();
-alert('✅ Сохранено локально!');
-} else {
-let song = songs.find(x => x.id === currentSongId);
-if (song) { song.title = title; song.chordpro = chordpro; song.key = key; song.author = author; song.bpm = bpm; }
-else { songs.push({id: getNextId(songs), title, chordpro, key, author, bpm, createdAt: Date.now(), columns: currentColumns, fontSize: fontSize}); }
-saveToStorage();
-alert('✅ Песня сохранена!');
-}
+if (isLocalEdit && currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) item.chordpro = chordpro; saveToStorage(); alert('✅ Сохранено локально!'); }
+else { let song = songs.find(x => x.id === currentSongId); if (song) { song.title = title; song.chordpro = chordpro; song.key = key; song.author = author; song.bpm = bpm; } else { songs.push({id: getNextId(songs), title, chordpro, key, author, bpm, createdAt: Date.now(), columns: currentColumns, fontSize: fontSize}); } saveToStorage(); alert('✅ Песня сохранена!'); }
 closeModal('modal-song-edit');
 currentSongId = null;
 document.querySelector('#home-view-songs .search-box').value = '';
@@ -1106,26 +652,18 @@ filtered.forEach(s => { const div = document.createElement('div'); div.className
 }
 
 function setupSwipe() {
-let startX = 0, startY = 0, tracking = false, currentPageId = null;
-let isClick = false;
+let startX = 0, startY = 0, tracking = false, currentPageId = null, isClick = false;
 function getCurrentPageId() { const active = document.querySelector('.page.active'); return active ? active.id : null; }
 document.addEventListener('touchstart', (e) => { if (e.target.closest('.modal')) return; if (e.target.closest('[contenteditable="true"]')) return; if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return; startX = e.touches[0].clientX; startY = e.touches[0].clientY; tracking = true; isClick = true; currentPageId = getCurrentPageId(); }, { passive: true });
-document.addEventListener('touchmove', (e) => { if (!tracking) return; const diffX = Math.abs(startX - e.touches[0].clientX); const diffY = Math.abs(startY - e.touches[0].clientY); if (diffX > 10 || diffY > 10) { isClick = false; } }, { passive: true });
-document.addEventListener('touchend', (e) => { if (!tracking) return; tracking = false; if (isClick) return; const diffX = startX - e.changedTouches[0].clientX; const diffY = startY - e.changedTouches[0].clientY; if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) { handleSwipe(diffX, currentPageId); } }, { passive: true });
+document.addEventListener('touchmove', (e) => { if (!tracking) return; const diffX = Math.abs(startX - e.touches[0].clientX); const diffY = Math.abs(startY - e.touches[0].clientY); if (diffX > 10 || diffY > 10) isClick = false; }, { passive: true });
+document.addEventListener('touchend', (e) => { if (!tracking) return; tracking = false; if (isClick) return; const diffX = startX - e.changedTouches[0].clientX; const diffY = startY - e.changedTouches[0].clientY; if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) handleSwipe(diffX, currentPageId); }, { passive: true });
 document.addEventListener('mousedown', (e) => { if (e.target.closest('.modal')) return; if (e.target.closest('[contenteditable="true"]')) return; if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return; startX = e.clientX; startY = e.clientY; tracking = true; isClick = true; currentPageId = getCurrentPageId(); });
-document.addEventListener('mousemove', (e) => { if (!tracking) return; const diffX = Math.abs(startX - e.clientX); const diffY = Math.abs(startY - e.clientY); if (diffX > 10 || diffY > 10) { isClick = false; } });
-document.addEventListener('mouseup', (e) => { if (!tracking) return; tracking = false; if (isClick) return; const diffX = startX - e.clientX; const diffY = startY - e.clientY; if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) { handleSwipe(diffX, currentPageId); } });
+document.addEventListener('mousemove', (e) => { if (!tracking) return; const diffX = Math.abs(startX - e.clientX); const diffY = Math.abs(startY - e.clientY); if (diffX > 10 || diffY > 10) isClick = false; });
+document.addEventListener('mouseup', (e) => { if (!tracking) return; tracking = false; if (isClick) return; const diffX = startX - e.clientX; const diffY = startY - e.clientY; if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) handleSwipe(diffX, currentPageId); });
 function handleSwipe(diffX, pageId) {
 if (pageId === 'page-song-view') {
-if (currentSlId) {
-const sl = setlists.find(x => x.id === currentSlId);
-if (!sl) return;
-const idx = sl.songs.findIndex(x => x.id === currentSongId);
-const isLastSong = (idx === sl.songs.length - 1);
-const isFirstSong = (idx === 0);
-if (diffX > 0) { if (isLastSong) { goBackFromSong(); } else { nextSong(); } }
-else { if (isFirstSong) { goBackFromSong(); } else { prevSong(); } }
-} else { if (diffX < 0) goBackFromSong(); }
+if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; const idx = sl.songs.findIndex(x => x.id === currentSongId); const isLastSong = (idx === sl.songs.length - 1); const isFirstSong = (idx === 0); if (diffX > 0) { if (isLastSong) goBackFromSong(); else nextSong(); } else { if (isFirstSong) goBackFromSong(); else prevSong(); } }
+else { if (diffX < 0) goBackFromSong(); }
 } else if (pageId === 'page-home') { if (diffX > 0) { if (currentHomeView === 'songs') switchHomeView('setlists'); } else { if (currentHomeView === 'setlists') switchHomeView('songs'); } }
 else if (pageId === 'page-setlist-detail') { if (diffX < 0) goBackFromSetlistDetail(); }
 else if (pageId === 'page-instruction') { if (diffX > 0) showInstruction(false); }
@@ -1135,31 +673,10 @@ else if (pageId === 'page-instruction') { if (diffX > 0) showInstruction(false);
 function setupVlButton() {
   const vlBtn = document.querySelector('.vl-worship-btn');
   if (!vlBtn) return;
-  let longPressTimer = null;
-  let longPressed = false;
-  
-  const startPress = (e) => {
-    longPressed = false;
-    longPressTimer = setTimeout(() => {
-      longPressed = true;
-      toggleColorTheme();
-      if (navigator.vibrate) navigator.vibrate(30);
-    }, 800);
-  };
-  
-  const cancelPress = () => {
-    clearTimeout(longPressTimer);
-  };
-  
-  const endPress = (e) => {
-    clearTimeout(longPressTimer);
-    if (longPressed) {
-      e.preventDefault();
-      e.stopPropagation();
-      longPressed = false;
-    }
-  };
-  
+  let longPressTimer = null, longPressed = false;
+  const startPress = (e) => { longPressed = false; longPressTimer = setTimeout(() => { longPressed = true; toggleColorTheme(); if (navigator.vibrate) navigator.vibrate(30); }, 800); };
+  const cancelPress = () => { clearTimeout(longPressTimer); };
+  const endPress = (e) => { clearTimeout(longPressTimer); if (longPressed) { e.preventDefault(); e.stopPropagation(); longPressed = false; } };
   vlBtn.addEventListener('touchstart', startPress, { passive: true });
   vlBtn.addEventListener('touchend', endPress);
   vlBtn.addEventListener('touchcancel', cancelPress);
@@ -1189,12 +706,8 @@ currentCapo = 0;
 currentColumns = s.columns || currentColumns;
 fontSize = s.fontSize || fontSize;
 let localChordpro = null, savedKey = null;
-if (slId) {
-const sl = setlists.find(x => x.id === slId);
-const item = sl.songs.find(x => x.id === id);
-if (item) { currentCapo = item.capo || 0; savedKey = item.key || null; localChordpro = item.chordpro || null; currentColumns = item.columns || currentColumns; fontSize = item.fontSize || fontSize; currentKey = savedKey || originalKey; }
+if (slId) { const sl = setlists.find(x => x.id === slId); const item = sl.songs.find(x => x.id === id); if (item) { currentCapo = item.capo || 0; savedKey = item.key || null; localChordpro = item.chordpro || null; currentColumns = item.columns || currentColumns; fontSize = item.fontSize || fontSize; currentKey = savedKey || originalKey; } else { currentKey = originalKey; } }
 else { currentKey = originalKey; }
-} else { currentKey = originalKey; }
 fillKeySelect('key-select', currentKey, true);
 document.getElementById('capo-select').value = currentCapo;
 document.getElementById('columns-select').value = currentColumns;
@@ -1202,15 +715,8 @@ document.getElementById('btn-save-all').style.display = 'block';
 const sidePrev = document.getElementById('side-prev');
 const sideNext = document.getElementById('side-next');
 const swipeHint = document.getElementById('swipe-hint');
-if (slId) {
-const sl = setlists.find(x => x.id === slId);
-const idx = sl.songs.findIndex(x => x.id === id);
-sidePrev.classList.add('visible');
-sideNext.classList.add('visible');
-sidePrev.disabled = idx <= 0;
-sideNext.disabled = idx >= sl.songs.length - 1;
-swipeHint.style.display = sl.songs.length > 1 ? 'block' : 'none';
-} else { sidePrev.classList.remove('visible'); sideNext.classList.remove('visible'); swipeHint.style.display = 'none'; }
+if (slId) { const sl = setlists.find(x => x.id === slId); const idx = sl.songs.findIndex(x => x.id === id); sidePrev.classList.add('visible'); sideNext.classList.add('visible'); sidePrev.disabled = idx <= 0; sideNext.disabled = idx >= sl.songs.length - 1; swipeHint.style.display = sl.songs.length > 1 ? 'block' : 'none'; }
+else { sidePrev.classList.remove('visible'); sideNext.classList.remove('visible'); swipeHint.style.display = 'none'; }
 renderSongContent(localChordpro || s.chordpro, originalKey, currentKey, currentCapo);
 showPage('page-song-view');
 }
@@ -1227,19 +733,13 @@ textarea.style.fontSize = fontSize + 'px';
 textarea.style.lineHeight = '1.4';
 textarea.style.fontFamily = '-apple-system, BlinkMacSystemFont, system-ui, sans-serif';
 textarea.style.letterSpacing = '0.5px';
-
 document.getElementById('inline-edit-container').style.display = 'block';
 document.getElementById('song-view-content').style.display = 'none';
 isInlineEditing = true;
 }
 
 function cancelInlineEdit() { document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; isInlineEditing = false; }
-
-function resizeInlineEdit(delta) {
-  fontSize = Math.max(8, Math.min(32, fontSize + delta));
-  const textarea = document.getElementById('inline-edit-textarea');
-  textarea.style.fontSize = fontSize + 'px';
-}
+function resizeInlineEdit(delta) { fontSize = Math.max(8, Math.min(32, fontSize + delta)); const textarea = document.getElementById('inline-edit-textarea'); textarea.style.fontSize = fontSize + 'px'; }
 
 function saveInlineEdit() {
 const newChordpro = document.getElementById('inline-edit-textarea').value;
@@ -1270,12 +770,8 @@ function saveSectionNote(songId, sectionIdx, value) { if (!sectionNotes[songId])
 function saveInlineComment(songId, sectionIdx, lineIdx, value) { 
   if (!inlineComments[songId]) inlineComments[songId] = {}; 
   const key = `${sectionIdx}_${lineIdx}`;
-  if (value.trim() === '') { 
-    delete inlineComments[songId][key]; 
-    if (Object.keys(inlineComments[songId]).length === 0) delete inlineComments[songId]; 
-  } else { 
-    inlineComments[songId][key] = value.substring(0, 12); 
-  } 
+  if (value.trim() === '') { delete inlineComments[songId][key]; if (Object.keys(inlineComments[songId]).length === 0) delete inlineComments[songId]; }
+  else { inlineComments[songId][key] = value.substring(0, 12); }
   saveToStorage(); 
 }
 
@@ -1308,61 +804,36 @@ const savedImage = localStorage.getItem(imageKey);
 const commentKey = `img_${songId}_${sectionIdx}_comment`;
 const savedComment = localStorage.getItem(commentKey) || '';
 if (savedImage) {
-html += `<div class="song-image-container">
-<div class="song-image-comment" contenteditable="true"
-onfocus="if(this.innerText==='${IMAGE_COMMENT_PLACEHOLDER}')this.innerText=''"
-onblur="saveImageComment('${commentKey}', this.innerText)"
-onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
-onclick="event.stopPropagation();">${savedComment || IMAGE_COMMENT_PLACEHOLDER}</div>
-<img src="${savedImage}" alt="Изображение" onclick="showImageDeleteModal('${imageKey}')">
-</div>`;
+html += `<div class="song-image-container"><div class="song-image-comment" contenteditable="true" onfocus="if(this.innerText==='${IMAGE_COMMENT_PLACEHOLDER}')this.innerText=''" onblur="saveImageComment('${commentKey}', this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" onclick="event.stopPropagation();">${savedComment || IMAGE_COMMENT_PLACEHOLDER}</div><img src="${savedImage}" alt="Изображение" onclick="showImageDeleteModal('${imageKey}')"></div>`;
 } else {
-html += `<div class="song-image-container">
-<div class="song-image-comment" contenteditable="true"
-onfocus="if(this.innerText==='${IMAGE_COMMENT_PLACEHOLDER}')this.innerText=''"
-onblur="saveImageComment('${commentKey}', this.innerText)"
-onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
-onclick="event.stopPropagation();">${IMAGE_COMMENT_PLACEHOLDER}</div>
-<label class="song-image-upload">📷 Загрузить изображение<input type="file" accept="image/*" onchange="uploadSongImage(this, '${imageKey}')"></label>
-</div>`;
+html += `<div class="song-image-container"><div class="song-image-comment" contenteditable="true" onfocus="if(this.innerText==='${IMAGE_COMMENT_PLACEHOLDER}')this.innerText=''" onblur="saveImageComment('${commentKey}', this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" onclick="event.stopPropagation();">${IMAGE_COMMENT_PLACEHOLDER}</div><label class="song-image-upload">📷 Загрузить изображение<input type="file" accept="image/*" onchange="uploadSongImage(this, '${imageKey}')"></label></div>`;
 }
 sectionIdx++;
 return;
 }
 const sectionMatch = trimmed.match(SECTION_RE);
-if (sectionMatch) { 
-  flushSection(); 
-  sectionStartLine = lineNum;
-  currentSection = trimmed.toUpperCase(); 
-  sectionContent += `<div class="section-label" style="font-size: ${fontSize}px;">${currentSection}</div>`; 
-  lineIdx = 0; 
-}
+if (sectionMatch) { flushSection(); sectionStartLine = lineNum; currentSection = trimmed.toUpperCase(); sectionContent += `<div class="section-label" style="font-size: ${fontSize}px;">${currentSection}</div>`; lineIdx = 0; }
 else if (trimmed !== '') {
 if (sectionStartLine === -1) sectionStartLine = lineNum;
-const parsed = parseMixedLine(line); 
-  
+const parsed = parseMixedLine(line);
 if (parsed.chords || parsed.text || parsed.rightNote) {
   const commentKey = `${sectionIdx}_${lineIdx}`;
   const savedComment = (inlineComments[songId] && inlineComments[songId][commentKey]) || '';
   sectionContent += '<div class="section-block"><div class="main-content" style="white-space: pre-wrap;">';
-  
-if (parsed.chords && parsed.text) {
-  let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
-  if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
-  sectionContent += `<span class="chords-above" style="font-size: ${fontSize}px;"><b>${displayChords}</b></span> <span class="lyrics-below" style="font-size: ${fontSize}px; display: inline;">${parsed.text}</span>`;
-} else if (parsed.chords) {
-  let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
-  if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
-  sectionContent += `<span class="chords-above" style="font-size: ${fontSize}px;"><b>${displayChords}</b></span>`;
-} else if (parsed.text) {
-  sectionContent += `<span class="lyrics-below" style="font-size: ${fontSize}px; display: inline;">${parsed.text}</span>`;
-}
-  
+  if (parsed.chords && parsed.text) {
+    let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
+    if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
+    sectionContent += `<span class="chords-above" style="font-size: ${fontSize}px;"><b>${displayChords}</b></span> <span class="lyrics-below" style="font-size: ${fontSize}px; display: inline;">${parsed.text}</span>`;
+  } else if (parsed.chords) {
+    let displayChords = fromKey !== toKey ? transposeLine(parsed.chords, fromKey, toKey) : parsed.chords;
+    if (capo > 0) displayChords = transposeLine(displayChords, toKey, NOTES_SHARP[((NOTES_SHARP.indexOf(toKey) - capo) % 12 + 12) % 12]);
+    sectionContent += `<span class="chords-above" style="font-size: ${fontSize}px;"><b>${displayChords}</b></span>`;
+  } else if (parsed.text) {
+    sectionContent += `<span class="lyrics-below" style="font-size: ${fontSize}px; display: inline;">${parsed.text}</span>`;
+  }
   sectionContent += '</div>';
   if (parsed.rightNote) sectionContent += `<div class="right-note" style="font-size: ${fontSize}px;">${parsed.rightNote}</div>`;
-  if (parsed.inlineComment) {
-    sectionContent += `<input type="text" class="inline-comment-input" maxlength="12" value="${savedComment.replace(/"/g, '&quot;')}" oninput="saveInlineComment(${songId}, ${sectionIdx}, ${lineIdx}, this.value)" placeholder="..." />`;
-  }
+  if (parsed.inlineComment) { sectionContent += `<input type="text" class="inline-comment-input" maxlength="12" value="${savedComment.replace(/"/g, '&quot;')}" oninput="saveInlineComment(${songId}, ${sectionIdx}, ${lineIdx}, this.value)" placeholder="..." />`; }
   sectionContent += '</div>';
   lineIdx++;
 }
@@ -1375,19 +846,8 @@ document.getElementById('song-view-content').innerHTML = html;
 document.querySelectorAll('.song-section').forEach(section => {
   let pressTimer;
   const startLine = parseInt(section.dataset.startLine);
-  
-  const startPress = (e) => {
-    if (e.target.tagName === 'INPUT') return;
-    pressTimer = setTimeout(() => {
-      openSectionEditorByLine(startLine);
-      if (navigator.vibrate) navigator.vibrate(20);
-    }, 1000);
-  };
-  
-  const cancelPress = () => {
-    clearTimeout(pressTimer);
-  };
-  
+  const startPress = (e) => { if (e.target.tagName === 'INPUT') return; pressTimer = setTimeout(() => { openSectionEditorByLine(startLine); if (navigator.vibrate) navigator.vibrate(20); }, 1000); };
+  const cancelPress = () => { clearTimeout(pressTimer); };
   section.addEventListener('touchstart', startPress, { passive: true });
   section.addEventListener('touchend', cancelPress);
   section.addEventListener('touchcancel', cancelPress);
@@ -1401,28 +861,13 @@ function openSectionEditorByLine(startLine) {
   const s = songs.find(x => x.id === currentSongId);
   if (!s) return;
   let textToEdit = s.chordpro;
-  if (currentSlId) { 
-    const sl = setlists.find(x => x.id === currentSlId); 
-    const item = sl.songs.find(x => x.id === currentSongId); 
-    if (item && item.chordpro) textToEdit = item.chordpro; 
-  }
-  
+  if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item && item.chordpro) textToEdit = item.chordpro; }
   const lines = textToEdit.split('\n');
   let sectionLines = [];
   let sectionLabel = '';
   let endIdx = lines.length;
-  
   sectionLabel = lines[startLine].trim();
-  
-  for (let i = startLine + 1; i < lines.length; i++) {
-    const trimmed = lines[i].trim();
-    if (trimmed.match(SECTION_RE)) {
-      endIdx = i;
-      break;
-    }
-    sectionLines.push(lines[i]);
-  }
-  
+  for (let i = startLine + 1; i < lines.length; i++) { const trimmed = lines[i].trim(); if (trimmed.match(SECTION_RE)) { endIdx = i; break; } sectionLines.push(lines[i]); }
   editingSectionStartLine = startLine;
   editingSectionEndLine = endIdx;
   document.getElementById('section-edit-label').value = sectionLabel;
@@ -1434,35 +879,16 @@ function saveSectionEdit() {
   const s = songs.find(x => x.id === currentSongId);
   if (!s) return;
   let textToEdit = s.chordpro;
-  if (currentSlId) { 
-    const sl = setlists.find(x => x.id === currentSlId); 
-    const item = sl.songs.find(x => x.id === currentSongId); 
-    if (item && item.chordpro) textToEdit = item.chordpro; 
-  }
-  
+  if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item && item.chordpro) textToEdit = item.chordpro; }
   const lines = textToEdit.split('\n');
   const newLabel = document.getElementById('section-edit-label').value.trim();
   const newContent = document.getElementById('section-edit-content').value;
-  
-  if (editingSectionStartLine < 0 || editingSectionEndLine < editingSectionStartLine) {
-    alert(' Ошибка: не удалось определить границы блока');
-    return;
-  }
-  
+  if (editingSectionStartLine < 0 || editingSectionEndLine < editingSectionStartLine) { alert(' Ошибка: не удалось определить границы блока'); return; }
   const newLines = [...lines];
   newLines.splice(editingSectionStartLine, editingSectionEndLine - editingSectionStartLine, newLabel, newContent);
   const newText = newLines.join('\n');
-  
-  if (currentSlId) { 
-    const sl = setlists.find(x => x.id === currentSlId); 
-    const item = sl.songs.find(x => x.id === currentSongId); 
-    if (item) { item.chordpro = newText; saveToStorage(); } 
-  }
-  else { 
-    s.chordpro = newText; 
-    saveToStorage(); 
-  }
-  
+  if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newText; saveToStorage(); } }
+  else { s.chordpro = newText; saveToStorage(); }
   closeModal('modal-section-edit');
   openSongView(currentSongId, currentSlId);
 }
@@ -1478,7 +904,7 @@ if (body.classList.contains('dark')) { body.classList.remove('dark'); body.class
 else { body.classList.remove('light'); body.classList.add('dark'); updateThemeButtons('🌙'); localStorage.setItem('clc_theme', 'dark'); }
 }
 
-// 🔧 ИСПРАВЛЕНА ФУНКЦИЯ PDF — теперь корректно работает 2 колонки на мобильных устройствах
+// 🔧 PDF: окно печати с 2 колонками. На телефоне можно "Сохранить как PDF" или "Поделиться".
 function downloadPdf() {
 const s = songs.find(x => x.id === currentSongId);
 if (!s) return;
@@ -1491,23 +917,14 @@ let i = 0;
 while (i < lines.length) {
   const trimmed = lines[i].trim();
   const sectionMatch = trimmed.match(SECTION_RE);
-  if (sectionMatch) {
-    bodyHtml += `<div class="pdf-section">${trimmed.toUpperCase()}</div>`;
-    i++;
-  } else if (trimmed === '') {
-    i++;
-  } else {
+  if (sectionMatch) { bodyHtml += `<div class="pdf-section">${trimmed.toUpperCase()}</div>`; i++; }
+  else if (trimmed === '') { i++; }
+  else {
     const parsed = parseMixedLine(trimmed);
-    if (parsed.chords && parsed.text) {
-      bodyHtml += `<div class="pdf-line"><b>${parsed.chords}</b> ${parsed.text}</div>`;
-    } else if (parsed.chords) {
-      bodyHtml += `<div class="pdf-chords">${parsed.chords}</div>`;
-    } else if (parsed.text) {
-      bodyHtml += `<div class="pdf-text">${parsed.text}</div>`;
-    }
-    if (parsed.rightNote) {
-      bodyHtml += `<div class="pdf-note">${parsed.rightNote}</div>`;
-    }
+    if (parsed.chords && parsed.text) { bodyHtml += `<div class="pdf-line"><b>${parsed.chords}</b> ${parsed.text}</div>`; }
+    else if (parsed.chords) { bodyHtml += `<div class="pdf-chords">${parsed.chords}</div>`; }
+    else if (parsed.text) { bodyHtml += `<div class="pdf-text">${parsed.text}</div>`; }
+    if (parsed.rightNote) { bodyHtml += `<div class="pdf-note">${parsed.rightNote}</div>`; }
     i++;
   }
 }
@@ -1517,109 +934,32 @@ const printWindow = window.open('', '_blank');
 if (!printWindow) { alert('⚠️ Разрешите всплывающие окна для печати PDF'); return; }
 
 const printHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+<html><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${s.title}</title>
 <style>
-@page {
-  size: A4 portrait;
-  margin: 10mm;
-}
+@page { size: A4 portrait; margin: 10mm; }
 * { box-sizing: border-box; }
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #000;
-  background: #fff;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-.pdf-header {
-  text-align: center;
-  margin-bottom: 8mm;
-  page-break-after: avoid;
-}
-.pdf-header h1 {
-  font-size: 16px;
-  margin: 0 0 3px 0;
-  color: #000;
-}
-.pdf-header .meta {
-  font-size: 11px;
-  color: #333;
-  margin: 0;
-}
+html, body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; color: #000; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.pdf-header { text-align: center; margin-bottom: 8mm; page-break-after: avoid; }
+.pdf-header h1 { font-size: 16px; margin: 0 0 3px 0; color: #000; }
+.pdf-header .meta { font-size: 11px; color: #333; margin: 0; }
 .pdf-body {
-  /* 🔧 КЛЮЧЕВОЕ: явная ширина + все префиксы колонок */
-  width: 190mm;
-  max-width: 190mm;
-  margin: 0 auto;
-  
-  -webkit-column-count: 2;
-  -moz-column-count: 2;
-  column-count: 2;
-  
-  -webkit-column-gap: 8mm;
-  -moz-column-gap: 8mm;
-  column-gap: 8mm;
-  
-  -webkit-column-fill: auto;
-  -moz-column-fill: auto;
-  column-fill: auto;
-  
-  font-size: 11px;
-  line-height: 1.35;
+  width: 190mm; max-width: 190mm; margin: 0 auto;
+  -webkit-column-count: 2; -moz-column-count: 2; column-count: 2;
+  -webkit-column-gap: 8mm; -moz-column-gap: 8mm; column-gap: 8mm;
+  -webkit-column-fill: balance; -moz-column-fill: balance; column-fill: balance;
+  font-size: 11px; line-height: 1.35;
 }
-.pdf-section {
-  font-size: 12px;
-  font-weight: bold;
-  color: #000;
-  text-transform: uppercase;
-  margin-top: 3mm;
-  margin-bottom: 1mm;
-  page-break-after: avoid;
-  break-after: avoid;
-  -webkit-column-break-after: avoid;
-}
-.pdf-line {
-  margin-bottom: 1.5mm;
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.pdf-line b {
-  color: #000;
-  font-weight: bold;
-}
-.pdf-chords {
-  font-weight: bold;
-  color: #000;
-  margin-bottom: 1.5mm;
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.pdf-text {
-  margin-bottom: 1.5mm;
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.pdf-note {
-  display: inline-block;
-  border: 1px solid #000;
-  padding: 1px 5px;
-  font-weight: bold;
-  font-size: 10px;
-  margin-left: 3mm;
-}
+.pdf-section { font-size: 12px; font-weight: bold; color: #000; text-transform: uppercase; margin-top: 3mm; margin-bottom: 1mm; page-break-after: avoid; break-after: avoid; -webkit-column-break-after: avoid; }
+.pdf-line { margin-bottom: 1.5mm; page-break-inside: avoid; break-inside: avoid; }
+.pdf-line b { color: #000; font-weight: bold; }
+.pdf-chords { font-weight: bold; color: #000; margin-bottom: 1.5mm; page-break-inside: avoid; break-inside: avoid; }
+.pdf-text { margin-bottom: 1.5mm; page-break-inside: avoid; break-inside: avoid; }
+.pdf-note { display: inline-block; border: 1px solid #000; padding: 1px 5px; font-weight: bold; font-size: 10px; margin-left: 3mm; }
 @media print {
   body { margin: 0; padding: 0; }
-  .pdf-body {
-    width: 190mm !important;
-    -webkit-column-count: 2 !important;
-    column-count: 2 !important;
-  }
+  .pdf-body { width: 190mm !important; -webkit-column-count: 2 !important; column-count: 2 !important; -webkit-column-fill: balance !important; column-fill: balance !important; }
 }
 </style>
 </head>
@@ -1631,14 +971,10 @@ html, body {
 ${bodyHtml}
 <script>
 window.addEventListener('load', function() {
-  setTimeout(function() {
-    window.focus();
-    window.print();
-  }, 300);
+  setTimeout(function() { window.focus(); window.print(); }, 300);
 });
 <\/script>
-</body>
-</html>`;
+</body></html>`;
 
 printWindow.document.open();
 printWindow.document.write(printHtml);
@@ -1673,18 +1009,7 @@ function exportDatabase() {
   if (fileName === null) return;
   const cleanName = fileName.trim() || defaultName;
   const finalName = cleanName.toLowerCase().endsWith('.clcdb') ? cleanName : cleanName + '.clcdb';
-  
-  const database = {
-    version: 1,
-    type: 'database',
-    app: 'Worship SetUP',
-    exportDate: new Date().toISOString(),
-    data: {
-      songs: songs,
-      sectionNotes: sectionNotes,
-      inlineComments: inlineComments
-    }
-  };
+  const database = { version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs: songs, sectionNotes: sectionNotes, inlineComments: inlineComments } };
   shareFile(database, finalName);
 }
 
@@ -1694,55 +1019,25 @@ const reader = new FileReader();
 reader.onload = (e) => { 
   try { 
     const data = JSON.parse(e.target.result); 
-    if (data.type !== 'database' || !data.data) { 
-      alert('❌ Это не файл базы данных Worship SetUP'); 
-      return; 
-    } 
+    if (data.type !== 'database' || !data.data) { alert('❌ Это не файл базы данных Worship SetUP'); return; } 
     const db = data.data; 
     let songsAdded = 0, songsSkipped = 0; 
-    
     if (db.songs && Array.isArray(db.songs)) { 
       db.songs.forEach(importedSong => { 
         const exists = songs.find(s => s.title.toLowerCase() === importedSong.title.toLowerCase()); 
         if (!exists) { 
           const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; 
-          songs.push({ 
-            id: newId, 
-            title: importedSong.title, 
-            author: importedSong.author || '', 
-            key: importedSong.key || 'C', 
-            bpm: importedSong.bpm || '', 
-            chordpro: importedSong.chordpro || '', 
-            columns: importedSong.columns || currentColumns, 
-            fontSize: importedSong.fontSize || fontSize, 
-            createdAt: importedSong.createdAt || Date.now() 
-          }); 
+          songs.push({ id: newId, title: importedSong.title, author: importedSong.author || '', key: importedSong.key || 'C', bpm: importedSong.bpm || '', chordpro: importedSong.chordpro || '', columns: importedSong.columns || currentColumns, fontSize: importedSong.fontSize || fontSize, createdAt: importedSong.createdAt || Date.now() }); 
           songsAdded++; 
-        } else { 
-          songsSkipped++; 
-        } 
+        } else { songsSkipped++; } 
       }); 
     } 
-    
-    if (db.sectionNotes && typeof db.sectionNotes === 'object') { 
-      Object.keys(db.sectionNotes).forEach(songId => { 
-        if (!sectionNotes[songId]) sectionNotes[songId] = {}; 
-        Object.assign(sectionNotes[songId], db.sectionNotes[songId]); 
-      }); 
-    } 
-    if (db.inlineComments && typeof db.inlineComments === 'object') { 
-      Object.keys(db.inlineComments).forEach(songId => { 
-        if (!inlineComments[songId]) inlineComments[songId] = {}; 
-        Object.assign(inlineComments[songId], db.inlineComments[songId]); 
-      }); 
-    } 
-    
+    if (db.sectionNotes && typeof db.sectionNotes === 'object') { Object.keys(db.sectionNotes).forEach(songId => { if (!sectionNotes[songId]) sectionNotes[songId] = {}; Object.assign(sectionNotes[songId], db.sectionNotes[songId]); }); }
+    if (db.inlineComments && typeof db.inlineComments === 'object') { Object.keys(db.inlineComments).forEach(songId => { if (!inlineComments[songId]) inlineComments[songId] = {}; Object.assign(inlineComments[songId], db.inlineComments[songId]); }); }
     saveToStorage(); 
     if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); 
     alert(`✅ База песен импортирована!\n\nДобавлено песен: ${songsAdded}\nПропущено (уже есть): ${songsSkipped}`); 
-  } catch (err) { 
-    alert('❌ Ошибка при чтении файла: ' + err.message); 
-  } 
+  } catch (err) { alert('❌ Ошибка при чтении файла: ' + err.message); } 
 };
 reader.readAsText(file); 
 event.target.value = '';
