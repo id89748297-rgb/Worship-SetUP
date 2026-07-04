@@ -390,7 +390,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">♯/♭</span><span class="instruction-card-title">Переключатель диезов/бемолей</span></div><div class="instruction-card-text">Кнопка <b>♯</b> переключает между диезами и бемолями.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👁️</span><span class="instruction-card-title">Скрытие элементов</span></div><div class="instruction-card-text"><b>⬇️ ещё</b> во 2 ряду → 3 ряд с кнопками:<br>• <b>👁️ аккорды</b> — скрыть/показать аккорды<br>• <b>👁️ текст</b> — скрыть/показать текст (при скрытии аккорды сжимаются)<br>• <b>👁️ стрелки</b> — скрыть боковые кнопки<br>• <b>👁️ комм.</b> — скрыть заметки и комментарии<br>💻 На ПК кнопка ⬇️ тоже раскрывает 3 ряд.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎼</span><span class="instruction-card-title">Метки в скобках</span></div><div class="instruction-card-text"><code>E (бросить) H (ALL IN)</code><br>• Текст в скобках может содержать пробелы<br>• Аккорд — транспонируется<br>• Не аккорд — отображается как метка</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📏</span><span class="instruction-card-title">Правила распознавания строк</span></div><div class="instruction-card-text">• Строка начинается с <b>обычного слова</b> (не аккорда) → вся строка = текст<br>• Строка начинается со <b>слова в скобках</b> <code>(интро)</code> → могут быть аккорды<br>• Строка начинается с <b>аккорда</b> <code>G C D</code> → парсинг аккордов<br>• Слова из <b>5+ латинских букв</b> не считаются аккордами<br>• Формат тактов <code>| A | H | C#m | E |</code> работает корректно</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📏</span><span class="instruction-card-title">Правила распознавания строк</span></div><div class="instruction-card-text">• Строка начинается с <b>обычного слова</b> (не аккорда) → вся строка = текст<br>• Строка начинается со <b>слова в скобках</b> <code>(интро)</code> → могут быть аккорды<br>• Строка начинается с <b>аккорда</b> <code>G C D</code> → парсинг аккордов<br>• Слова из <b>5+ латинских букв</b> не считаются аккордами<br>• Формат тактов <code>| A | H | C#m | E |</code> работает корректно<br>• Поддерживается <code>C//Em</code> (без пробелов)</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Сохранение настроек</span></div><div class="instruction-card-text">💾 <b>На главной</b>: колонки — ко всем песням<br>💾 <b>В сет-листе</b>: колонки — ко всем песням этого сет-листа<br>💾 Кнопка 1/2 колонки всегда действует на всю текущую область</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> → <code>.clcdb</code><br>• <b>📤 поделиться</b> → <code>.clcsong</code><br>• <b>📤 Поделиться</b> сет-листом → <code>.clcsetlist</code></div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div><div class="instruction-card-text">Кнопка <b>📄 PDF</b> — печать в 2 колонки.</div></div>
@@ -477,7 +477,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button id="side-prev" class="side-nav-btn side-nav-left" onclick="prevSong()">‹</button>
 <button id="side-next" class="side-nav-btn side-nav-right" onclick="nextSong()">›</button>
 </div>
-<div id="modal-song-edit" class="modal"><div class="modal-content"><h2 id="modal-song-edit-title">Редактор песни</h2><div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Метки в скобках: <b>E (бросить) H (ALL IN)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Комментарий строки: <b>G C D Текст **</b><br>• <b>Ссылки:</b> <code>https://...</code> (на отдельной строке)<br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ:</b> и т.д.<br>• Картинка: <b>Картинка:</b> (отдельной строкой)<br>• Такты: <b>| F#m / A | E/G# |</b></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label><input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label><div style="position: relative;"><input type="text" id="edit-author" placeholder="Автор" oninput="showAuthorSuggestions()" onblur="setTimeout(() => hideAuthorSuggestions(), 200)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="author-suggestions" class="author-suggestions" style="display: none;"></div></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Тональность <span class="required-star">*</span></label><select id="edit-key"><option value="">-- Выберите тональность --</option><option value="C">C (До)</option><option value="C#">C# / Db</option><option value="D">D (Ре)</option><option value="D#">D# / Eb</option><option value="E">E (Ми)</option><option value="F">F (Фа)</option><option value="F#">F# / Gb</option><option value="G">G (Соль)</option><option value="G#">G# / Ab</option><option value="A">A (Ля)</option><option value="A#">A# / Bb</option><option value="H">H (Си)</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label><input type="number" id="edit-bpm" placeholder="Например: 120" min="42" max="500" autocomplete="off"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label><textarea id="edit-text" placeholder="G C D&#10;Текст песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-song-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button></div></div></div>
+<div id="modal-song-edit" class="modal"><div class="modal-content"><h2 id="modal-song-edit-title">Редактор песни</h2><div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Метки в скобках: <b>E (бросить) H (ALL IN)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Комментарий строки: <b>G C D Текст **</b><br>• <b>Ссылки:</b> <code>https://...</code> (на отдельной строке)<br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ:</b> и т.д.<br>• Картинка: <b>Картинка:</b> (отдельной строкой)<br>• Такты: <b>| F#m / A | E/G# |</b><br>• Быстрые смены: <b>C//Em</b> (без пробелов)</div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label><input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label><div style="position: relative;"><input type="text" id="edit-author" placeholder="Автор" oninput="showAuthorSuggestions()" onblur="setTimeout(() => hideAuthorSuggestions(), 200)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="author-suggestions" class="author-suggestions" style="display: none;"></div></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Тональность <span class="required-star">*</span></label><select id="edit-key"><option value="">-- Выберите тональность --</option><option value="C">C (До)</option><option value="C#">C# / Db</option><option value="D">D (Ре)</option><option value="D#">D# / Eb</option><option value="E">E (Ми)</option><option value="F">F (Фа)</option><option value="F#">F# / Gb</option><option value="G">G (Соль)</option><option value="G#">G# / Ab</option><option value="A">A (Ля)</option><option value="A#">A# / Bb</option><option value="H">H (Си)</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label><input type="number" id="edit-bpm" placeholder="Например: 120" min="42" max="500" autocomplete="off"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label><textarea id="edit-text" placeholder="G C D&#10;Текст песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-song-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button></div></div></div>
 <div id="modal-express-add" class="modal"><div class="modal-content">
 <h2>⚡ Экспресс-добавление песни</h2>
 <div class="help-box"><b>Формат:</b><br>• <b>1-я строка</b> — название песни (можно с BPM в конце: <code>Название 120</code>)<br>• <b>Метаданные</b> (следующими строками, в любом порядке):<br>&nbsp;&nbsp;<code>Автор: VL worship</code><br>&nbsp;&nbsp;<code>Тональность: C</code><br>&nbsp;&nbsp;<code>BPM: 120</code> или <code>BPM 120</code> или <code>Темп: 120</code><br>• <b>Остальные строки</b> — аккорды и текст<br>• Если тональность не указана — определится автоматически<br>• Диапазон BPM: 42–500</div>
@@ -555,12 +555,21 @@ const SHARP_TO_FLAT = { 'C#': 'Db', 'D#': 'Eb', 'F#': 'Gb', 'G#': 'Ab', 'A#': 'B
 const FLAT_TO_SHARP = { 'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#' };
 function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.split('/'); return convertBtoH(parts[0]) + '/' + convertBtoH(parts[1]); } if (chord.startsWith('B') && !chord.startsWith('Bb')) return 'H' + chord.substring(1); return chord; }
 function cleanWordForChordCheck(word) { return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, ''); }
-// ЗАДАЧА 8: слово из 5+ латинских букв не аккорд (игнорируя | и пробелы)
+
+// === ЗАДАЧА 7: слово из 5+ латинских букв не аккорд (игнорируя | и пробелы) ===
 function isLongWordNotChord(token) {
     const cleaned = token.replace(/[^A-Ha-h#b]/g, '');
     const lettersOnly = cleaned.replace(/[#b]/g, '');
     return lettersOnly.length >= 5 && /^[A-Ha-h]+$/.test(lettersOnly);
 }
+
+// === ЗАДАЧА 9: нормализация строки для парсинга (C//Em -> C Em) ===
+function normalizeLineForParsing(line) {
+    // Заменяем // на пробел, чтобы C//Em стало C Em
+    // Но сохраняем одинарные / (они часть аккорда C/G)
+    return line.replace(/\/\//g, ' ');
+}
+
 function convertAccidentals(chord, mode) {
 if (chord.includes('/')) { const parts = chord.split('/'); return convertAccidentals(parts[0], mode) + '/' + convertAccidentals(parts[1], mode); }
 const m = chord.match(/^([A-H][#b]?)(.*)$/); if (!m) return chord;
@@ -588,7 +597,8 @@ const isChord = CHORD_RE.test(convertBtoH(cleanWordForChordCheck(trimmed)));
 return isChord ? match : `<span class="chord-label">(${trimmed})</span>`;
 });
 }
-// ЗАДАЧИ 8 и 9: переработанный parseMixedLine
+
+// === ЗАДАЧИ 7, 8, 9: переработанный parseMixedLine ===
 function parseMixedLine(line) {
 let rightNote = '', inlineComment = '';
 const doubleStarMatch = line.match(/\s*\*\*\s*$/);
@@ -599,9 +609,12 @@ const parens = [];
 const protectedLine = line.replace(/\([^)]+\)/g, (match) => { parens.push(match); return `\x01P${parens.length - 1}\x01`; });
 function restoreParens(str) { return str.replace(/\x01P(\d+)\x01/g, (m, idx) => parens[parseInt(idx)]); }
 
-// ЗАДАЧА 9: проверка первого существенного слова строки (пропуская | и пробелы)
-const trimmedProtected = protectedLine.trim();
-const meaningfulTokens = trimmedProtected.split(/\s+/).filter(t => t && t !== '|');
+// === ЗАДАЧА 9: нормализуем // для парсинга ===
+const normalizedLine = normalizeLineForParsing(protectedLine);
+
+// === ЗАДАЧА 8: проверка первого существенного слова строки ===
+const trimmedNormalized = normalizedLine.trim();
+const meaningfulTokens = trimmedNormalized.split(/\s+/).filter(t => t && t !== '|');
 if (meaningfulTokens.length > 0) {
     const firstMeaningful = meaningfulTokens[0];
     const startsWithParens = /^\x01P\d+\x01$/.test(firstMeaningful);
@@ -609,12 +622,13 @@ if (meaningfulTokens.length > 0) {
         const cleanFirst = cleanWordForChordCheck(firstMeaningful);
         const firstIsChord = CHORD_RE.test(convertBtoH(cleanFirst)) && !isLongWordNotChord(cleanFirst);
         if (!firstIsChord) {
+            // Вся строка — текст
             return { chords: '', text: restoreParens(line), rightNote, inlineComment };
         }
     }
 }
 
-const tokens = protectedLine.trim().split(/\s+/);
+const tokens = normalizedLine.trim().split(/\s+/);
 const allChords = tokens.length > 0 && tokens.every(t => {
 if (t === '|' || /^\/{1,8}$/.test(t) || REPEAT_RE.test(t)) return true;
 if (PAIR_RE.test(t)) return true;
@@ -623,16 +637,18 @@ const cleaned = cleanWordForChordCheck(t);
 if (isLongWordNotChord(cleaned)) return false;
 return CHORD_RE.test(convertBtoH(cleaned));
 });
-if (allChords) return { chords: restoreParens(protectedLine.trim()), text: '', rightNote, inlineComment };
+if (allChords) return { chords: restoreParens(normalizedLine.trim()), text: '', rightNote, inlineComment };
+
 const chordPartRe = new RegExp(`^((?:\\s*(?:${PAIR_RE_STR}|[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[0-9b]*(?:\\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[0-9b]*)?|x\\d+|\\d+[рpx]|\\||\\/{1,8}|\\x01P\\d+\\x01))+)`, 'i');
-const chordPartMatch = protectedLine.match(chordPartRe);
+const chordPartMatch = normalizedLine.match(chordPartRe);
 if (chordPartMatch) {
 const chords = restoreParens(chordPartMatch[1]);
-const text = restoreParens(protectedLine.substring(chordPartMatch[1].length)).trim();
+const text = restoreParens(normalizedLine.substring(chordPartMatch[1].length)).trim();
 return { chords, text, rightNote, inlineComment };
 }
 return { chords: '', text: restoreParens(line), rightNote, inlineComment };
 }
+
 function transposeChord(chord, fromKey, toKey) {
 chord = convertBtoH(chord);
 if (chord.includes('/')) { const parts = chord.split('/'); return transposeChord(parts[0], fromKey, toKey) + '/' + transposeChord(parts[1], fromKey, toKey); }
@@ -733,7 +749,7 @@ if (searchBox) searchBox.value = '';
 homeSongIndex = homeFilteredSongs.findIndex(s => s.id === songId);
 openSongView(songId, null, false);
 }
-// ЗАДАЧА 7: сортировка песен
+// === ЗАДАЧА 6: сортировка песен ===
 function sortSongs(list, sortType) {
 const sorted = [...list];
 switch (sortType) {
@@ -794,7 +810,7 @@ const diffMs = now - slDateTime;
 const twentyFourHoursMs = 24 * 60 * 60 * 1000;
 return diffMs > twentyFourHoursMs;
 }
-// ЗАДАЧА 2: сет-листы — название 14px, дата/время/количество 8px, просроченные красным
+// === ЗАДАЧА 2: сет-листы — название 14px, дата 8px, просроченные красным ===
 function renderSetlists() {
 const q = (document.getElementById('setlists-search')?.value || '').toLowerCase(); const list = document.getElementById('setlists-list'); list.innerHTML = '';
 const isLight = document.body.classList.contains('light'); const dateColor = isLight ? '#7e57c2' : '#9575cd';
@@ -926,7 +942,8 @@ if (scores[0].score <= 0) return { best: null, suggestions: [] };
 const threshold = scores[0].score * 0.8;
 return { best: scores[0].key, suggestions: scores.filter(s => s.score >= threshold && s.score > 0).slice(0, 3).map(s => s.key) };
 }
-// ЗАДАЧА 1: полная переработка saveExpressAdd
+
+// === ЗАДАЧА 1: полная переработка saveExpressAdd ===
 function saveExpressAdd() {
 const rawText = document.getElementById('express-text').value.trim();
 if (!rawText) { alert('Введите текст песни!'); return; }
@@ -1098,7 +1115,7 @@ return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="so
 container.style.display = 'flex';
 } else { container.innerHTML = ''; container.style.display = 'none'; }
 }
-// ЗАДАЧА 5: прокрутка к началу контента
+// === ЗАДАЧА 4: прокрутка к началу контента ===
 function scrollToSongContent() {
 const content = document.getElementById('song-view-content');
 if (content) {
@@ -1107,7 +1124,7 @@ const offset = window.scrollY + rect.top - 10;
 window.scrollTo({ top: Math.max(0, offset), behavior: 'instant' });
 }
 }
-// ЗАДАЧИ 4 и 5: параметр isNavigation
+// === ЗАДАЧИ 4 и 5: параметр isNavigation ===
 function openSongView(id, slId, isNavigation = false) {
 currentSongId = id; currentSlId = slId; isInlineEditing = false;
 document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; document.querySelector('.song-toolbar').style.display = 'block';
@@ -1140,7 +1157,7 @@ applyBodyClasses(); updateToggleButtonsUI(); toolbarExpanded = false; const row3
 const sl = slId ? setlists.find(x => x.id === slId) : null; const item = sl ? sl.songs.find(x => x.id === id) : null;
 renderSongContent((item && item.chordpro) || s.chordpro, originalKey, currentKey, currentCapo);
 showPage('page-song-view'); updatePdfOrCopyButton();
-// ЗАДАЧИ 4 и 5: разная прокрутка
+// === ЗАДАЧИ 4 и 5: разная прокрутка ===
 if (isNavigation) {
 requestAnimationFrame(() => { setTimeout(scrollToSongContent, 50); });
 } else {
@@ -1155,7 +1172,7 @@ function toggleInlineEdit() { if (isInlineEditing) { cancelInlineEdit(); return;
 function cancelInlineEdit() { document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; isInlineEditing = false; }
 function resizeInlineEdit(delta) { fontSize = Math.max(8, Math.min(32, fontSize + delta)); document.getElementById('inline-edit-textarea').style.fontSize = fontSize + 'px'; }
 function saveInlineEdit() { const newChordpro = document.getElementById('inline-edit-textarea').value; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newChordpro; saveToStorage(); alert('✅ Сохранено локально!'); } } else { const song = songs.find(x => x.id === currentSongId); if (song) { song.chordpro = newChordpro; saveToStorage(); alert('✅ Песня сохранена!'); } } cancelInlineEdit(); openSongView(currentSongId, currentSlId); }
-// ЗАДАЧА 3: колонки применяются ко всей текущей области
+// === ЗАДАЧА 3: колонки применяются ко всей текущей области ===
 function changeColumns(value) {
     currentColumns = parseInt(value);
     syncColumnsSelects(value);
@@ -1206,7 +1223,7 @@ renderSongs();
 }
 }
 function goBackFromSong() { if (currentSlId) showPage('page-setlist-detail'); else { currentHomeView = 'songs'; document.getElementById('home-tab-songs').classList.add('active'); document.getElementById('home-tab-setlists').classList.remove('active'); document.getElementById('home-view-songs').style.display = 'block'; document.getElementById('home-view-setlists').style.display = 'none'; showPage('page-home'); renderSongs(); } }
-// ЗАДАЧА 5: пролистывание с isNavigation=true
+// === ЗАДАЧА 5: пролистывание с isNavigation=true ===
 function prevSong() {
 if (currentSlId) {
 const sl = setlists.find(x => x.id === currentSlId);
