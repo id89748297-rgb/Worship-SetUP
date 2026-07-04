@@ -88,6 +88,11 @@ body.dark-white .btn-pastel:hover { background: rgba(179, 157, 219, 0.25); }
 .home-actions-row button { flex: 1; min-width: 0; }
 .home-actions-row.row-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
 .home-actions-row.row-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* ЗАДАЧА 5: sticky-обёртка для кнопок на главной */
+.home-sticky-actions { position: sticky; top: 0; z-index: 25; padding: 10px 0; margin: -10px 0 10px 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+body.dark .home-sticky-actions { background: rgba(18, 18, 18, 0.85); }
+body.light .home-sticky-actions { background: rgba(245, 245, 220, 0.85); }
+body.dark-white .home-sticky-actions { background: rgba(18, 18, 18, 0.85); }
 .tab { flex: 1; padding: 14px; text-align: center; background: #333; color: #eee; border-radius: 10px; cursor: pointer; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 16px; touch-action: manipulation; line-height: 1.2; }
 body.light .tab { background: rgba(126, 87, 194, 0.15); color: #4527a0; }
 body.dark-white .tab { background: #333; color: #eee; }
@@ -121,7 +126,8 @@ body.violet .vl-worship-btn { background: #757575; }
 body.light .vl-worship-btn { background: #7e57c2; color: #ffffff; }
 body.violet.light .vl-worship-btn { background: #616161; color: #ffffff; }
 body.dark-white .vl-worship-btn { background: #9575cd; color: #ffffff; }
-.song-toolbar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1e1e1e; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+/* ЗАДАЧА 4: sticky тулбар песни */
+.song-toolbar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1e1e1e; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 30; }
 body.light .song-toolbar { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 body.dark-white .song-toolbar { background: #1e1e1e; }
 .toolbar-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -341,14 +347,17 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <option value="bpm-asc">По BPM ↑</option>
 <option value="bpm-desc">По BPM ↓</option>
 </select>
+<!-- ЗАДАЧА 5: sticky-обёртка для кнопок действий -->
+<div class="home-sticky-actions">
 <div class="home-actions-row row-top">
-<button class="btn-pastel" onclick="openExpressAdd()">⚡ Добавить экспресс</button>
+<button class="btn-pastel" onclick="openExpressAdd()">⚡ Экспресс</button>
 <button class="btn-pastel" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
 <button class="btn-pastel" onclick="openMainSongEditor()">+ Добавить</button>
 </div>
 <div class="home-actions-row row-bottom">
 <button class="btn-pastel" onclick="exportDatabase()">📤 Экспорт базы</button>
 <button class="btn-pastel" onclick="document.getElementById('import-database-input').click()">📥 Импорт базы</button>
+</div>
 </div>
 <input type="file" id="import-database-input" accept=".clcdb" style="display: none;" onchange="handleImportDatabase(event)">
 <input type="file" id="import-song-input" accept=".clcsong" style="display: none;" onchange="handleImportSong(event)">
@@ -390,7 +399,8 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">♯/♭</span><span class="instruction-card-title">Переключатель диезов/бемолей</span></div><div class="instruction-card-text">Кнопка <b>♯</b> переключает между диезами и бемолями.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👁️</span><span class="instruction-card-title">Скрытие элементов</span></div><div class="instruction-card-text"><b>⬇️ ещё</b> во 2 ряду → 3 ряд с кнопками:<br>• <b>👁️ аккорды</b> — скрыть/показать аккорды<br>• <b>👁️ текст</b> — скрыть/показать текст (при скрытии аккорды сжимаются)<br>• <b>👁️ стрелки</b> — скрыть боковые кнопки<br>• <b>👁️ комм.</b> — скрыть заметки и комментарии<br>💻 На ПК кнопка ⬇️ тоже раскрывает 3 ряд.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎼</span><span class="instruction-card-title">Метки в скобках</span></div><div class="instruction-card-text"><code>E (бросить) H (ALL IN)</code><br>• Текст в скобках может содержать пробелы<br>• Аккорд — транспонируется<br>• Не аккорд — отображается как метка</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Сохранение настроек</span></div><div class="instruction-card-text">💾 <b>На главной</b>: колонки — ко всем песням<br>💾 <b>В сет-листе</b>: всё локально (колонки, скрытие текста и т.д.)</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📏</span><span class="instruction-card-title">Правила распознавания строк</span></div><div class="instruction-card-text">• Строка начинается с <b>обычного слова</b> (не аккорда) → вся строка = текст<br>• Строка начинается со <b>слова в скобках</b> <code>(интро)</code> → могут быть аккорды<br>• Строка начинается с <b>аккорда</b> <code>G C D</code> → парсинг аккордов<br>• Слова из <b>5+ латинских букв</b> не считаются аккордами</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Сохранение настроек</span></div><div class="instruction-card-text">💾 <b>На главной</b>: колонки — ко всем песням<br>💾 <b>В сет-листе</b>: колонки — ко всем песням этого сет-листа<br>💾 Кнопка 1/2 колонки всегда действует на всю текущую область</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> → <code>.clcdb</code><br>• <b>📤 поделиться</b> → <code>.clcsong</code><br>• <b>📤 Поделиться</b> сет-листом → <code>.clcsetlist</code></div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div><div class="instruction-card-text">Кнопка <b>📄 PDF</b> — печать в 2 колонки.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Темы оформления</span></div><div class="instruction-card-text">• <b>🌙</b> — тёмная<br>• <b>☀️</b> — светлая<br>• <b>🌑</b> — тёмная, заголовки секций <b>цветом аккордов</b><br>• <b>VL</b> долгое нажатие — смена цветовой схемы</div></div>
@@ -446,7 +456,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button class="toolbar-btn-item" onclick="toggleInlineEdit()" title="Редактировать"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">✏️</span><span style="font-size: 8px; margin-top: 2px;">редакт.</span></div></button>
 <button class="toolbar-btn-item desktop-only" onclick="downloadPdf()" title="PDF"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📄</span><span style="font-size: 8px; margin-top: 2px;">PDF</span></div></button>
 </div>
-<!-- Ряд 3 (скрыт по умолчанию, раскрывается ⬇️) -->
+<!-- Ряд 3 -->
 <div class="toolbar-row" id="toolbar-row-3" style="margin-top: 8px; display: none;">
 <button class="toolbar-btn-item" id="btn-toggle-chords" onclick="toggleChordsVisibility()" title="Скрыть/показать аккорды"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="chords-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">аккорды</span></div></button>
 <button class="toolbar-btn-item" id="btn-toggle-lyrics" onclick="toggleLyricsVisibility()" title="Скрыть/показать текст"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="lyrics-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">текст</span></div></button>
@@ -539,7 +549,6 @@ let currentHideArrows = false;
 let currentHideComments = false;
 let toolbarExpanded = false;
 let savedScrollPosition = 0;
-// === ЗАДАЧА 5: список отфильтрованных песен на главной для свайпа ===
 let homeFilteredSongs = [];
 let homeSongIndex = -1;
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'H'];
@@ -559,6 +568,12 @@ const SHARP_TO_FLAT = { 'C#': 'Db', 'D#': 'Eb', 'F#': 'Gb', 'G#': 'Ab', 'A#': 'B
 const FLAT_TO_SHARP = { 'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#' };
 function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.split('/'); return convertBtoH(parts[0]) + '/' + convertBtoH(parts[1]); } if (chord.startsWith('B') && !chord.startsWith('Bb')) return 'H' + chord.substring(1); return chord; }
 function cleanWordForChordCheck(word) { return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, ''); }
+// === ЗАДАЧА 2: слово из 5+ латинских букв не аккорд ===
+function isLongWordNotChord(token) {
+    const cleaned = token.replace(/[^A-Ha-h#b]/g, '');
+    const lettersOnly = cleaned.replace(/[#b]/g, '');
+    return lettersOnly.length >= 5 && /^[A-Ha-h]+$/.test(lettersOnly);
+}
 function convertAccidentals(chord, mode) {
 if (chord.includes('/')) { const parts = chord.split('/'); return convertAccidentals(parts[0], mode) + '/' + convertAccidentals(parts[1], mode); }
 const m = chord.match(/^([A-H][#b]?)(.*)$/); if (!m) return chord;
@@ -586,6 +601,7 @@ const isChord = CHORD_RE.test(convertBtoH(cleanWordForChordCheck(trimmed)));
 return isChord ? match : `<span class="chord-label">(${trimmed})</span>`;
 });
 }
+// === ЗАДАЧИ 2 и 3: переработанный parseMixedLine ===
 function parseMixedLine(line) {
 let rightNote = '', inlineComment = '';
 const doubleStarMatch = line.match(/\s*\*\*\s*$/);
@@ -595,12 +611,33 @@ if (starMatch) { rightNote = starMatch[1].trim(); line = line.substring(0, line.
 const parens = [];
 const protectedLine = line.replace(/\([^)]+\)/g, (match) => { parens.push(match); return `\x01P${parens.length - 1}\x01`; });
 function restoreParens(str) { return str.replace(/\x01P(\d+)\x01/g, (m, idx) => parens[parseInt(idx)]); }
+
+// === ЗАДАЧА 3: проверка первого слова строки ===
+const trimmedProtected = protectedLine.trim();
+const firstTokenMatch = trimmedProtected.match(/^(\x01P\d+\x01|\S+)/);
+if (firstTokenMatch) {
+    const firstToken = firstTokenMatch[1];
+    const startsWithParens = /^\x01P\d+\x01$/.test(firstToken);
+    if (!startsWithParens) {
+        // Первое слово не в скобках — проверяем, аккорд ли это
+        const cleanFirst = cleanWordForChordCheck(firstToken);
+        const firstIsChord = CHORD_RE.test(convertBtoH(cleanFirst)) && !isLongWordNotChord(cleanFirst);
+        if (!firstIsChord) {
+            // Вся строка — текст
+            return { chords: '', text: restoreParens(line), rightNote, inlineComment };
+        }
+    }
+}
+
 const tokens = protectedLine.trim().split(/\s+/);
 const allChords = tokens.length > 0 && tokens.every(t => {
 if (t === '|' || /^\/{1,8}$/.test(t) || REPEAT_RE.test(t)) return true;
 if (PAIR_RE.test(t)) return true;
 if (/^\x01P\d+\x01$/.test(t)) return true;
-return CHORD_RE.test(convertBtoH(cleanWordForChordCheck(t)));
+const cleaned = cleanWordForChordCheck(t);
+// === ЗАДАЧА 2: слово из 5+ букв не аккорд ===
+if (isLongWordNotChord(cleaned)) return false;
+return CHORD_RE.test(convertBtoH(cleaned));
 });
 if (allChords) return { chords: restoreParens(protectedLine.trim()), text: '', rightNote, inlineComment };
 const chordPartRe = new RegExp(`^((?:\\s*(?:${PAIR_RE_STR}|[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[0-9b]*(?:\\/[A-H][#b]?(?:m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[0-9b]*)?|x\\d+|\\d+[рpx]|\\||\\/{1,8}|\\x01P\\d+\\x01))+)`, 'i');
@@ -709,11 +746,9 @@ function switchHomeView(view) { currentHomeView = view; const subtitle = documen
 function clearSearchAndOpenSong(songId) {
 const searchBox = document.getElementById('songs-search');
 if (searchBox) searchBox.value = '';
-// === ЗАДАЧА 5: сохраняем индекс в отфильтрованном списке ДО рендера ===
 homeSongIndex = homeFilteredSongs.findIndex(s => s.id === songId);
 openSongView(songId, null);
 }
-// === ЗАДАЧА 7: сортировка песен ===
 function sortSongs(list, sortType) {
 const sorted = [...list];
 switch (sortType) {
@@ -736,7 +771,7 @@ localStorage.setItem('clc_songs_sort', sortType);
 const list = document.getElementById('songs-list'); list.innerHTML = '';
 const filtered = songs.filter(s => s.title.toLowerCase().includes(q) || (s.chordpro && s.chordpro.toLowerCase().includes(q)) || (s.author && s.author.toLowerCase().includes(q)));
 const sorted = sortSongs(filtered, sortType);
-homeFilteredSongs = sorted; // === ЗАДАЧА 5: сохраняем для свайпа ===
+homeFilteredSongs = sorted;
 document.getElementById('songs-count').innerText = sorted.length;
 sorted.forEach(s => { const keyLabel = s.key ? ` <span style="color:#90caf9; font-size:12px;">[${s.key}]</span>` : ''; const bpmText = s.bpm ? `<span style="color:#888; font-size:8px;">${s.bpm} BPM</span>` : ''; const authorText = s.author ? `<span style="color:#888; font-size:8px; margin-left: 6px;">${s.author}</span>` : ''; const div = document.createElement('div'); div.className = 'list-item'; div.style.cursor = 'default'; div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1;"><div class="item-title">${s.title}${keyLabel}</div><div class="item-sub">${bpmText}${authorText}</div></div><div class="item-actions" style="display: flex; gap: 4px;"><button class="btn-icon" onclick="event.stopPropagation(); openMainSongEditor(${s.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); confirmDeleteSong(${s.id}, '${s.title.replace(/'/g, "\\'")}')">🗑️</button></div>`; div.onclick = () => clearSearchAndOpenSong(s.id); list.appendChild(div); });
 }
@@ -774,7 +809,6 @@ const diffMs = now - slDateTime;
 const twentyFourHoursMs = 24 * 60 * 60 * 1000;
 return diffMs > twentyFourHoursMs;
 }
-// === ЗАДАЧА 2: дата/время/количество песен в ОДНОЙ строке ПОД названием, весь текст 10px ===
 function renderSetlists() {
 const q = (document.getElementById('setlists-search')?.value || '').toLowerCase(); const list = document.getElementById('setlists-list'); list.innerHTML = '';
 const isLight = document.body.classList.contains('light'); const dateColor = isLight ? '#7e57c2' : '#9575cd';
@@ -847,7 +881,6 @@ renderSlSongs();
 };
 list.appendChild(div); });
 }
-// === ЗАДАЧА 5: свайп в общем списке песен на главной ===
 function setupSwipe() {
 if (!('ontouchstart' in window) && !navigator.maxTouchPoints) return;
 let startX = 0, startY = 0, tracking = false, currentPageId = null, isClick = false;
@@ -861,7 +894,6 @@ const idx = sl.songs.findIndex(x => x.id === currentSongId);
 if (diffX > 0) { if (idx === sl.songs.length - 1) goBackFromSong(); else nextSong(); }
 else { if (idx === 0) goBackFromSong(); else prevSong(); }
 } else if (homeFilteredSongs.length > 0 && homeSongIndex >= 0) {
-// === ЗАДАЧА 5: листаем по общему списку на главной ===
 if (diffX > 0) {
 if (homeSongIndex === homeFilteredSongs.length - 1) goBackFromSong();
 else { homeSongIndex++; openSongView(homeFilteredSongs[homeSongIndex].id, null); }
@@ -906,10 +938,6 @@ if (scores[0].score <= 0) return { best: null, suggestions: [] };
 const threshold = scores[0].score * 0.8;
 return { best: scores[0].key, suggestions: scores.filter(s => s.score >= threshold && s.score > 0).slice(0, 3).map(s => s.key) };
 }
-// === ЗАДАЧА 1: полная переработка saveExpressAdd ===
-// Исправлен regex для BPM (теперь работает с кириллицей)
-// Поддержка: "Название 120", "BPM 120", "BPM:120", "Темп: 120"
-// Диапазон BPM: 42-500
 function saveExpressAdd() {
 const rawText = document.getElementById('express-text').value.trim();
 if (!rawText) { alert('Введите текст песни!'); return; }
@@ -927,11 +955,9 @@ if (titleFound) contentLines.push(line);
 continue;
 }
 
-// Первая непустая строка — название (возможно с BPM в конце)
 if (!titleFound) {
 title = trimmed;
 titleFound = true;
-// Ищем число в КОНЦЕ строки (не используем \b, т.к. он не работает с кириллицей)
 const bpmInTitle = title.match(/(\d{2,3})\s*$/);
 if (bpmInTitle) {
 const num = parseInt(bpmInTitle[1]);
@@ -944,7 +970,6 @@ bpmFound = true;
 continue;
 }
 
-// Метаданные (после названия)
 const authorMatch = trimmed.match(/^(?:Автор|Author)\s*[:\-]\s*(.+)$/i);
 if (authorMatch) {
 author = authorMatch[1].trim();
@@ -955,7 +980,6 @@ if (keyMatch) {
 explicitKey = convertBtoH(keyMatch[1].trim());
 continue;
 }
-// BPM: 120 / BPM 120 / Темп: 120 / Темп 120
 const bpmMetaMatch = trimmed.match(/^(?:BPM|Темп)\s*[:\-]?\s*(\d{2,3})\s*$/i);
 if (bpmMetaMatch) {
 const num = parseInt(bpmMetaMatch[1]);
@@ -968,7 +992,6 @@ continue;
 contentLines.push(line);
 }
 
-// Если на первой строке контента стоит отдельное число — это тоже может быть BPM
 if (!bpmFound && contentLines.length > 0) {
 const firstContent = contentLines[0].trim();
 const numMatch = firstContent.match(/^(\d{2,3})$/);
@@ -1050,7 +1073,6 @@ document.body.classList.toggle('hide-comments', currentHideComments);
 }
 function toggleAccidental() { currentAccidental = currentAccidental === 'sharp' ? 'flat' : 'sharp'; document.getElementById('btn-accidental').innerText = currentAccidental === 'sharp' ? '♯' : '♭'; updateSongView(); }
 function toggleChordsVisibility() { currentHideChords = !currentHideChords; applyBodyClasses(); updateToggleButtonsUI(); updateSongView(); }
-// === ЗАДАЧА 6: скрытие текста — локально в сет-листе, глобально на главной ===
 function toggleLyricsVisibility() {
 currentHideLyrics = !currentHideLyrics;
 applyBodyClasses();
@@ -1087,7 +1109,6 @@ return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="so
 container.style.display = 'flex';
 } else { container.innerHTML = ''; container.style.display = 'none'; }
 }
-// === ЗАДАЧА 4: скролл к началу контента при открытии песни ===
 function scrollToSongContent() {
 const content = document.getElementById('song-view-content');
 if (content) {
@@ -1110,7 +1131,6 @@ originalKey = s.key || 'C'; currentCapo = 0;
 const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
 currentColumns = isDesktop ? 2 : (s.columns || 1);
 fontSize = s.fontSize || fontSize; currentAccidental = s.accidental || 'sharp'; currentHideChords = s.hideChords || false;
-// === ЗАДАЧА 6: hideLyrics — читаем из item если в сет-листе, иначе из песни ===
 currentHideLyrics = s.hideLyrics || false;
 if (slId) { const sl = setlists.find(x => x.id === slId); const item = sl.songs.find(x => x.id === id); if (item) { currentCapo = item.capo || 0; const savedKey = item.key || null; if (!isDesktop) currentColumns = item.columns || s.columns || 1; fontSize = item.fontSize || fontSize; currentKey = savedKey || originalKey; currentAccidental = item.accidental || s.accidental || 'sharp'; currentHideChords = item.hideChords !== undefined ? item.hideChords : (s.hideChords || false); if (item.hideLyrics !== undefined) currentHideLyrics = item.hideLyrics; } else { currentKey = originalKey; } }
 else { currentKey = originalKey; }
@@ -1118,7 +1138,6 @@ fillKeySelect('key-select', currentKey, true); document.getElementById('capo-sel
 document.getElementById('btn-accidental').innerText = currentAccidental === 'sharp' ? '♯' : '♭'; document.getElementById('btn-save-all').style.display = 'block';
 const sidePrev = document.getElementById('side-prev'); const sideNext = document.getElementById('side-next'); const swipeHint = document.getElementById('swipe-hint');
 if (slId) { const sl = setlists.find(x => x.id === slId); const idx = sl.songs.findIndex(x => x.id === id); sidePrev.classList.add('visible'); sideNext.classList.add('visible'); sidePrev.disabled = idx <= 0; sideNext.disabled = idx >= sl.songs.length - 1; swipeHint.style.display = (!isDesktop && sl.songs.length > 1) ? 'block' : 'none'; } else {
-// === ЗАДАЧА 5: показываем стрелки и подсказку для общего списка ===
 const showHomeNav = !isDesktop && homeFilteredSongs.length > 1 && homeSongIndex >= 0;
 sidePrev.classList.toggle('visible', showHomeNav);
 sideNext.classList.toggle('visible', showHomeNav);
@@ -1130,7 +1149,6 @@ applyBodyClasses(); updateToggleButtonsUI(); toolbarExpanded = false; const row3
 const sl = slId ? setlists.find(x => x.id === slId) : null; const item = sl ? sl.songs.find(x => x.id === id) : null;
 renderSongContent((item && item.chordpro) || s.chordpro, originalKey, currentKey, currentCapo);
 showPage('page-song-view'); updatePdfOrCopyButton();
-// === ЗАДАЧА 4: прокрутка к началу контента ===
 requestAnimationFrame(() => { setTimeout(scrollToSongContent, 50); });
 }
 function updatePdfOrCopyButton() { const btn = document.getElementById('btn-pdf-or-copy'); if (window.innerWidth <= 768) btn.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📋</span><span style="font-size: 8px; margin-top: 2px;">копировать</span></div>'; else btn.innerHTML = '📄 PDF'; }
@@ -1141,12 +1159,27 @@ function toggleInlineEdit() { if (isInlineEditing) { cancelInlineEdit(); return;
 function cancelInlineEdit() { document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; isInlineEditing = false; }
 function resizeInlineEdit(delta) { fontSize = Math.max(8, Math.min(32, fontSize + delta)); document.getElementById('inline-edit-textarea').style.fontSize = fontSize + 'px'; }
 function saveInlineEdit() { const newChordpro = document.getElementById('inline-edit-textarea').value; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newChordpro; saveToStorage(); alert('✅ Сохранено локально!'); } } else { const song = songs.find(x => x.id === currentSongId); if (song) { song.chordpro = newChordpro; saveToStorage(); alert('✅ Песня сохранена!'); } } cancelInlineEdit(); openSongView(currentSongId, currentSlId); }
-// === ЗАДАЧА 3: сохранение колонок — в сет-листе только локально, на главной — глобально ===
-// === ЗАДАЧА 6: hideLyrics — в сет-листе локально, на главной глобально ===
+// === ЗАДАЧА 1: колонки применяются ко всей текущей области ===
+function changeColumns(value) {
+currentColumns = parseInt(value);
+syncColumnsSelects(value);
+updateSongView();
+if (currentSlId) {
+// В сет-листе: применить ко всем песням этого сет-листа
+const sl = setlists.find(x => x.id === currentSlId);
+if (sl) {
+sl.songs.forEach(item => { item.columns = currentColumns; });
+saveToStorage();
+}
+} else {
+// На главной: применить ко всем песням глобально
+songs.forEach(s => { s.columns = currentColumns; });
+saveToStorage();
+}
+}
 function saveAllSettings() {
 if (!currentSongId) { alert("❌ Ошибка"); return; }
 if (currentSlId) {
-// === В сет-листе: ВСЁ локально (включая колонки и hideLyrics) ===
 const sl = setlists.find(x => x.id === currentSlId);
 if (sl) {
 const item = sl.songs.find(x => x.id === currentSongId);
@@ -1165,7 +1198,6 @@ return;
 }
 }
 }
-// === На главной: колонки — ко ВСЕМ песням, остальное — к текущей ===
 const song = songs.find(x => x.id === currentSongId);
 if (song) {
 songs.forEach(s => { s.columns = currentColumns; });
@@ -1202,7 +1234,6 @@ openSongView(homeFilteredSongs[homeSongIndex].id, null);
 }
 function changeKey(value) { currentKey = value; updateSongView(); }
 function changeCapo(value) { currentCapo = parseInt(value); updateSongView(); }
-function changeColumns(value) { currentColumns = parseInt(value); syncColumnsSelects(value); updateSongView(); if (!window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches) { const s = songs.find(x => x.id === currentSongId); if (s) { s.columns = currentColumns; saveToStorage(); } if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl?.songs.find(x => x.id === currentSongId); if (item) { item.columns = currentColumns; saveToStorage(); } } } }
 function updateSongView() { const s = songs.find(x => x.id === currentSongId); if (!s) return; let text = s.chordpro; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl?.songs.find(x => x.id === currentSongId); if (item?.chordpro) text = item.chordpro; }
 renderSongLinks(extractUrlsFromChordpro(text));
 renderSongContent(text, originalKey, currentKey, currentCapo);
