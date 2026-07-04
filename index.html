@@ -88,11 +88,6 @@ body.dark-white .btn-pastel:hover { background: rgba(179, 157, 219, 0.25); }
 .home-actions-row button { flex: 1; min-width: 0; }
 .home-actions-row.row-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
 .home-actions-row.row-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-/* ЗАДАЧА 5: sticky-обёртка для кнопок на главной */
-.home-sticky-actions { position: sticky; top: 0; z-index: 25; padding: 10px 0; margin: -10px 0 10px 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-body.dark .home-sticky-actions { background: rgba(18, 18, 18, 0.85); }
-body.light .home-sticky-actions { background: rgba(245, 245, 220, 0.85); }
-body.dark-white .home-sticky-actions { background: rgba(18, 18, 18, 0.85); }
 .tab { flex: 1; padding: 14px; text-align: center; background: #333; color: #eee; border-radius: 10px; cursor: pointer; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 16px; touch-action: manipulation; line-height: 1.2; }
 body.light .tab { background: rgba(126, 87, 194, 0.15); color: #4527a0; }
 body.dark-white .tab { background: #333; color: #eee; }
@@ -126,8 +121,7 @@ body.violet .vl-worship-btn { background: #757575; }
 body.light .vl-worship-btn { background: #7e57c2; color: #ffffff; }
 body.violet.light .vl-worship-btn { background: #616161; color: #ffffff; }
 body.dark-white .vl-worship-btn { background: #9575cd; color: #ffffff; }
-/* ЗАДАЧА 4: sticky тулбар песни */
-.song-toolbar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1e1e1e; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 30; }
+.song-toolbar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1e1e1e; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 body.light .song-toolbar { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 body.dark-white .song-toolbar { background: #1e1e1e; }
 .toolbar-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -347,17 +341,14 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <option value="bpm-asc">По BPM ↑</option>
 <option value="bpm-desc">По BPM ↓</option>
 </select>
-<!-- ЗАДАЧА 5: sticky-обёртка для кнопок действий -->
-<div class="home-sticky-actions">
 <div class="home-actions-row row-top">
-<button class="btn-pastel" onclick="openExpressAdd()">⚡ Экспресс</button>
+<button class="btn-pastel" onclick="openExpressAdd()">⚡ Добавить экспресс</button>
 <button class="btn-pastel" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
 <button class="btn-pastel" onclick="openMainSongEditor()">+ Добавить</button>
 </div>
 <div class="home-actions-row row-bottom">
 <button class="btn-pastel" onclick="exportDatabase()">📤 Экспорт базы</button>
 <button class="btn-pastel" onclick="document.getElementById('import-database-input').click()">📥 Импорт базы</button>
-</div>
 </div>
 <input type="file" id="import-database-input" accept=".clcdb" style="display: none;" onchange="handleImportDatabase(event)">
 <input type="file" id="import-song-input" accept=".clcsong" style="display: none;" onchange="handleImportSong(event)">
@@ -399,7 +390,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">♯/♭</span><span class="instruction-card-title">Переключатель диезов/бемолей</span></div><div class="instruction-card-text">Кнопка <b>♯</b> переключает между диезами и бемолями.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👁️</span><span class="instruction-card-title">Скрытие элементов</span></div><div class="instruction-card-text"><b>⬇️ ещё</b> во 2 ряду → 3 ряд с кнопками:<br>• <b>👁️ аккорды</b> — скрыть/показать аккорды<br>• <b>👁️ текст</b> — скрыть/показать текст (при скрытии аккорды сжимаются)<br>• <b>👁️ стрелки</b> — скрыть боковые кнопки<br>• <b>👁️ комм.</b> — скрыть заметки и комментарии<br>💻 На ПК кнопка ⬇️ тоже раскрывает 3 ряд.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎼</span><span class="instruction-card-title">Метки в скобках</span></div><div class="instruction-card-text"><code>E (бросить) H (ALL IN)</code><br>• Текст в скобках может содержать пробелы<br>• Аккорд — транспонируется<br>• Не аккорд — отображается как метка</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📏</span><span class="instruction-card-title">Правила распознавания строк</span></div><div class="instruction-card-text">• Строка начинается с <b>обычного слова</b> (не аккорда) → вся строка = текст<br>• Строка начинается со <b>слова в скобках</b> <code>(интро)</code> → могут быть аккорды<br>• Строка начинается с <b>аккорда</b> <code>G C D</code> → парсинг аккордов<br>• Слова из <b>5+ латинских букв</b> не считаются аккордами</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📏</span><span class="instruction-card-title">Правила распознавания строк</span></div><div class="instruction-card-text">• Строка начинается с <b>обычного слова</b> (не аккорда) → вся строка = текст<br>• Строка начинается со <b>слова в скобках</b> <code>(интро)</code> → могут быть аккорды<br>• Строка начинается с <b>аккорда</b> <code>G C D</code> → парсинг аккордов<br>• Слова из <b>5+ латинских букв</b> не считаются аккордами<br>• Формат тактов <code>| A | H | C#m | E |</code> работает корректно</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Сохранение настроек</span></div><div class="instruction-card-text">💾 <b>На главной</b>: колонки — ко всем песням<br>💾 <b>В сет-листе</b>: колонки — ко всем песням этого сет-листа<br>💾 Кнопка 1/2 колонки всегда действует на всю текущую область</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> → <code>.clcdb</code><br>• <b>📤 поделиться</b> → <code>.clcsong</code><br>• <b>📤 Поделиться</b> сет-листом → <code>.clcsetlist</code></div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div><div class="instruction-card-text">Кнопка <b>📄 PDF</b> — печать в 2 колонки.</div></div>
@@ -438,7 +429,6 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
 </div>
 <div class="song-toolbar">
-<!-- Ряд 1 -->
 <div class="toolbar-row">
 <div class="toolbar-select-item"><span>🎵</span><select class="key-select" id="key-select" onchange="changeKey(this.value)"></select></div>
 <div class="toolbar-select-item"><span>🎸</span><select class="capo-select" id="capo-select" onchange="changeCapo(this.value)">
@@ -448,7 +438,6 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button class="toolbar-btn-item" id="btn-pdf-or-copy" onclick="handlePdfOrCopy()" title="PDF/Копировать">📄 PDF</button>
 <div class="toolbar-select-item desktop-only"><span>📄</span><select class="columns-select" id="columns-select-desktop" onchange="changeColumns(this.value)"><option value="1">1 кол.</option><option value="2">2 кол.</option></select></div>
 </div>
-<!-- Ряд 2 -->
 <div class="toolbar-row" style="margin-top: 8px;">
 <button class="toolbar-btn-item" onclick="changeFontSize(-2)" title="Уменьшить шрифт">A-</button>
 <button class="toolbar-btn-item" onclick="changeFontSize(2)" title="Увеличить шрифт">A+</button>
@@ -456,7 +445,6 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button class="toolbar-btn-item" onclick="toggleInlineEdit()" title="Редактировать"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">✏️</span><span style="font-size: 8px; margin-top: 2px;">редакт.</span></div></button>
 <button class="toolbar-btn-item desktop-only" onclick="downloadPdf()" title="PDF"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📄</span><span style="font-size: 8px; margin-top: 2px;">PDF</span></div></button>
 </div>
-<!-- Ряд 3 -->
 <div class="toolbar-row" id="toolbar-row-3" style="margin-top: 8px; display: none;">
 <button class="toolbar-btn-item" id="btn-toggle-chords" onclick="toggleChordsVisibility()" title="Скрыть/показать аккорды"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="chords-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">аккорды</span></div></button>
 <button class="toolbar-btn-item" id="btn-toggle-lyrics" onclick="toggleLyricsVisibility()" title="Скрыть/показать текст"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="lyrics-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">текст</span></div></button>
@@ -464,7 +452,6 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button class="toolbar-btn-item" id="btn-toggle-comments" onclick="toggleCommentsVisibility()" title="Скрыть/показать комментарии"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="comments-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">комм.</span></div></button>
 <button class="toolbar-btn-item desktop-only" onclick="exportSong()" title="Поделиться"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📤</span><span style="font-size: 8px; margin-top: 2px;">поделиться</span></div></button>
 </div>
-<!-- Ряд 4 (только мобильный) -->
 <div class="toolbar-row mobile-only" id="toolbar-row-4" style="margin-top: 8px; display: none;">
 <button class="toolbar-btn-item" onclick="exportSong()" title="Поделиться"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📤</span><span style="font-size: 8px; margin-top: 2px;">поделиться</span></div></button>
 <div class="toolbar-select-item mobile-only"><span>📄</span><select class="columns-select" id="columns-select-mobile" onchange="changeColumns(this.value)"><option value="1">1 кол.</option><option value="2">2 кол.</option></select></div>
@@ -569,9 +556,13 @@ const FLAT_TO_SHARP = { 'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A
 function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.split('/'); return convertBtoH(parts[0]) + '/' + convertBtoH(parts[1]); } if (chord.startsWith('B') && !chord.startsWith('Bb')) return 'H' + chord.substring(1); return chord; }
 function cleanWordForChordCheck(word) { return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, ''); }
 // === ЗАДАЧА 2: слово из 5+ латинских букв не аккорд ===
+// Игнорируем символы | и пробелы при подсчёте
 function isLongWordNotChord(token) {
+    // Убираем всё кроме латинских букв A-H и символов #b
     const cleaned = token.replace(/[^A-Ha-h#b]/g, '');
+    // Убираем #b
     const lettersOnly = cleaned.replace(/[#b]/g, '');
+    // Если осталось 5+ букв — не аккорд
     return lettersOnly.length >= 5 && /^[A-Ha-h]+$/.test(lettersOnly);
 }
 function convertAccidentals(chord, mode) {
@@ -612,15 +603,17 @@ const parens = [];
 const protectedLine = line.replace(/\([^)]+\)/g, (match) => { parens.push(match); return `\x01P${parens.length - 1}\x01`; });
 function restoreParens(str) { return str.replace(/\x01P(\d+)\x01/g, (m, idx) => parens[parseInt(idx)]); }
 
-// === ЗАДАЧА 3: проверка первого слова строки ===
+// === ЗАДАЧА 3: проверка первого существенного слова строки ===
+// Пропускаем | и пробелы, ищем первое "существенное" слово
 const trimmedProtected = protectedLine.trim();
-const firstTokenMatch = trimmedProtected.match(/^(\x01P\d+\x01|\S+)/);
-if (firstTokenMatch) {
-    const firstToken = firstTokenMatch[1];
-    const startsWithParens = /^\x01P\d+\x01$/.test(firstToken);
+// Разбиваем на токены, пропуская | и пустые
+const meaningfulTokens = trimmedProtected.split(/\s+/).filter(t => t && t !== '|');
+if (meaningfulTokens.length > 0) {
+    const firstMeaningful = meaningfulTokens[0];
+    const startsWithParens = /^\x01P\d+\x01$/.test(firstMeaningful);
     if (!startsWithParens) {
         // Первое слово не в скобках — проверяем, аккорд ли это
-        const cleanFirst = cleanWordForChordCheck(firstToken);
+        const cleanFirst = cleanWordForChordCheck(firstMeaningful);
         const firstIsChord = CHORD_RE.test(convertBtoH(cleanFirst)) && !isLongWordNotChord(cleanFirst);
         if (!firstIsChord) {
             // Вся строка — текст
@@ -747,7 +740,7 @@ function clearSearchAndOpenSong(songId) {
 const searchBox = document.getElementById('songs-search');
 if (searchBox) searchBox.value = '';
 homeSongIndex = homeFilteredSongs.findIndex(s => s.id === songId);
-openSongView(songId, null);
+openSongView(songId, null, false);
 }
 function sortSongs(list, sortType) {
 const sorted = [...list];
@@ -861,7 +854,7 @@ div.addEventListener('dragover', (e) => { e.preventDefault(); const t = e.target
 div.addEventListener('dragleave', () => { const t = e.target.closest('.list-item'); if (t) t.classList.remove('drag-over'); });
 div.addEventListener('drop', (e) => { e.preventDefault(); const t = e.target.closest('.list-item'); if (!t || t === div) return; t.classList.remove('drag-over'); const fi = parseInt(e.dataTransfer.getData('text/plain')); const ti = parseInt(t.dataset.index); if (!isNaN(fi) && !isNaN(ti) && fi !== ti) { const [moved] = sl.songs.splice(fi, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); renderSlSongs(); } });
 div.addEventListener('dragend', () => { div.classList.remove('dragging'); document.querySelectorAll('.list-item').forEach(i => i.classList.remove('drag-over')); });
-div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT' && e.target.tagName !== 'INPUT' && !e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input')) { homeSongIndex = idx; openSongView(item.id, currentSlId); } };
+div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT' && e.target.tagName !== 'INPUT' && !e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input')) { homeSongIndex = idx; openSongView(item.id, currentSlId, false); } };
 list.appendChild(div); });
 }
 function confirmRemoveFromSl(songId, songName) { showDeleteConfirm('remove', songId, `Песню "${songName}" из сет-листа`, () => { const sl = setlists.find(x => x.id === currentSlId); sl.songs = sl.songs.filter(x => x.id !== songId); saveToStorage(); renderSlSongs(); }); }
@@ -896,10 +889,10 @@ else { if (idx === 0) goBackFromSong(); else prevSong(); }
 } else if (homeFilteredSongs.length > 0 && homeSongIndex >= 0) {
 if (diffX > 0) {
 if (homeSongIndex === homeFilteredSongs.length - 1) goBackFromSong();
-else { homeSongIndex++; openSongView(homeFilteredSongs[homeSongIndex].id, null); }
+else { homeSongIndex++; openSongView(homeFilteredSongs[homeSongIndex].id, null, true); }
 } else {
 if (homeSongIndex === 0) goBackFromSong();
-else { homeSongIndex--; openSongView(homeFilteredSongs[homeSongIndex].id, null); }
+else { homeSongIndex--; openSongView(homeFilteredSongs[homeSongIndex].id, null, true); }
 }
 } else {
 if (diffX < 0) goBackFromSong();
@@ -1109,6 +1102,7 @@ return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="so
 container.style.display = 'flex';
 } else { container.innerHTML = ''; container.style.display = 'none'; }
 }
+// === ЗАДАЧА 5: прокрутка к началу контента ===
 function scrollToSongContent() {
 const content = document.getElementById('song-view-content');
 if (content) {
@@ -1117,7 +1111,8 @@ const offset = window.scrollY + rect.top - 10;
 window.scrollTo({ top: Math.max(0, offset), behavior: 'instant' });
 }
 }
-function openSongView(id, slId) {
+// === ЗАДАЧИ 4 и 5: параметр isNavigation ===
+function openSongView(id, slId, isNavigation = false) {
 currentSongId = id; currentSlId = slId; isInlineEditing = false;
 document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; document.querySelector('.song-toolbar').style.display = 'block';
 const s = songs.find(x => x.id === id); if (!s) return;
@@ -1149,7 +1144,14 @@ applyBodyClasses(); updateToggleButtonsUI(); toolbarExpanded = false; const row3
 const sl = slId ? setlists.find(x => x.id === slId) : null; const item = sl ? sl.songs.find(x => x.id === id) : null;
 renderSongContent((item && item.chordpro) || s.chordpro, originalKey, currentKey, currentCapo);
 showPage('page-song-view'); updatePdfOrCopyButton();
-requestAnimationFrame(() => { setTimeout(scrollToSongContent, 50); });
+// === ЗАДАЧИ 4 и 5: разная прокрутка ===
+if (isNavigation) {
+    // Пролистывание — к началу контента
+    requestAnimationFrame(() => { setTimeout(scrollToSongContent, 50); });
+} else {
+    // Открытие — в самый верх
+    window.scrollTo(0, 0);
+}
 }
 function updatePdfOrCopyButton() { const btn = document.getElementById('btn-pdf-or-copy'); if (window.innerWidth <= 768) btn.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📋</span><span style="font-size: 8px; margin-top: 2px;">копировать</span></div>'; else btn.innerHTML = '📄 PDF'; }
 function handlePdfOrCopy() { if (window.innerWidth <= 768) copySongText(); else downloadPdf(); }
@@ -1161,21 +1163,21 @@ function resizeInlineEdit(delta) { fontSize = Math.max(8, Math.min(32, fontSize 
 function saveInlineEdit() { const newChordpro = document.getElementById('inline-edit-textarea').value; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newChordpro; saveToStorage(); alert('✅ Сохранено локально!'); } } else { const song = songs.find(x => x.id === currentSongId); if (song) { song.chordpro = newChordpro; saveToStorage(); alert('✅ Песня сохранена!'); } } cancelInlineEdit(); openSongView(currentSongId, currentSlId); }
 // === ЗАДАЧА 1: колонки применяются ко всей текущей области ===
 function changeColumns(value) {
-currentColumns = parseInt(value);
-syncColumnsSelects(value);
-updateSongView();
-if (currentSlId) {
-// В сет-листе: применить ко всем песням этого сет-листа
-const sl = setlists.find(x => x.id === currentSlId);
-if (sl) {
-sl.songs.forEach(item => { item.columns = currentColumns; });
-saveToStorage();
-}
-} else {
-// На главной: применить ко всем песням глобально
-songs.forEach(s => { s.columns = currentColumns; });
-saveToStorage();
-}
+    currentColumns = parseInt(value);
+    syncColumnsSelects(value);
+    updateSongView();
+    if (currentSlId) {
+        // В сет-листе: применить ко всем песням этого сет-листа
+        const sl = setlists.find(x => x.id === currentSlId);
+        if (sl) {
+            sl.songs.forEach(item => { item.columns = currentColumns; });
+            saveToStorage();
+        }
+    } else {
+        // На главной: применить ко всем песням глобально
+        songs.forEach(s => { s.columns = currentColumns; });
+        saveToStorage();
+    }
 }
 function saveAllSettings() {
 if (!currentSongId) { alert("❌ Ошибка"); return; }
@@ -1212,24 +1214,25 @@ renderSongs();
 }
 }
 function goBackFromSong() { if (currentSlId) showPage('page-setlist-detail'); else { currentHomeView = 'songs'; document.getElementById('home-tab-songs').classList.add('active'); document.getElementById('home-tab-setlists').classList.remove('active'); document.getElementById('home-view-songs').style.display = 'block'; document.getElementById('home-view-setlists').style.display = 'none'; showPage('page-home'); renderSongs(); } }
+// === ЗАДАЧА 5: пролистывание с isNavigation=true ===
 function prevSong() {
 if (currentSlId) {
 const sl = setlists.find(x => x.id === currentSlId);
 const idx = sl.songs.findIndex(x => x.id === currentSongId);
-if (idx > 0) openSongView(sl.songs[idx - 1].id, currentSlId);
+if (idx > 0) openSongView(sl.songs[idx - 1].id, currentSlId, true);
 } else if (homeFilteredSongs.length > 0 && homeSongIndex > 0) {
 homeSongIndex--;
-openSongView(homeFilteredSongs[homeSongIndex].id, null);
+openSongView(homeFilteredSongs[homeSongIndex].id, null, true);
 }
 }
 function nextSong() {
 if (currentSlId) {
 const sl = setlists.find(x => x.id === currentSlId);
 const idx = sl.songs.findIndex(x => x.id === currentSongId);
-if (idx < sl.songs.length - 1) openSongView(sl.songs[idx + 1].id, currentSlId);
+if (idx < sl.songs.length - 1) openSongView(sl.songs[idx + 1].id, currentSlId, true);
 } else if (homeFilteredSongs.length > 0 && homeSongIndex < homeFilteredSongs.length - 1) {
 homeSongIndex++;
-openSongView(homeFilteredSongs[homeSongIndex].id, null);
+openSongView(homeFilteredSongs[homeSongIndex].id, null, true);
 }
 }
 function changeKey(value) { currentKey = value; updateSongView(); }
