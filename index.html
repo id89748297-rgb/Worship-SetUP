@@ -851,9 +851,9 @@ function renderSlSongs() {
 const sl = setlists.find(x => x.id === currentSlId); const list = document.getElementById('sl-songs-list'); list.innerHTML = '';
 sl.songs.forEach((item, idx) => { const s = songs.find(x => x.id === item.id); if (!s) return; const div = document.createElement('div'); div.className = 'list-item'; div.draggable = true; div.dataset.index = idx;
 const originalKeyLabel = s.key ? ` [${s.key}]` : ''; const currentSlKey = item.key || s.key; const localBadge = item.chordpro ? ' <span style="font-size:11px;">(лок.)</span>' : '';
-const authorText = s.author ? `<div style="color:#888; font-size:8px; text-align: right; white-space: nowrap;">${s.author}</div>` : '';
+const authorText = s.author ? `<div style="color:#888; font-size:8px; margin-top: 2px;">${s.author}</div>` : '';
 const bpmText = s.bpm ? `<div style="color:#888; font-size:10px; white-space: nowrap; text-align: right;">${s.bpm} BPM</div>` : '';
-const rightInfo = (bpmText || authorText) ? `<div style="display: flex; flex-direction: column; align-items: flex-end; margin-left: 8px; flex-shrink: 0;">${bpmText}${authorText}</div>` : '';
+const rightInfo = (bpmText || authorText) ? `<div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 8px; flex-shrink: 0;">${bpmText}${authorText}</div>` : '';
 let keySelectHtml = `<select class="key-select-inline" onchange="changeSongKeyInSetlist(${item.id}, this.value)">`; NOTES_SHARP.forEach(key => { keySelectHtml += `<option value="${key}" ${(key === currentSlKey) ? 'selected' : ''}>${key}</option>`; }); keySelectHtml += '</select>';
 const orderValue = idx + 1;
 div.innerHTML = `<div class="item-left"><input type="number" class="order-input" value="${orderValue}" min="1" max="${sl.songs.length}" data-original="${orderValue}" onclick="event.stopPropagation()" onfocus="handleOrderInputFocus(this, ${orderValue})" onblur="handleOrderInputBlur(this, ${item.id})"><div style="min-width: 0; flex: 1;"><div class="item-title">${s.title}<span style="color:#90caf9; font-size:12px;">${originalKeyLabel}</span>${localBadge}</div></div>${rightInfo}</div><div class="item-right">${keySelectHtml}<button class="btn-icon" onclick="event.stopPropagation(); confirmRemoveFromSl(${item.id}, '${s.title.replace(/'/g, "\\'")}')" style="color: #ef5350;">🗑️</button></div>`;
