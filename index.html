@@ -340,7 +340,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDcZNjWcBR51xgrWGD9HQa8gc8-FMp_Qls",
   authDomain: "setup-c1fee.firebaseapp.com",
   databaseURL: "https://setup-fab0b-default-rtdb.firebaseio.com",
-  projectId: "setup-c1fee",
+  projectId: "setup-fab0b",
   storageBucket: "setup-c1fee.firebasestorage.app",
   messagingSenderId: "829819588775",
   appId: "1:829819588775:web:6f109293ed5239db440b82"
@@ -857,7 +857,6 @@ function archiveCurrentSetlist() { const sl = setlists.find(x => x.id === curren
 function openSetlistDetail(id) { currentSlId = id; const sl = setlists.find(x => x.id === id); document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; document.getElementById('sl-subtitle').innerText = 'Сет-лист'; renderSlSongs(); showPage('page-setlist-detail'); }
 function goBackFromSetlistDetail() { currentHomeView = 'setlists'; document.getElementById('home-tab-songs').classList.remove('active'); document.getElementById('home-tab-setlists').classList.add('active'); document.getElementById('home-view-songs').style.display = 'none'; document.getElementById('home-view-setlists').style.display = 'block'; showPage('page-home'); renderSetlists(); }
 function updateSongOrder(songId, newOrderStr) { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; const newOrder = parseInt(newOrderStr); if (isNaN(newOrder) || newOrder < 1) { renderSlSongs(); return; } const ci = sl.songs.findIndex(x => x.id === songId); if (ci === -1) return; const ti = Math.min(Math.max(0, newOrder - 1), sl.songs.length - 1); if (ci !== ti) { const [moved] = sl.songs.splice(ci, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); renderSlSongs(); } }
-function handleOrderInputFocus(input, originalValue) { input.dataset.originalValue = originalValue; input.value = ''; }
 function handleOrderInputBlur(input, songId) {
 const newValue = input.value.trim();
 const originalValue = input.dataset.originalValue;
@@ -1426,109 +1425,494 @@ event.target.value = '';
 }
 function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn = prompt('Имя файла:', dn); if (fn === null) return; const cn = fn.trim() || dn; const final = cn.toLowerCase().endsWith('.clcdb') ? cn : cn + '.clcdb'; shareFile({ version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs, sectionNotes, inlineComments } }, final); }
 function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!\nДобавлено: ${added}\nПропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
-// === ОНЛАЙН СИНХРОНИЗАЦИЯ ===
+// === ОНЛАЙН СИНХРОНИЗАЦИЯ С АУТЕНТИФИКАЦИЕЙ ===
 let isOnline = navigator.onLine;
-let userId = localStorage.getItem('clc_user_id') || 'user_' + Math.random().toString(36).substr(2, 9);
-localStorage.setItem('clc_user_id', userId);
+let currentUser = null;
+let currentTeamId = null;
+let teamUnsubscribe = null;
+let dataUnsubscribe = null;
 
-window.addEventListener('online', () => { isOnline = true; updateConnectionStatus(); syncToCloud(); });
-window.addEventListener('offline', () => { isOnline = false; updateConnectionStatus(); });
+// Инициализация Auth
+const auth = firebase.auth();
 
-function updateConnectionStatus() {
-  const indicator = document.getElementById('connection-status');
-  if (indicator) {
-    indicator.textContent = isOnline ? '🟢 Онлайн' : '🔴 Офлайн';
-    indicator.style.color = isOnline ? '#4caf50' : '#ef5350';
-  }
+// Проверка состояния подключения
+window.addEventListener('online', () => { 
+    isOnline = true; 
+    updateConnectionStatus(); 
+    if (currentUser) subscribeToTeamChanges(); 
+});
+window.addEventListener('offline', () => { 
+    isOnline = false; 
+    updateConnectionStatus(); 
+});
+
+// Вход через email
+async function signInWithEmail(email, password) {
+    try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        currentUser = cred.user;
+        localStorage.setItem('clc_user_email', email);
+        alert(`✅ Вход выполнен: ${email}`);
+        updateUIForUser();
+    } catch (err) {
+        alert('❌ Ошибка входа: ' + err.message);
+    }
 }
 
-function syncToCloud() {
-  if (!isOnline) return;
-  const data = {
-    songs: songs,
-    setlists: setlists,
-    sectionNotes: sectionNotes,
-    inlineComments: inlineComments,
-    updatedAt: Date.now(),
-    updatedBy: userId
-  };
-  db.ref('worship-setup/data').set(data)
-    .then(() => console.log('✅ Синхронизация в облако'))
-    .catch(err => console.error('❌ Ошибка:', err));
+// Регистрация
+async function signUpWithEmail(email, password, displayName) {
+    try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        await cred.user.updateProfile({ displayName });
+        await firebase.database().ref('users/' + cred.user.uid).set({
+            displayName: displayName,
+            email: email,
+            createdAt: Date.now()
+        });
+        currentUser = cred.user;
+        alert(`✅ Регистрация успешна: ${email}`);
+        updateUIForUser();
+    } catch (err) {
+        alert('❌ Ошибка регистрации: ' + err.message);
+    }
 }
 
-function syncFromCloud() {
-  if (!isOnline) return;
-  db.ref('worship-setup/data').once('value')
-    .then(snapshot => {
-      const data = snapshot.val();
-      if (data && data.updatedAt) {
-        const localUpdated = Math.max(
-          parseInt(localStorage.getItem('clc_songs_updated') || '0'),
-          parseInt(localStorage.getItem('clc_setlists_updated') || '0')
-        );
-        if (data.updatedAt > localUpdated && data.updatedBy !== userId) {
-          if (confirm('🔄 Найдены изменения в облаке. Загрузить?')) {f
-            songs = data.songs || [];
-            setlists = data.setlists || [];
-            sectionNotes = data.sectionNotes || {};
-            inlineComments = data.inlineComments || {};
-            saveToStorage();
-            renderSongs();
-            alert('✅ Данные загружены');
-          }
-        }
-      }
-    })
-    .catch(err => console.error('❌ Ошибка загрузки:', err));
+// Выход
+function signOut() {
+    if (teamUnsubscribe) teamUnsubscribe();
+    if (dataUnsubscribe) dataUnsubscribe();
+    auth.signOut();
+    currentUser = null;
+    currentTeamId = null;
+    localStorage.removeItem('clc_user_email');
+    updateUIForUser();
+    alert('👋 Вы вышли из системы');
 }
 
-function subscribeToChanges() {
-  if (!isOnline) return;
-  db.ref('worship-setup/data').on('value', snapshot => {
+// Создание команды
+async function createTeam(teamName) {
+    if (!currentUser) {
+        alert('❌ Сначала войдите в систему');
+        return;
+    }
+    const teamId = 'team_' + Math.random().toString(36).substr(2, 9);
+    const teamData = {
+        id: teamId,
+        name: teamName,
+        createdBy: currentUser.uid,
+        creatorName: currentUser.displayName || currentUser.email,
+        createdAt: Date.now(),
+        members: {
+            [currentUser.uid]: {
+                email: currentUser.email,
+                displayName: currentUser.displayName || currentUser.email,
+                joinedAt: Date.now(),
+                role: 'admin'
+            }
+        },
+        inviteCode: generateInviteCode()
+    };
+    
+    await firebase.database().ref('teams/' + teamId).set(teamData);
+    await firebase.database().ref('userTeams/' + currentUser.uid + '/' + teamId).set(true);
+    
+    currentTeamId = teamId;
+    localStorage.setItem('clc_team_id', teamId);
+    
+    // Копируем текущие данные в команду
+    await syncDataToTeam(teamId);
+    
+    alert(`✅ Команда создана!\nКод приглашения: ${teamData.inviteCode}`);
+    return teamData.inviteCode;
+}
+
+// Присоединение к команде по коду
+async function joinTeamByCode(inviteCode) {
+    if (!currentUser) {
+        alert('❌ Сначала войдите в систему');
+        return;
+    }
+    
+    const snapshot = await firebase.database().ref('teams').orderByChild('inviteCode').equalTo(inviteCode).once('value');
+    if (!snapshot.val()) {
+        alert('❌ Команда не найдена');
+        return;
+    }
+    
+    const teamId = Object.keys(snapshot.val())[0];
+    const team = snapshot.val()[teamId];
+    
+    await firebase.database().ref('teams/' + teamId + '/members/' + currentUser.uid).set({
+        email: currentUser.email,
+        displayName: currentUser.displayName || currentUser.email,
+        joinedAt: Date.now(),
+        role: 'member'
+    });
+    await firebase.database().ref('userTeams/' + currentUser.uid + '/' + teamId).set(true);
+    
+    currentTeamId = teamId;
+    localStorage.setItem('clc_team_id', teamId);
+    
+    // Загружаем данные команды
+    await loadDataFromTeam(teamId);
+    
+    alert(`✅ Вы присоединились к команде: ${team.name}`);
+}
+
+// Генерация кода приглашения
+function generateInviteCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+// Синхронизация данных в команду
+async function syncDataToTeam(teamId) {
+    if (!isOnline) return;
+    const data = {
+        songs: songs,
+        setlists: setlists,
+        sectionNotes: sectionNotes,
+        inlineComments: inlineComments,
+        updatedAt: Date.now(),
+        updatedBy: currentUser.uid,
+        updatedByName: currentUser.displayName || currentUser.email
+    };
+    await firebase.database().ref('teamData/' + teamId).set(data);
+}
+
+// Загрузка данных из команды
+async function loadDataFromTeam(teamId) {
+    if (!isOnline) return;
+    const snapshot = await firebase.database().ref('teamData/' + teamId).once('value');
     const data = snapshot.val();
-    if (data && data.updatedBy !== userId) {
-      console.log('🔄 Изменения от другого пользователя');
-      if (confirm('🔄 Кто-то изменил данные. Обновить?')) {
+    if (data) {
         songs = data.songs || [];
         setlists = data.setlists || [];
         sectionNotes = data.sectionNotes || {};
         inlineComments = data.inlineComments || {};
         saveToStorage();
         renderSongs();
-      }
     }
-  });
 }
 
+// Подписка на изменения команды
+function subscribeToTeamChanges() {
+    if (!currentTeamId || !isOnline) return;
+    
+    if (dataUnsubscribe) dataUnsubscribe();
+    
+    dataUnsubscribe = firebase.database().ref('teamData/' + currentTeamId).on('value', snapshot => {
+        const data = snapshot.val();
+        if (data && data.updatedBy !== currentUser?.uid) {
+            console.log('🔄 Изменения от:', data.updatedByName);
+            // Показываем уведомление
+            showNotification(`🔄 ${data.updatedByName} обновил данные`, () => {
+                songs = data.songs || [];
+                setlists = data.setlists || [];
+                sectionNotes = data.sectionNotes || {};
+                inlineComments = data.inlineComments || {};
+                saveToStorage();
+                renderSongs();
+            });
+        }
+    });
+}
+
+// Показ уведомления
+function showNotification(message, onAccept) {
+    if (confirm(message + '\n\nЗагрузить изменения?')) {
+        onAccept();
+    }
+}
+
+// Обновление UI для пользователя
+function updateUIForUser() {
+    const headerRight = document.querySelector('.header-right');
+    if (!headerRight) return;
+    
+    // Удаляем старые элементы
+    const oldAuth = headerRight.querySelector('.auth-controls');
+    if (oldAuth) oldAuth.remove();
+    
+    const authDiv = document.createElement('div');
+    authDiv.className = 'auth-controls';
+    authDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; margin-right: 8px;';
+    
+    if (currentUser) {
+        authDiv.innerHTML = `
+            <span style="font-size: 12px; color: #90caf9;">👤 ${currentUser.displayName || currentUser.email}</span>
+            <button onclick="showTeamModal()" style="background: #9575cd; border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">👥 Команда</button>
+            <button onclick="signOut()" style="background: #78909c; border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Выйти</button>
+        `;
+    } else {
+        authDiv.innerHTML = `
+            <button onclick="showAuthModal()" style="background: #9575cd; border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">🔐 Войти</button>
+        `;
+    }
+    
+    headerRight.insertBefore(authDiv, headerRight.firstChild);
+}
+
+// Модальное окно аутентификации
+function showAuthModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal show';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>🔐 Вход / Регистрация</h2>
+            <div id="auth-mode-login">
+                <input type="email" id="auth-email" placeholder="Email" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee;">
+                <input type="password" id="auth-password" placeholder="Пароль" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee;">
+                <div class="modal-actions">
+                    <button onclick="closeModal('${modal.id}')" class="btn-secondary">Отмена</button>
+                    <button onclick="handleLogin()" class="btn-main">Войти</button>
+                    <button onclick="toggleAuthMode('register')" class="btn-pastel">Регистрация</button>
+                </div>
+            </div>
+            <div id="auth-mode-register" style="display: none;">
+                <input type="text" id="reg-name" placeholder="Ваше имя" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee;">
+                <input type="email" id="reg-email" placeholder="Email" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee;">
+                <input type="password" id="reg-password" placeholder="Пароль (мин. 6 символов)" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee;">
+                <div class="modal-actions">
+                    <button onclick="closeModal('${modal.id}')" class="btn-secondary">Отмена</button>
+                    <button onclick="handleRegister()" class="btn-main">Зарегистрироваться</button>
+                    <button onclick="toggleAuthMode('login')" class="btn-pastel">Уже есть аккаунт</button>
+                </div>
+            </div>
+        </div>
+    `;
+    modal.id = 'modal-auth';
+    document.body.appendChild(modal);
+}
+
+function toggleAuthMode(mode) {
+    document.getElementById('auth-mode-login').style.display = mode === 'login' ? 'block' : 'none';
+    document.getElementById('auth-mode-register').style.display = mode === 'register' ? 'block' : 'none';
+}
+
+async function handleLogin() {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    await signInWithEmail(email, password);
+    closeModal('modal-auth');
+}
+
+async function handleRegister() {
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    await signUpWithEmail(email, password, name);
+    closeModal('modal-auth');
+}
+
+// Модальное окно команды
+function showTeamModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal show';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>👥 Команда</h2>
+            ${currentTeamId ? `
+                <div style="background: rgba(144, 202, 249, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p style="margin: 0 0 10px;"><b>Код приглашения:</b></p>
+                    <p id="team-invite-code" style="font-size: 24px; font-weight: bold; color: #90caf9; text-align: center; margin: 10px 0;">Загрузка...</p>
+                    <button onclick="copyInviteCode()" style="width: 100%; padding: 10px; background: #90caf9; color: #0d47a1; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📋 Копировать</button>
+                </div>
+                <button onclick="showExportModal()" class="btn-main" style="width: 100%; margin: 10px 0;">📤 Поделиться (выбор)</button>
+                <button onclick="leaveTeam()" class="btn-danger" style="width: 100%;">🚪 Покинуть команду</button>
+            ` : `
+                <div class="modal-actions" style="flex-direction: column; gap: 10px;">
+                    <button onclick="showCreateTeamModal()" class="btn-main">➕ Создать команду</button>
+                    <button onclick="showJoinTeamModal()" class="btn-pastel">🔗 Присоединиться по коду</button>
+                </div>
+            `}
+            <button onclick="closeModal('${modal.id}')" class="btn-secondary" style="width: 100%; margin-top: 10px;">Закрыть</button>
+        </div>
+    `;
+    modal.id = 'modal-team';
+    document.body.appendChild(modal);
+    
+    if (currentTeamId) {
+        loadTeamInviteCode();
+    }
+}
+
+async function loadTeamInviteCode() {
+    const snapshot = await firebase.database().ref('teams/' + currentTeamId).once('value');
+    const team = snapshot.val();
+    const codeEl = document.getElementById('team-invite-code');
+    if (codeEl && team) {
+        codeEl.textContent = team.inviteCode || '—';
+    }
+}
+
+function copyInviteCode() {
+    const code = document.getElementById('team-invite-code').textContent;
+    navigator.clipboard.writeText(code).then(() => alert('✅ Код скопирован: ' + code));
+}
+
+function showCreateTeamModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal show';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>➕ Создать команду</h2>
+            <input type="text" id="team-name" placeholder="Название команды" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee;">
+            <div class="modal-actions">
+                <button onclick="closeModal('${modal.id}')" class="btn-secondary">Отмена</button>
+                <button onclick="handleCreateTeam()" class="btn-main">Создать</button>
+            </div>
+        </div>
+    `;
+    modal.id = 'modal-create-team';
+    document.body.appendChild(modal);
+}
+
+async function handleCreateTeam() {
+    const name = document.getElementById('team-name').value;
+    if (!name) {
+        alert('❌ Введите название команды');
+        return;
+    }
+    closeModal('modal-create-team');
+    await createTeam(name);
+    closeModal('modal-team');
+    showTeamModal();
+}
+
+function showJoinTeamModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal show';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>🔗 Присоединиться к команде</h2>
+            <input type="text" id="join-code" placeholder="Код приглашения" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee; text-transform: uppercase;">
+            <div class="modal-actions">
+                <button onclick="closeModal('${modal.id}')" class="btn-secondary">Отмена</button>
+                <button onclick="handleJoinTeam()" class="btn-main">Присоединиться</button>
+            </div>
+        </div>
+    `;
+    modal.id = 'modal-join-team';
+    document.body.appendChild(modal);
+}
+
+async function handleJoinTeam() {
+    const code = document.getElementById('join-code').value.toUpperCase();
+    if (!code) {
+        alert('❌ Введите код приглашения');
+        return;
+    }
+    closeModal('modal-join-team');
+    await joinTeamByCode(code);
+    closeModal('modal-team');
+    showTeamModal();
+}
+
+async function leaveTeam() {
+    if (!confirm('❓ Вы уверены, что хотите покинуть команду?')) return;
+    
+    await firebase.database().ref('teams/' + currentTeamId + '/members/' + currentUser.uid).remove();
+    await firebase.database().ref('userTeams/' + currentUser.uid + '/' + currentTeamId).remove();
+    
+    if (dataUnsubscribe) dataUnsubscribe();
+    currentTeamId = null;
+    localStorage.removeItem('clc_team_id');
+    
+    closeModal('modal-team');
+    showTeamModal();
+    alert('👋 Вы покинули команду');
+}
+
+// Модальное окно экспорта с выбором
+function showExportModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal show';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>📤 Поделиться</h2>
+            <p style="margin: 15px 0; color: #888;">Выберите способ экспорта:</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="exportAsFile()" class="btn-main">📁 Файл (.clcdb)</button>
+                <button onclick="exportToTeam()" class="btn-pastel">☁️ Онлайн (команда)</button>
+            </div>
+            <button onclick="closeModal('${modal.id}')" class="btn-secondary" style="width: 100%; margin-top: 10px;">Отмена</button>
+        </div>
+    `;
+    modal.id = 'modal-export';
+    document.body.appendChild(modal);
+}
+
+function exportAsFile() {
+    closeModal('modal-export');
+    exportDatabase();
+}
+
+async function exportToTeam() {
+    if (!currentTeamId) {
+        alert('❌ Вы не в команде');
+        return;
+    }
+    closeModal('modal-export');
+    await syncDataToTeam(currentTeamId);
+    alert('✅ Данные синхронизированы с командой');
+}
+
+// Обновление статуса подключения
+function updateConnectionStatus() {
+    const indicator = document.getElementById('connection-status');
+    if (indicator) {
+        indicator.textContent = isOnline ? '🟢 On' : '🔴 Off';
+        indicator.style.color = isOnline ? '#4caf50' : '#ef5350';
+    }
+}
+
+// Обновлённая функция сохранения
 const originalSaveToStorage = saveToStorage;
 saveToStorage = function() {
-  originalSaveToStorage();
-  localStorage.setItem('clc_songs_updated', Date.now().toString());
-  if (isOnline) setTimeout(syncToCloud, 1000);
+    originalSaveToStorage();
+    localStorage.setItem('clc_songs_updated', Date.now().toString());
+    
+    // Автосинхронизация в команду
+    if (isOnline && currentTeamId && currentUser) {
+        setTimeout(() => syncDataToTeam(currentTeamId), 1000);
+    }
 };
 
+// Индикатор подключения
 function addConnectionIndicator() {
-  const headerRight = document.querySelector('.header-right');
-  if (headerRight && !document.getElementById('connection-status')) {
-    const indicator = document.createElement('div');
-    indicator.id = 'connection-status';
-    indicator.style.cssText = 'font-size: 12px; padding: 4px 8px; background: rgba(0,0,0,0.2); border-radius: 4px; margin-right: 8px;';
-    indicator.textContent = '🟢 Онлайн';
-    headerRight.insertBefore(indicator, headerRight.firstChild);
-  }
+    const headerRight = document.querySelector('.header-right');
+    if (headerRight && !document.getElementById('connection-status')) {
+        const indicator = document.createElement('div');
+        indicator.id = 'connection-status';
+        indicator.style.cssText = 'font-size: 12px; padding: 4px 8px; background: rgba(0,0,0,0.2); border-radius: 4px; margin-right: 8px;';
+        indicator.textContent = '🟢 On';
+        headerRight.insertBefore(indicator, headerRight.firstChild);
+    }
 }
 
-window.addEventListener('load', () => {
-  updateConnectionStatus();
-  addConnectionIndicator();
-  if (isOnline) {
-    setTimeout(syncFromCloud, 2000);
-    setTimeout(subscribeToChanges, 3000);
-  }
+// Загрузка при старте
+window.addEventListener('load', async () => {
+    updateConnectionStatus();
+    addConnectionIndicator();
+    
+    // Проверка сохранённого пользователя
+    const savedEmail = localStorage.getItem('clc_user_email');
+    if (savedEmail) {
+        // Показываем кнопку входа, но не входим автоматически (требуется пароль)
+        updateUIForUser();
+    }
+    
+    // Проверка команды
+    const savedTeamId = localStorage.getItem('clc_team_id');
+    if (savedTeamId) {
+        currentTeamId = savedTeamId;
+    }
+    
+    if (isOnline && currentUser) {
+        setTimeout(() => subscribeToTeamChanges(), 2000);
+    }
 });
 // === КОНЕЦ ОНЛАЙН СИНХРОНИЗАЦИИ ===
-loadFromStorage(); renderSongs(); setupSwipe(); setupVlButton(); applyBodyClasses(); updateToggleButtonsUI();
 window.addEventListener('resize', updatePdfOrCopyButton);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => console.log('SW:', r.scope)).catch(console.error));
 </script>
