@@ -336,20 +336,18 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-// Твоя Firebase конфигурация (замени на свою!)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-app.firebaseapp.com",
-  databaseURL: "https://your-app-default-rtdb.firebaseio.com",
-  projectId: "your-app",
-  storageBucket: "your-app.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123"
+  apiKey: "AIzaSyDcZNjWcBR51xgrWGD9HQa8gc8-FMp_Qls",
+  authDomain: "setup-c1fee.firebaseapp.com",
+  databaseURL: "https://setup-fab0b-default-rtdb.firebaseio.com",
+  projectId: "setup-c1fee",
+  storageBucket: "setup-c1fee.firebasestorage.app",
+  messagingSenderId: "829819588775",
+  appId: "1:829819588775:web:6f109293ed5239db440b82"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 </script>
-</head>
 </head>
 <body class="dark">
 <div id="page-home" class="page active">
@@ -868,13 +866,10 @@ if (newValue === '' || isNaN(parseInt(newValue))) { input.value = originalValue;
 function renderSlSongs() {
 const sl = setlists.find(x => x.id === currentSlId); const list = document.getElementById('sl-songs-list'); list.innerHTML = '';
 sl.songs.forEach((item, idx) => { const s = songs.find(x => x.id === item.id); if (!s) return; const div = document.createElement('div'); div.className = 'list-item'; div.draggable = true; div.dataset.index = idx;
-const originalKeyLabel = s.key ? ` [${s.key}]` : ''; const currentSlKey = item.key || s.key; const localBadge = item.chordpro ? ' <span style="font-size:11px;">(лок.)</span>' : '';
-const authorText = s.author ? `<div style="color:#888; font-size:8px; margin-top: 2px;">${s.author}</div>` : '';
-const bpmText = s.bpm ? `<div style="color:#888; font-size:10px; white-space: nowrap; text-align: right;">${s.bpm} BPM</div>` : '';
-const rightInfo = (bpmText || authorText) ? `<div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 8px; flex-shrink: 0;">${bpmText}${authorText}</div>` : '';
+const originalKeyLabel = s.key ? ` [${s.key}]` : ''; const currentSlKey = item.key || s.key; const capoLabel = item.capo !== 0 ? ` Capo ${item.capo}` : ''; const localBadge = item.chordpro ? ' <span style="font-size:11px;">(лок.)</span>' : '';
 let keySelectHtml = `<select class="key-select-inline" onchange="changeSongKeyInSetlist(${item.id}, this.value)">`; NOTES_SHARP.forEach(key => { keySelectHtml += `<option value="${key}" ${(key === currentSlKey) ? 'selected' : ''}>${key}</option>`; }); keySelectHtml += '</select>';
 const orderValue = idx + 1;
-div.innerHTML = `<div class="item-left"><input type="number" class="order-input" value="${orderValue}" min="1" max="${sl.songs.length}" data-original="${orderValue}" onclick="event.stopPropagation()" onfocus="handleOrderInputFocus(this, ${orderValue})" onblur="handleOrderInputBlur(this, ${item.id})"><div style="min-width: 0; flex: 1;"><div class="item-title">${s.title}<span style="color:#90caf9; font-size:12px;">${originalKeyLabel}</span>${localBadge}</div></div>${rightInfo}</div><div class="item-right">${keySelectHtml}<button class="btn-icon" onclick="event.stopPropagation(); confirmRemoveFromSl(${item.id}, '${s.title.replace(/'/g, "\\'")}')" style="color: #ef5350;">🗑️</button></div>`;
+div.innerHTML = `<div class="item-left"><input type="number" class="order-input" value="${orderValue}" min="1" max="${sl.songs.length}" data-original="${orderValue}" onclick="event.stopPropagation()" onfocus="handleOrderInputFocus(this, ${orderValue})" onblur="handleOrderInputBlur(this, ${item.id})"><div style="min-width: 0; flex: 1;"><div class="item-title">${s.title}<span style="color:#90caf9; font-size:12px;">${originalKeyLabel}</span>${localBadge}</div>${capoLabel ? `<div class="item-sub">${capoLabel}</div>` : ''}</div></div><div class="item-right">${keySelectHtml}<button class="btn-icon" onclick="event.stopPropagation(); confirmRemoveFromSl(${item.id}, '${s.title.replace(/'/g, "\\'")}')" style="color: #ef5350;">🗑️</button></div>`;
 div.addEventListener('dragstart', (e) => { if (e.target.closest('button, select, input')) { e.preventDefault(); return; } div.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', idx); });
 div.addEventListener('dragover', (e) => { e.preventDefault(); const t = e.target.closest('.list-item'); if (t && t !== div) t.classList.add('drag-over'); });
 div.addEventListener('dragleave', () => { div.classList.remove('drag-over'); });
@@ -1431,7 +1426,109 @@ event.target.value = '';
 }
 function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn = prompt('Имя файла:', dn); if (fn === null) return; const cn = fn.trim() || dn; const final = cn.toLowerCase().endsWith('.clcdb') ? cn : cn + '.clcdb'; shareFile({ version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs, sectionNotes, inlineComments } }, final); }
 function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!\nДобавлено: ${added}\nПропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
-loadFromStorage(); renderSongs(); setupSwipe(); setupVlButton(); applyBodyClasses(); updateToggleButtonsUI(); addConnectionIndicator();
+// === ОНЛАЙН СИНХРОНИЗАЦИЯ ===
+let isOnline = navigator.onLine;
+let userId = localStorage.getItem('clc_user_id') || 'user_' + Math.random().toString(36).substr(2, 9);
+localStorage.setItem('clc_user_id', userId);
+
+window.addEventListener('online', () => { isOnline = true; updateConnectionStatus(); syncToCloud(); });
+window.addEventListener('offline', () => { isOnline = false; updateConnectionStatus(); });
+
+function updateConnectionStatus() {
+  const indicator = document.getElementById('connection-status');
+  if (indicator) {
+    indicator.textContent = isOnline ? '🟢 Онлайн' : '🔴 Офлайн';
+    indicator.style.color = isOnline ? '#4caf50' : '#ef5350';
+  }
+}
+
+function syncToCloud() {
+  if (!isOnline) return;
+  const data = {
+    songs: songs,
+    setlists: setlists,
+    sectionNotes: sectionNotes,
+    inlineComments: inlineComments,
+    updatedAt: Date.now(),
+    updatedBy: userId
+  };
+  db.ref('worship-setup/data').set(data)
+    .then(() => console.log('✅ Синхронизация в облако'))
+    .catch(err => console.error('❌ Ошибка:', err));
+}
+
+function syncFromCloud() {
+  if (!isOnline) return;
+  db.ref('worship-setup/data').once('value')
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (data && data.updatedAt) {
+        const localUpdated = Math.max(
+          parseInt(localStorage.getItem('clc_songs_updated') || '0'),
+          parseInt(localStorage.getItem('clc_setlists_updated') || '0')
+        );
+        if (data.updatedAt > localUpdated && data.updatedBy !== userId) {
+          if (confirm('🔄 Найдены изменения в облаке. Загрузить?')) {f
+            songs = data.songs || [];
+            setlists = data.setlists || [];
+            sectionNotes = data.sectionNotes || {};
+            inlineComments = data.inlineComments || {};
+            saveToStorage();
+            renderSongs();
+            alert('✅ Данные загружены');
+          }
+        }
+      }
+    })
+    .catch(err => console.error('❌ Ошибка загрузки:', err));
+}
+
+function subscribeToChanges() {
+  if (!isOnline) return;
+  db.ref('worship-setup/data').on('value', snapshot => {
+    const data = snapshot.val();
+    if (data && data.updatedBy !== userId) {
+      console.log('🔄 Изменения от другого пользователя');
+      if (confirm('🔄 Кто-то изменил данные. Обновить?')) {
+        songs = data.songs || [];
+        setlists = data.setlists || [];
+        sectionNotes = data.sectionNotes || {};
+        inlineComments = data.inlineComments || {};
+        saveToStorage();
+        renderSongs();
+      }
+    }
+  });
+}
+
+const originalSaveToStorage = saveToStorage;
+saveToStorage = function() {
+  originalSaveToStorage();
+  localStorage.setItem('clc_songs_updated', Date.now().toString());
+  if (isOnline) setTimeout(syncToCloud, 1000);
+};
+
+function addConnectionIndicator() {
+  const headerRight = document.querySelector('.header-right');
+  if (headerRight && !document.getElementById('connection-status')) {
+    const indicator = document.createElement('div');
+    indicator.id = 'connection-status';
+    indicator.style.cssText = 'font-size: 12px; padding: 4px 8px; background: rgba(0,0,0,0.2); border-radius: 4px; margin-right: 8px;';
+    indicator.textContent = '🟢 Онлайн';
+    headerRight.insertBefore(indicator, headerRight.firstChild);
+  }
+}
+
+window.addEventListener('load', () => {
+  updateConnectionStatus();
+  addConnectionIndicator();
+  if (isOnline) {
+    setTimeout(syncFromCloud, 2000);
+    setTimeout(subscribeToChanges, 3000);
+  }
+});
+// === КОНЕЦ ОНЛАЙН СИНХРОНИЗАЦИИ ===
+loadFromStorage(); renderSongs(); setupSwipe(); setupVlButton(); applyBodyClasses(); updateToggleButtonsUI();
 window.addEventListener('resize', updatePdfOrCopyButton);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => console.log('SW:', r.scope)).catch(console.error));
 </script>
