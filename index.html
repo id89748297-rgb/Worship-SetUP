@@ -102,7 +102,7 @@ body.dark-white .list-item { background: #1e1e1e; box-shadow: 0 2px 4px rgba(0,0
 .list-item.drag-over { border: 2px dashed #9575cd; }
 .item-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
 .item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.item-title { font-weight: bold; font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-title { font-weight: bold; font-size: 15px; margin-bottom: 2px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
 .item-sub { font-size: 12px; color: #888; }
 .order-input { width: 42px; height: 36px; border-radius: 6px; border: 1px solid #555; background: #2a2a2a; color: #eee; text-align: center; font-size: 14px; font-weight: bold; touch-action: manipulation; cursor: pointer; }
 body.light .order-input { background: #f0f0f0; border: 1px solid #ccc; color: #333; }
@@ -357,9 +357,9 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <option value="bpm-desc">По BPM ↓</option>
 </select>
 <div class="home-actions-row row-top">
-<button class="btn-pastel" onclick="openExpressAdd()">⚡ Добавить экспресс</button>
+<button class="btn-pastel" onclick="openExpressAdd()">⚡ Добавить песню (экспресс)</button>
 <button class="btn-pastel" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
-<button class="btn-pastel" onclick="openMainSongEditor()">+ Добавить</button>
+<button class="btn-pastel" onclick="openMainSongEditor()">+Добавить</button>
 </div>
 <div class="home-actions-row row-bottom">
 <button class="btn-pastel" onclick="exportDatabase()">📤 Экспорт базы</button>
@@ -532,7 +532,7 @@ function formatDate(dateString) { const date = new Date(dateString); const month
 function formatSetlistDate(dateString, timeString) { let result = formatDate(dateString); if (timeString) result += `, ${timeString}`; return result; }
 function getCurrentDate() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 function getCurrentTime() { const date = new Date(); return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`; }
-const CATEGORY_LABELS = { fast: '🔥 Быстрая', medium: '🎵 Средняя', slow: '🧎 Медленная' };
+const CATEGORY_LABELS = { fast: '🔥 Б', medium: '🎵 С', slow: '🧎 M' };
 const CATEGORY_ICONS = { fast: '🔥', medium: '🎵', slow: '🧎' };
 const DIATONIC_CHORDS = {
 'C':  [{r:'C',m:false},{r:'D',m:true},{r:'E',m:true},{r:'F',m:false},{r:'G',m:false},{r:'A',m:true},{r:'H',m:true}],
@@ -700,6 +700,7 @@ else { document.body.classList.add('dark'); document.body.classList.remove('ligh
 const savedColor = localStorage.getItem('clc_color');
 if (savedColor === 'violet') document.body.classList.add('violet'); else document.body.classList.remove('violet');
 currentHideArrows = localStorage.getItem('clc_hide_arrows') === 'true';
+currentHideComments = localStorage.getItem('clc_hide_comments') === 'true';
 const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
 if (savedState.page === 'page-song-view' && savedState.songId) { currentSongId = savedState.songId; currentSlId = savedState.slId || null; showPage('page-song-view'); setTimeout(() => openSongView(savedState.songId, savedState.slId), 100); }
 else if (savedState.page === 'page-setlist-detail' && savedState.slId) { currentSlId = savedState.slId; showPage('page-setlist-detail'); setTimeout(() => openSetlistDetail(savedState.slId), 100); }
@@ -769,7 +770,7 @@ const countLabel = document.getElementById('songs-count-label');
 const countText = categoryFilter === 'fast' ? '🔥 Быстрые' : categoryFilter === 'medium' ? '🎵 Средние' : categoryFilter === 'slow' ? '🧎 Медленные' : categoryFilter === 'none' ? 'Без категории' : 'Все песни';
 if (countLabel) countLabel.innerText = countText;
 document.getElementById('songs-count').innerText = sorted.length;
-sorted.forEach(s => { const keyLabel = s.key ? ` <span style="color:#90caf9; font-size:12px;">[${s.key}]</span>` : ''; const bpmText = s.bpm ? `<span style="color:#888; font-size:8px;">${s.bpm} BPM</span>` : ''; const authorText = s.author ? `<span style="color:#888; font-size:8px; margin-left: 6px;">${s.author}</span>` : ''; const categoryBadge = s.category ? `<span class="category-badge ${s.category}">${CATEGORY_ICONS[s.category]} ${CATEGORY_LABELS[s.category].split(' ')[1]}</span>` : ''; const div = document.createElement('div'); div.className = 'list-item'; div.style.cursor = 'default'; div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1;"><div class="item-title">${s.title}${keyLabel}${categoryBadge}</div><div class="item-sub">${bpmText}${authorText}</div></div><div class="item-actions" style="display: flex; gap: 4px;"><button class="btn-icon" onclick="event.stopPropagation(); openMainSongEditor(${s.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); confirmDeleteSong(${s.id}, '${s.title.replace(/'/g, "\\'")}')">🗑️</button></div>`; div.onclick = () => clearSearchAndOpenSong(s.id); list.appendChild(div); });
+sorted.forEach(s => { const keyLabel = s.key ? ` <span style="color:#90caf9; font-size:12px;">[${s.key}]</span>` : ''; const bpmText = s.bpm ? `<div style="color:#888; font-size:8px;">${s.bpm} BPM</div>` : ''; const authorText = s.author ? `<div style="color:#888; font-size:8px;">${s.author}</div>` : ''; const div = document.createElement('div'); div.className = 'list-item'; div.style.cursor = 'default'; div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1;"><div class="item-title">${s.title}${keyLabel}</div><div class="item-sub" style="display: flex; flex-direction: column; gap: 1px;">${bpmText}${authorText}</div></div><div class="item-actions" style="display: flex; gap: 4px;"><button class="btn-icon" onclick="event.stopPropagation(); openMainSongEditor(${s.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); confirmDeleteSong(${s.id}, '${s.title.replace(/'/g, "\\'")}')">🗑️</button></div>`; div.onclick = () => clearSearchAndOpenSong(s.id); list.appendChild(div); });
 }
 function confirmDeleteSong(id, name) { showDeleteConfirm('song', id, `Песню "${name}"`, () => { songs = songs.filter(s => s.id !== id); setlists.forEach(sl => sl.songs = sl.songs.filter(x => x.id !== id)); if (sectionNotes[id]) delete sectionNotes[id]; if (inlineComments[id]) delete inlineComments[id]; saveToStorage(); renderSongs(); }); }
 function openMainSongEditor(id = null) { currentSongId = id; openSongEditor(id, false); }
@@ -1073,7 +1074,7 @@ updateToggleButtonsUI();
 updateSongView();
 }
 function toggleArrowsVisibility() { currentHideArrows = !currentHideArrows; localStorage.setItem('clc_hide_arrows', currentHideArrows ? 'true' : 'false'); applyBodyClasses(); updateToggleButtonsUI(); }
-function toggleCommentsVisibility() { currentHideComments = !currentHideComments; applyBodyClasses(); updateToggleButtonsUI(); }
+function toggleCommentsVisibility() { currentHideComments = !currentHideComments; localStorage.setItem('clc_hide_comments', currentHideComments ? 'true' : 'false'); applyBodyClasses(); updateToggleButtonsUI(); }
 function toggleToolbarExpand() {
 toolbarExpanded = !toolbarExpanded;
 const row3 = document.getElementById('toolbar-row-3');
@@ -1102,6 +1103,7 @@ return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="so
 container.style.display = 'flex';
 } else { container.innerHTML = ''; container.style.display = 'none'; }
 }
+// === Скролл к началу контента ===
 function scrollToSongContent() {
 const content = document.getElementById('song-view-content');
 if (content) {
@@ -1110,6 +1112,7 @@ const offset = window.scrollY + rect.top - 10;
 window.scrollTo({ top: Math.max(0, offset), behavior: 'instant' });
 }
 }
+// === Скролл к подсказке о свайпах ===
 function scrollToSwipeHint() {
 const hint = document.getElementById('swipe-hint');
 if (hint && hint.style.display !== 'none') {
@@ -1120,7 +1123,7 @@ window.scrollTo({ top: Math.max(0, offset), behavior: 'instant' });
 scrollToSongContent();
 }
 }
-function openSongView(id, slId) {
+function openSongView(id, slId, fromSwipe = false) {
 currentSongId = id; currentSlId = slId; isInlineEditing = false;
 document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; document.querySelector('.song-toolbar').style.display = 'block';
 const s = songs.find(x => x.id === id); if (!s) return;
@@ -1152,7 +1155,16 @@ applyBodyClasses(); updateToggleButtonsUI(); toolbarExpanded = false; const row3
 const sl = slId ? setlists.find(x => x.id === slId) : null; const item = sl ? sl.songs.find(x => x.id === id) : null;
 renderSongContent((item && item.chordpro) || s.chordpro, originalKey, currentKey, currentCapo);
 showPage('page-song-view'); updatePdfOrCopyButton();
-requestAnimationFrame(() => { setTimeout(scrollToSwipeHint, 50); });
+// === Скролл: при свайпе в сет-листе — к подсказке, иначе — наверх ===
+requestAnimationFrame(() => {
+setTimeout(() => {
+if (fromSwipe && slId) {
+scrollToSwipeHint();
+} else {
+window.scrollTo({ top: 0, behavior: 'instant' });
+}
+}, 50);
+});
 }
 function updatePdfOrCopyButton() { const btn = document.getElementById('btn-pdf-or-copy'); if (window.innerWidth <= 768) btn.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📋</span><span style="font-size: 8px; margin-top: 2px;">копировать</span></div>'; else btn.innerHTML = '📄 PDF'; }
 function handlePdfOrCopy() { if (window.innerWidth <= 768) copySongText(); else downloadPdf(); }
@@ -1201,7 +1213,7 @@ function prevSong() {
 if (currentSlId) {
 const sl = setlists.find(x => x.id === currentSlId);
 const idx = sl.songs.findIndex(x => x.id === currentSongId);
-if (idx > 0) openSongView(sl.songs[idx - 1].id, currentSlId);
+if (idx > 0) openSongView(sl.songs[idx - 1].id, currentSlId, true);
 } else if (homeFilteredSongs.length > 0 && homeSongIndex > 0) {
 homeSongIndex--;
 openSongView(homeFilteredSongs[homeSongIndex].id, null);
@@ -1211,7 +1223,7 @@ function nextSong() {
 if (currentSlId) {
 const sl = setlists.find(x => x.id === currentSlId);
 const idx = sl.songs.findIndex(x => x.id === currentSongId);
-if (idx < sl.songs.length - 1) openSongView(sl.songs[idx + 1].id, currentSlId);
+if (idx < sl.songs.length - 1) openSongView(sl.songs[idx + 1].id, currentSlId, true);
 } else if (homeFilteredSongs.length > 0 && homeSongIndex < homeFilteredSongs.length - 1) {
 homeSongIndex++;
 openSongView(homeFilteredSongs[homeSongIndex].id, null);
