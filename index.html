@@ -42,9 +42,10 @@ body.dark-white .section-label { color: #90caf9 !important; font-weight: normal 
 body.dark-white .section-extra { color: #90caf9 !important; opacity: 0.85 !important; font-weight: normal !important; }
 .page { display: none; } .page.active { display: block; }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; flex-wrap: nowrap; position: relative; min-height: 60px; }
-.header-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; z-index: 2; }
+.header-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; max-width: calc(100% - 200px); z-index: 1; pointer-events: none; }
+.header-center > * { pointer-events: auto; }
+.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; z-index: 2; }
 .header h1.app-title { font-size: 12px; margin: 0; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 .app-subtitle { font-size: 14px; color: #9575cd; text-align: center; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; }
 body.light .app-subtitle { color: #7e57c2; }
@@ -329,6 +330,21 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 @media (hover: hover) and (pointer: fine) and (min-width: 769px) { .mobile-only { display: none !important; } .desktop-only { display: flex; } .toolbar-row { grid-template-columns: repeat(5, 1fr); } #toolbar-row-3 { grid-template-columns: repeat(5, 1fr); } }
 @media (max-width: 480px) { body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); } .header h1.app-title { font-size: 12px; } .btn-main { padding: 14px; font-size: 14px; min-height: 48px; } .list-item { padding: 10px 12px; min-height: 56px; } .item-title { font-size: 14px; } .modal-content { padding: 15px; max-height: 85vh; } .theme-toggle, .vl-worship-btn { width: 44px; height: 44px; font-size: 20px; } .song-toolbar { padding: 10px; gap: 6px; } .toolbar-row { gap: 6px; } .toolbar-btn-item, .toolbar-select-item { height: 48px; } .toolbar-select-item select { font-size: 11px; } .song-section { padding: 6px; } .section-label { font-size: 13px; } .key-select-inline { min-width: 60px; font-size: 12px; padding: 4px 6px; padding-right: 20px; min-height: 36px; } .btn-icon { min-width: 36px; min-height: 36px; font-size: 18px; } .setlist-actions-row button { padding: 10px 6px; font-size: 13px; } .side-nav-btn { width: 44px; height: 70px; font-size: 24px; } .grid-btn { font-size: 13px; padding: 12px 6px; min-height: 48px; } .order-input { width: 36px; height: 32px; font-size: 13px; } .instruction-card { padding: 14px; } .instruction-card-title { font-size: 15px; } .instruction-card-text { font-size: 13px; } .btn-pastel { font-size: 13px; padding: 10px 8px; } .song-view-links { padding: 6px 10px; } .song-link { font-size: 12px; padding: 3px 6px; } .songs-count-row h2 { font-size: 16px; } .category-filter-select { font-size: 13px; min-height: 32px; } .carousel-item-inner { padding: 8px 4px; min-height: 50px; } .carousel-item-icon { font-size: 16px; } .carousel-item-label { font-size: 10px; } .carousel-item.active .carousel-item-label { font-size: 11px; } }
 @media (max-width: 768px) and (min-width: 481px) { .song-columns-2 { column-count: 2; } }
+/* Табы Email/Логин */
+.auth-tab { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #888; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+.auth-tab.active { background: #9575cd; color: white; border-color: #9575cd; }
+body.light .auth-tab { background: #f0f0f0; color: #666; border-color: #ddd; }
+body.light .auth-tab.active { background: #7e57c2; color: white; border-color: #7e57c2; }
+/* Кнопка показать пароль */
+.pwd-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 20px; cursor: pointer; padding: 6px; border-radius: 6px; color: #888; }
+.pwd-toggle:hover { background: rgba(255,255,255,0.05); }
+body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
+/* Аватар со свечением */
+.user-avatar-glow { box-shadow: 0 0 12px rgba(149, 117, 205, 0.8), 0 0 20px rgba(149, 117, 205, 0.4); animation: avatarPulse 2.5s ease-in-out infinite; }
+@keyframes avatarPulse { 0%, 100% { box-shadow: 0 0 12px rgba(149, 117, 205, 0.8), 0 0 20px rgba(149, 117, 205, 0.4); } 50% { box-shadow: 0 0 18px rgba(149, 117, 205, 1), 0 0 28px rgba(149, 117, 205, 0.6); } }
+/* Модалка профиля */
+.profile-avatar-preview { width: 96px; height: 96px; border-radius: 50%; background: #9575cd; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 48px; overflow: hidden; color: white; box-shadow: 0 0 16px rgba(149, 117, 205, 0.6); }
+.profile-avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
 </style>
 </head>
 <body class="dark">
@@ -564,25 +580,50 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 <h2 id="auth-modal-title" style="text-align:center; color: #90caf9; margin-bottom: 20px;">Вход</h2>
 
 <div id="auth-login-form">
-<input type="email" id="auth-email" placeholder="Email" autocomplete="email" style="margin-bottom: 10px;">
-<input type="password" id="auth-password" placeholder="Пароль" autocomplete="current-password" style="margin-bottom: 15px;">
+<div style="display: flex; gap: 8px; margin-bottom: 12px;">
+  <button type="button" class="auth-tab active" id="tab-email" onclick="switchAuthTab('email')">📧 Email</button>
+  <button type="button" class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">👤 Логин</button>
+</div>
+<div style="margin-bottom: 10px;">
+  <input type="email" id="auth-email" placeholder="Email" autocomplete="email">
+  <input type="text" id="auth-username" placeholder="Логин" autocomplete="username" style="display: none;">
+</div>
+<div style="position: relative; margin-bottom: 15px;">
+  <input type="password" id="auth-password" placeholder="Пароль" autocomplete="current-password" style="padding-right: 44px;">
+  <button type="button" class="pwd-toggle" onclick="togglePassword('auth-password', this)" title="Показать пароль">👁️</button>
+</div>
 <button class="btn-main" onclick="loginWithEmail()">Войти</button>
 <button class="btn-secondary" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 8px; font-size: 13px;">📧 Повторно отправить письмо подтверждения</button>
 <p style="text-align: center; margin: 15px 0; color: #888;">или</p>
 <button class="btn-pastel" onclick="loginWithGoogle()" style="width: 100%;">🔵 Войти через Google</button>
-<button class="btn-pastel" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 10px; font-size: 13px;">
-📧 Отправить письмо подтверждения повторно
-</button>
 <p style="text-align: center; margin-top: 15px;">
 Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
 </p>
 </div>
 
 <div id="auth-register-form" style="display: none;">
-<input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="margin-bottom: 10px;">
-<input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="margin-bottom: 10px;">
+<input type="text" id="auth-reg-username" placeholder="Логин (уникальный) *" autocomplete="username" style="margin-bottom: 10px;">
+<div style="display: flex; gap: 8px; margin-bottom: 10px;">
+  <input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="flex: 1;">
+  <input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="flex: 1;">
+</div>
 <input type="email" id="auth-reg-email" placeholder="Email *" autocomplete="email" style="margin-bottom: 10px;">
-<input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов)" autocomplete="new-password" style="margin-bottom: 15px;">
+<div style="display: flex; gap: 8px; margin-bottom: 10px;">
+  <input type="date" id="auth-birthdate" style="flex: 1;">
+  <select id="auth-gender" style="flex: 1;">
+    <option value="">Пол</option>
+    <option value="male">Мужской</option>
+    <option value="female">Женский</option>
+  </select>
+</div>
+<div style="position: relative; margin-bottom: 10px;">
+  <input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов) *" autocomplete="new-password" style="padding-right: 44px;">
+  <button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password', this)">👁️</button>
+</div>
+<div style="position: relative; margin-bottom: 15px;">
+  <input type="password" id="auth-reg-password-confirm" placeholder="Повторите пароль *" autocomplete="new-password" style="padding-right: 44px;">
+  <button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password-confirm', this)">👁️</button>
+</div>
 <button class="btn-main" onclick="registerWithEmail()">Зарегистрироваться</button>
 <p style="text-align: center; margin-top: 15px;">
 Уже есть аккаунт? <a href="#" onclick="showLoginForm(); return false;" style="color: #90caf9;">Войти</a>
@@ -590,6 +631,64 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 </div>
 
 <button class="btn-secondary" onclick="closeModal('modal-auth')" style="width: 100%; margin-top: 10px;">Отмена</button>
+</div>
+</div>
+<div id="modal-profile" class="modal">
+<div class="modal-content" style="max-width: 480px;">
+<h2 style="text-align: center; color: #90caf9; margin-bottom: 15px;">👤 Мой профиль</h2>
+<div style="text-align: center; margin-bottom: 15px;">
+  <div id="profile-avatar-preview" class="profile-avatar-preview">👤</div>
+  <label class="btn-pastel" style="display: inline-block; cursor: pointer; padding: 8px 16px; font-size: 13px;">
+    📷 Загрузить аватар
+    <input type="file" id="profile-avatar-input" accept="image/*" style="display: none;" onchange="previewProfileAvatar(this)">
+  </label>
+  <button class="btn-icon" id="profile-remove-avatar-btn" onclick="removeProfileAvatar()" style="display: none; margin: 5px auto; color: #ef5350;" title="Удалить аватар">🗑️ Удалить аватар</button>
+</div>
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
+<input type="text" id="profile-username" placeholder="username" autocomplete="username">
+<div style="display: flex; gap: 8px;">
+  <div style="flex: 1;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
+    <input type="text" id="profile-firstname" autocomplete="given-name">
+  </div>
+  <div style="flex: 1;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
+    <input type="text" id="profile-lastname" autocomplete="family-name">
+  </div>
+</div>
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
+<input type="email" id="profile-email" autocomplete="email" disabled style="opacity: 0.7;">
+<div style="display: flex; gap: 8px;">
+  <div style="flex: 1;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Дата рождения</label>
+    <input type="date" id="profile-birthdate">
+  </div>
+  <div style="flex: 1;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
+    <select id="profile-gender">
+      <option value="">Не указан</option>
+      <option value="male">Мужской</option>
+      <option value="female">Женский</option>
+    </select>
+  </div>
+</div>
+<hr style="margin: 15px 0; border: none; border-top: 1px solid #444;">
+<p style="color: #888; font-size: 12px; margin-bottom: 10px;">Оставьте пустым, чтобы не менять пароль:</p>
+<div style="position: relative; margin-bottom: 10px;">
+  <label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль</label>
+  <input type="password" id="profile-new-password" placeholder="Новый пароль" style="padding-right: 44px;">
+  <button type="button" class="pwd-toggle" onclick="togglePassword('profile-new-password', this)">👁️</button>
+</div>
+<div style="position: relative; margin-bottom: 10px;">
+  <label style="font-weight: bold; display: block; margin-bottom: 5px;">Повторите пароль</label>
+  <input type="password" id="profile-confirm-password" placeholder="Повторите" style="padding-right: 44px;">
+  <button type="button" class="pwd-toggle" onclick="togglePassword('profile-confirm-password', this)">👁️</button>
+</div>
+<div class="modal-actions" style="margin-top: 20px;">
+<button class="btn-danger" onclick="logout()" style="margin-right: auto;">🚪 Выйти</button>
+<button class="btn-secondary" onclick="closeModal('modal-profile')">Отмена</button>
+<button class="btn-main" style="width: auto; margin: 0;" onclick="saveProfile()">💾 Сохранить</button>
+</div>
 </div>
 </div>
 <div id="modal-share-setlist" class="modal"><div class="modal-content"><h2>📤 Поделиться сет-листом</h2><p style="color: #888; margin-bottom: 15px;">Выберите способ:</p><div style="display: flex; flex-direction: column; gap: 10px;"><button class="btn-main" onclick="exportSetlistAsFile()">📁 Сохранить файл (.clcsetlist)</button><button class="btn-main" onclick="shareSetlistViaAPI()">📤 Отправить через систему</button><div id="share-to-team-section"></div></div><button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeModal('modal-share-setlist')">Отмена</button></div></div>
@@ -1299,17 +1398,6 @@ document.getElementById('sl-time').value = getCurrentTime();
 document.getElementById('sl-name').value = '';
 document.getElementById('modal-setlist').dataset.teamId = teamId;
 document.getElementById('modal-setlist').classList.add('show');
-}
-function openSetlistModalForTeam(teamId) {
-document.getElementById('sl-date').value = getCurrentDate();
-document.getElementById('sl-time').value = getCurrentTime();
-document.getElementById('sl-name').value = '';
-document.getElementById('modal-setlist').dataset.teamId = teamId;
-document.getElementById('modal-setlist').classList.add('show');
-}
-function toggleTeamArchive(teamId) {
-currentTeamArchiveTeamId = (currentTeamArchiveTeamId === teamId) ? null : teamId;
-showTeamDetailView(teamId);
 }
 function createSetlistForTeam(teamId) {
 const name = prompt('Название сет-листа:');
@@ -2346,168 +2434,360 @@ event.target.value = '';
 function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn = prompt('Имя файла:', dn); if (fn === null) return; const cn = fn.trim() || dn; const final = cn.toLowerCase().endsWith('.clcdb') ? cn : cn + '.clcdb'; shareFile({ version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs, sectionNotes, inlineComments } }, final); }
 function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!\nДобавлено: ${added}\nПропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 // === АВТОРИЗАЦИЯ FIREBASE ===
+let profileAvatarFile = null;
+let profileAvatarData = null;
 
-// Слушатель состояния авторизации
-// === АВТОРИЗАЦИЯ FIREBASE ===
-// Слушатель состояния авторизации
-auth.onAuthStateChanged((user) => {
-    authChecked = true;
-    if (user) {
-        // 🔽 ПРОВЕРКА ПОДТВЕРЖДЕНИЯ EMAIL
-        if (!user.emailVerified) {
-            const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-            if (!isGoogleUser) {
-                alert('⚠️ Ваш email не подтверждён!\n\nПроверьте почту и перейдите по ссылке из письма.\nЕсли письмо не пришло — нажмите «📧 Отправить письмо повторно» в окне входа.');
-                auth.signOut();
-                return;
-            }
-        }
-        
-        currentUser = user;
-        isAuthenticated = true;
-        saveUserProfile(user);
-        closeModal('modal-auth');
-        updateUserAvatar();
-        renderCarousel();
-    } else {
-        currentUser = null;
-        isAuthenticated = false;
-        updateUserAvatar();
-        if (!localStorage.getItem('clc_auth_shown')) {
-            showAuthModal();
-            localStorage.setItem('clc_auth_shown', 'true');
-        }
+function compressProfileImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const size = 128;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const minDim = Math.min(img.width, img.height);
+      const sx = (img.width - minDim) / 2;
+      const sy = (img.height - minDim) / 2;
+      ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+      callback(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+auth.onAuthStateChanged(async (user) => {
+  authChecked = true;
+  if (user) {
+    if (!user.emailVerified) {
+      const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+      if (!isGoogleUser) {
+        alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+        auth.signOut();
+        return;
+      }
     }
+    currentUser = user;
+    isAuthenticated = true;
+    await loadUserProfileFromFirestore(user);
+    closeModal('modal-auth');
+    updateUserAvatar();
+    renderCarousel();
+  } else {
+    currentUser = null;
+    isAuthenticated = false;
+    updateUserAvatar();
+    if (!localStorage.getItem('clc_auth_shown')) {
+      showAuthModal();
+      localStorage.setItem('clc_auth_shown', 'true');
+    }
+  }
 });
 
+async function loadUserProfileFromFirestore(user) {
+  if (!db) return;
+  try {
+    const doc = await db.collection('users').doc(user.uid).get();
+    if (doc.exists) {
+      currentUser.profileData = doc.data();
+    } else {
+      await saveUserProfile(user);
+    }
+  } catch (e) { console.error('Ошибка загрузки профиля:', e); }
+}
+
 function showAuthModal() {
-document.getElementById('modal-auth').classList.add('show');
-showLoginForm();
+  document.getElementById('modal-auth').classList.add('show');
+  showLoginForm();
 }
 
 function showLoginForm() {
-document.getElementById('auth-login-form').style.display = 'block';
-document.getElementById('auth-register-form').style.display = 'none';
-document.getElementById('auth-modal-title').innerText = 'Вход';
+  document.getElementById('auth-login-form').style.display = 'block';
+  document.getElementById('auth-register-form').style.display = 'none';
+  document.getElementById('auth-modal-title').innerText = 'Вход';
 }
 
 function showRegisterForm() {
-document.getElementById('auth-login-form').style.display = 'none';
-document.getElementById('auth-register-form').style.display = 'block';
-document.getElementById('auth-modal-title').innerText = 'Регистрация';
+  document.getElementById('auth-login-form').style.display = 'none';
+  document.getElementById('auth-register-form').style.display = 'block';
+  document.getElementById('auth-modal-title').innerText = 'Регистрация';
 }
 
-// Вход через email/пароль
-function loginWithEmail() {
-const email = document.getElementById('auth-email').value.trim();
-const password = document.getElementById('auth-password').value;
-if (!email || !password) { alert('Введите email и пароль'); return; }
-auth.signInWithEmailAndPassword(email, password)
-.catch((error) => alert('Ошибка входа: ' + error.message));
+function switchAuthTab(tab) {
+  const emailInput = document.getElementById('auth-email');
+  const usernameInput = document.getElementById('auth-username');
+  const tabEmail = document.getElementById('tab-email');
+  const tabLogin = document.getElementById('tab-login');
+  if (tab === 'email') {
+    emailInput.style.display = 'block';
+    usernameInput.style.display = 'none';
+    tabEmail.classList.add('active');
+    tabLogin.classList.remove('active');
+  } else {
+    emailInput.style.display = 'none';
+    usernameInput.style.display = 'block';
+    tabEmail.classList.remove('active');
+    tabLogin.classList.add('active');
+  }
 }
 
-// Регистрация через email/пароль
-// Регистрация через email/пароль
-function registerWithEmail() {
-    const firstName = document.getElementById('auth-firstname').value.trim();
-    const lastName = document.getElementById('auth-lastname').value.trim();
-    const email = document.getElementById('auth-reg-email').value.trim();
-    const password = document.getElementById('auth-reg-password').value;
-    if (!firstName || !email || !password) { alert('Заполните обязательные поля'); return; }
-    if (password.length < 6) { alert('Пароль должен быть не менее 6 символов'); return; }
-    auth.createUserWithEmailAndPassword(email, password)
-        .then((cred) => {
-            // 🔽 ОТПРАВКА ПИСЬМА ПОДТВЕРЖДЕНИЯ
-            return cred.user.sendEmailVerification()
-                .then(() => {
-                    alert('✅ Аккаунт создан!\n\n📧 На ' + email + ' отправлено письмо с подтверждением.\nПерейдите по ссылке в нём, затем войдите в приложение.');
-                    return cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
-                })
-                .then(() => auth.signOut()); // выходим, чтобы пользователь вошёл заново после подтверждения
-        })
-        .catch((error) => alert('Ошибка регистрации: ' + error.message));
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerText = '🙈';
+  } else {
+    input.type = 'password';
+    btn.innerText = '👁️';
+  }
 }
 
-// Вход через Google
+async function loginWithEmail() {
+  const tabEmail = document.getElementById('tab-email');
+  const isEmailMode = tabEmail ? tabEmail.classList.contains('active') : true;
+  const password = document.getElementById('auth-password').value;
+  let email = '';
+  if (isEmailMode) {
+    email = document.getElementById('auth-email').value.trim();
+    if (!email || !password) { alert('Введите email и пароль'); return; }
+  } else {
+    const username = document.getElementById('auth-username').value.trim();
+    if (!username || !password) { alert('Введите логин и пароль'); return; }
+    try {
+      const snap = await db.collection('usernames').doc(username.toLowerCase()).get();
+      if (!snap.exists) { alert('❌ Пользователь с таким логином не найден'); return; }
+      email = snap.data().email;
+    } catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
+  }
+  auth.signInWithEmailAndPassword(email, password)
+    .catch((error) => alert('Ошибка входа: ' + error.message));
+}
+
+async function registerWithEmail() {
+  const username = document.getElementById('auth-reg-username').value.trim();
+  const firstName = document.getElementById('auth-firstname').value.trim();
+  const lastName = document.getElementById('auth-lastname').value.trim();
+  const email = document.getElementById('auth-reg-email').value.trim();
+  const password = document.getElementById('auth-reg-password').value;
+  const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
+  const birthdate = document.getElementById('auth-birthdate').value;
+  const gender = document.getElementById('auth-gender').value;
+
+  if (!username || !firstName || !email || !password) {
+    alert('Заполните обязательные поля (отмечены *)'); return;
+  }
+  if (username.length < 3) { alert('Логин: минимум 3 символа'); return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('Логин: только латиница, цифры и _'); return; }
+  if (password.length < 6) { alert('Пароль: минимум 6 символов'); return; }
+  if (password !== passwordConfirm) { alert('❌ Пароли не совпадают!'); return; }
+
+  try {
+    const existing = await db.collection('usernames').doc(username.toLowerCase()).get();
+    if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
+  } catch (e) { /* ок */ }
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    await cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
+    await db.collection('usernames').doc(username.toLowerCase()).set({
+      uid: cred.user.uid, email: email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('users').doc(cred.user.uid).set({
+      email: email, displayName: `${firstName} ${lastName}`,
+      firstName: firstName, lastName: lastName,
+      username: username.toLowerCase(),
+      birthdate: birthdate || null, gender: gender || null,
+      photoURL: null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await cred.user.sendEmailVerification();
+    alert('✅ Аккаунт создан!\n📧 На ' + email + ' отправлено письмо с подтверждением.\nПерейдите по ссылке в нём, затем войдите.');
+    await auth.signOut();
+    showLoginForm();
+  } catch (error) {
+    alert('Ошибка регистрации: ' + error.message);
+  }
+}
+
 function loginWithGoogle() {
-const provider = new firebase.auth.GoogleAuthProvider();
-auth.signInWithPopup(provider).catch((error) => alert('Ошибка: ' + error.message));
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch((error) => alert('Ошибка: ' + error.message));
 }
-// Повторная отправка письма подтверждения
+
 function resendVerificationEmail() {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    if (!email || !password) { 
-        alert('Введите email и пароль, чтобы войти и отправить письмо'); 
-        return; 
-    }
-    auth.signInWithEmailAndPassword(email, password)
-        .then((cred) => {
-            if (cred.user.emailVerified) {
-                alert('✅ Email уже подтверждён!');
-                closeModal('modal-auth');
-            } else {
-                return cred.user.sendEmailVerification().then(() => {
-                    alert('✅ Письмо отправлено на ' + email);
-                    return auth.signOut();
-                });
-            }
-        })
-        .catch((err) => alert('Ошибка: ' + err.message));
+  const tabEmail = document.getElementById('tab-email');
+  const isEmailMode = tabEmail ? tabEmail.classList.contains('active') : true;
+  const password = document.getElementById('auth-password').value;
+  let email = '';
+  if (isEmailMode) {
+    email = document.getElementById('auth-email').value.trim();
+    if (!email || !password) { alert('Введите email и пароль'); return; }
+  } else {
+    alert('Для повторной отправки письма переключитесь на вкладку Email');
+    return;
+  }
+  auth.signInWithEmailAndPassword(email, password)
+    .then((cred) => {
+      if (cred.user.emailVerified) {
+        alert('✅ Email уже подтверждён!');
+        closeModal('modal-auth');
+      } else {
+        return cred.user.sendEmailVerification().then(() => {
+          alert('✅ Письмо отправлено на ' + email);
+          return auth.signOut();
+        });
+      }
+    })
+    .catch((err) => alert('Ошибка: ' + err.message));
 }
-// Выход
+
 function logout() {
-if (confirm('Выйти из аккаунта?')) {
-auth.signOut();
-localStorage.removeItem('clc_auth_shown');
-location.reload();
-}
-}
-
-// Сохранение профиля пользователя
-function saveUserProfile(user) {
-if (!db) return;
-db.collection('users').doc(user.uid).set({
-email: user.email,
-displayName: user.displayName,
-photoURL: user.photoURL,
-lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-}, { merge: true });
+  if (confirm('Выйти из аккаунта?')) {
+    auth.signOut();
+    localStorage.removeItem('clc_auth_shown');
+    closeModal('modal-profile');
+    location.reload();
+  }
 }
 
-// Обновление аватара пользователя в шапке
+async function saveUserProfile(user) {
+  if (!db) return;
+  try {
+    await db.collection('users').doc(user.uid).set({
+      email: user.email, displayName: user.displayName,
+      photoURL: user.photoURL || null,
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  } catch (e) { console.error(e); }
+}
+
 function updateUserAvatar() {
-const btn = document.getElementById('user-avatar-btn');
-if (!btn) return;
-btn.style.display = 'flex';
-if (isAuthenticated && currentUser) {
-if (currentUser.photoURL) {
-btn.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-} else {
-btn.innerText = '👤';
-}
-} else {
-btn.innerText = '👤';
-}
+  const btn = document.getElementById('user-avatar-btn');
+  if (!btn) return;
+  btn.style.display = 'flex';
+  if (isAuthenticated && currentUser) {
+    const customAvatar = currentUser.profileData?.photoURL;
+    const googleAvatar = currentUser.photoURL;
+    const avatarUrl = customAvatar || googleAvatar;
+    if (avatarUrl) {
+      btn.innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      btn.classList.add('user-avatar-glow');
+    } else {
+      btn.innerText = '👤';
+      btn.classList.remove('user-avatar-glow');
+    }
+  } else {
+    btn.innerText = '👤';
+    btn.classList.remove('user-avatar-glow');
+  }
 }
 
-// Меню пользователя
-function showUserMenu() {
-if (!currentUser) return;
-const name = currentUser.displayName || currentUser.email;
-const email = currentUser.email;
-if (confirm(`Пользователь: ${name}\nEmail: ${email}\n\nНажмите OK для выхода`)) {
-logout();
+function openProfileModal() {
+  if (!currentUser) return;
+  const data = currentUser.profileData || {};
+  document.getElementById('profile-username').value = data.username || '';
+  document.getElementById('profile-firstname').value = data.firstName || '';
+  document.getElementById('profile-lastname').value = data.lastName || '';
+  document.getElementById('profile-email').value = currentUser.email || '';
+  document.getElementById('profile-birthdate').value = data.birthdate || '';
+  document.getElementById('profile-gender').value = data.gender || '';
+  document.getElementById('profile-new-password').value = '';
+  document.getElementById('profile-confirm-password').value = '';
+  const avatarUrl = data.photoURL || currentUser.photoURL;
+  const preview = document.getElementById('profile-avatar-preview');
+  const removeBtn = document.getElementById('profile-remove-avatar-btn');
+  profileAvatarData = avatarUrl;
+  profileAvatarFile = null;
+  if (avatarUrl) {
+    preview.innerHTML = `<img src="${avatarUrl}" alt="">`;
+    removeBtn.style.display = 'block';
+  } else {
+    preview.innerHTML = '👤';
+    removeBtn.style.display = 'none';
+  }
+  document.getElementById('modal-profile').classList.add('show');
 }
+
+function previewProfileAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { alert('❌ Выберите изображение'); return; }
+  profileAvatarFile = file;
+  compressProfileImage(file, (dataUrl) => {
+    profileAvatarData = dataUrl;
+    document.getElementById('profile-avatar-preview').innerHTML = `<img src="${dataUrl}" alt="">`;
+    document.getElementById('profile-remove-avatar-btn').style.display = 'block';
+  });
 }
-// Обработка кнопки авторизации
-// Обработка кнопки авторизации
+
+function removeProfileAvatar() {
+  profileAvatarData = null;
+  profileAvatarFile = null;
+  document.getElementById('profile-avatar-preview').innerHTML = '👤';
+  document.getElementById('profile-remove-avatar-btn').style.display = 'none';
+  document.getElementById('profile-avatar-input').value = '';
+}
+
+async function saveProfile() {
+  if (!currentUser) return;
+  const username = document.getElementById('profile-username').value.trim().toLowerCase();
+  const firstName = document.getElementById('profile-firstname').value.trim();
+  const lastName = document.getElementById('profile-lastname').value.trim();
+  const birthdate = document.getElementById('profile-birthdate').value;
+  const gender = document.getElementById('profile-gender').value;
+  const newPassword = document.getElementById('profile-new-password').value;
+  const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+  if (!username) { alert('Логин не может быть пустым'); return; }
+  if (username.length < 3) { alert('Логин: минимум 3 символа'); return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('Логин: только латиница, цифры и _'); return; }
+  if (!firstName) { alert('Имя обязательно'); return; }
+  if (newPassword && newPassword.length < 6) { alert('Пароль: минимум 6 символов'); return; }
+  if (newPassword && newPassword !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
+
+  const oldUsername = (currentUser.profileData?.username || '').toLowerCase();
+  if (username !== oldUsername) {
+    try {
+      const existing = await db.collection('usernames').doc(username).get();
+      if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
+    } catch (e) { /* ок */ }
+  }
+
+  try {
+    if (newPassword) await currentUser.updatePassword(newPassword);
+    await currentUser.updateProfile({ displayName: `${firstName} ${lastName}` });
+    if (username !== oldUsername) {
+      if (oldUsername) await db.collection('usernames').doc(oldUsername).delete();
+      await db.collection('usernames').doc(username).set({
+        uid: currentUser.uid, email: currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    const updateData = {
+      username: username, firstName: firstName, lastName: lastName,
+      displayName: `${firstName} ${lastName}`,
+      birthdate: birthdate || null, gender: gender || null,
+      photoURL: profileAvatarData || null,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await db.collection('users').doc(currentUser.uid).set(updateData, { merge: true });
+    currentUser.profileData = { ...currentUser.profileData, ...updateData };
+    alert('✅ Профиль сохранён!');
+    closeModal('modal-profile');
+    updateUserAvatar();
+  } catch (e) {
+    alert('Ошибка сохранения: ' + e.message);
+  }
+}
+
 function handleAuthButton() {
-if (!isAuthenticated) {
-showAuthModal();
-} else {
-showUserMenu();
-}
+  if (!isAuthenticated) {
+    showAuthModal();
+  } else {
+    openProfileModal();
+  }
 }
 // Добавить кнопку "Пользователи" в команду
 function showTeamMembers(teamId) {
