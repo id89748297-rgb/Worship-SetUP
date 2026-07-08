@@ -42,7 +42,7 @@ body.dark-white .section-label { color: #90caf9 !important; font-weight: normal 
 body.dark-white .section-extra { color: #90caf9 !important; opacity: 0.85 !important; font-weight: normal !important; }
 .page { display: none; } .page.active { display: block; }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; flex-wrap: nowrap; position: relative; min-height: 60px; }
-.header-left { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
 .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .header h1.app-title { font-size: 12px; margin: 0; color: #888; text-transform: uppercase; letter-spacing: 1px; }
@@ -335,8 +335,8 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 <div id="page-home" class="page active">
 <div class="header">
 <div class="header-left">
-<button id="user-avatar-btn" onclick="showUserMenu()" style="width:40px;height:40px;border-radius:50%;border:none;background:#9575cd;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;"></button>
-<button class="vl-worship-btn" onclick="showInstruction(true)" title="Инструкция" style="width:40px;height:40px;font-size:16px;">VL</button>
+<button id="user-avatar-btn" onclick="handleAuthButton()" style="width:48px;height:48px;border-radius:50%;border:none;background:#9575cd;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">👤</button>
+<button class="vl-worship-btn" onclick="showInstruction(true)" title="Инструкция">VL</button>
 </div>
 <div class="header-center"><h1 class="app-title">Worship SetUP</h1><div id="home-page-subtitle" class="app-subtitle">песни</div></div>
 <div class="header-right">
@@ -2479,15 +2479,15 @@ lastLogin: firebase.firestore.FieldValue.serverTimestamp()
 function updateUserAvatar() {
 const btn = document.getElementById('user-avatar-btn');
 if (!btn) return;
-if (isAuthenticated && currentUser) {
 btn.style.display = 'flex';
+if (isAuthenticated && currentUser) {
 if (currentUser.photoURL) {
 btn.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
 } else {
 btn.innerText = '👤';
 }
 } else {
-btn.style.display = 'none';
+btn.innerText = '👤';
 }
 }
 
@@ -2500,7 +2500,15 @@ if (confirm(`Пользователь: ${name}\nEmail: ${email}\n\nНажмит�
 logout();
 }
 }
-
+// Обработка кнопки авторизации
+// Обработка кнопки авторизации
+function handleAuthButton() {
+if (!isAuthenticated) {
+showAuthModal();
+} else {
+showUserMenu();
+}
+}
 // Добавить кнопку "Пользователи" в команду
 function showTeamMembers(teamId) {
 const team = teams.find(t => t.id === teamId);
