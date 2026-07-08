@@ -399,6 +399,116 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
         font-size: 13px !important;
     }
 }
+/* Исправление мобильного вида */
+@media (max-width: 768px) {
+    body {
+        padding: 10px !important;
+        padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+        overflow-x: hidden !important;
+    }
+    
+    .header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 10px 5px !important;
+        gap: 5px !important;
+    }
+    
+    .header-left {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .header-center {
+        flex: 1 !important;
+        text-align: center !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    .header-right {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    #user-avatar-btn {
+        width: 42px !important;
+        height: 42px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .app-title {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    .app-subtitle {
+        font-size: 13px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    .home-actions-row {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .btn-pastel {
+        width: 100% !important;
+        margin: 5px 0 !important;
+        min-height: 52px !important;
+    }
+    
+    .modal-content {
+        width: calc(100% - 20px) !important;
+        max-width: 100% !important;
+        margin: 10px auto !important;
+        padding: 15px !important;
+    }
+    
+    .carousel-container {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px !important;
+    }
+    
+    .header {
+        padding: 8px 3px !important;
+    }
+    
+    #user-avatar-btn {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 18px !important;
+    }
+    
+    .vl-worship-btn {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 14px !important;
+    }
+    
+    .app-title {
+        font-size: 10px !important;
+    }
+    
+    .app-subtitle {
+        font-size: 12px !important;
+    }
+}
 </style>
 </head>
 <body class="dark">
@@ -2732,64 +2842,76 @@ function showProfileModal() {
             </div>
             
             <form onsubmit="saveProfile(event)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div>
-                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
-                        <input type="text" id="profile-firstname" value="${currentUser.firstName || ''}" autocomplete="given-name" style="margin-bottom: 0;">
-                    </div>
-                    <div>
-                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
-                        <input type="text" id="profile-lastname" value="${currentUser.lastName || ''}" autocomplete="family-name" style="margin-bottom: 0;">
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 10px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
-                    <input type="text" id="profile-username" value="${currentUser.username || ''}" autocomplete="username" style="margin-bottom: 0;">
-                </div>
-                
-                <div style="margin-bottom: 10px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
-                    <input type="email" id="profile-email" value="${currentUser.email || ''}" autocomplete="email" style="margin-bottom: 0;">
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div>
-                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Дата рождения</label>
-                        <input type="date" id="profile-birthdate" value="${currentUser.birthDate || ''}" style="margin-bottom: 0;">
-                    </div>
-                    <div>
-                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
-                        <select id="profile-gender" style="margin-bottom: 0;">
-                            <option value="">Не указан</option>
-                            <option value="male" ${currentUser.gender === 'male' ? 'selected' : ''}>Мужской</option>
-                            <option value="female" ${currentUser.gender === 'female' ? 'selected' : ''}>Женский</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 10px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль (оставьте пустым, чтобы не менять)</label>
-                    <input type="password" id="profile-password" placeholder="Новый пароль" autocomplete="new-password" style="margin-bottom: 0;">
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Подтвердите пароль</label>
-                    <input type="password" id="profile-password-confirm" placeholder="Повторите пароль" autocomplete="new-password" style="margin-bottom: 0;">
-                </div>
-                
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="submit" class="btn-main" style="flex: 1; min-width: 120px;">💾 Сохранить</button>
-                    <button type="button" class="btn-secondary" onclick="closeProfileModal()" style="flex: 1; min-width: 120px;">Отмена</button>
-                    <button type="button" class="btn-danger" onclick="logoutUser()" style="flex: 1; min-width: 120px;">🚪 Выйти</button>
-                </div>
-            </form>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
+            <input type="text" id="profile-firstname" value="${currentUser.firstName || ''}" placeholder="Ваше имя" autocomplete="given-name" style="margin-bottom: 0;">
         </div>
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
+            <input type="text" id="profile-lastname" value="${currentUser.lastName || ''}" placeholder="Ваша фамилия" autocomplete="family-name" style="margin-bottom: 0;">
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
+        <input type="text" id="profile-username" value="${currentUser.username || ''}" placeholder="Ваш логин" autocomplete="username" style="margin-bottom: 0;">
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
+        <input type="email" id="profile-email" value="${currentUser.email || ''}" placeholder="Ваш email" autocomplete="email" style="margin-bottom: 0;">
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Дата рождения</label>
+            <input type="date" id="profile-birthdate" value="${currentUser.birthDate || ''}" style="margin-bottom: 0;">
+        </div>
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
+            <select id="profile-gender" style="margin-bottom: 0;">
+                <option value="">Не указан</option>
+                <option value="male" ${currentUser.gender === 'male' ? 'selected' : ''}>Мужской</option>
+                <option value="female" ${currentUser.gender === 'female' ? 'selected' : ''}>Женский</option>
+            </select>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль (оставьте пустым, чтобы не менять)</label>
+    <div style="position: relative;">
+        <input type="password" id="profile-password" placeholder="Новый пароль" autocomplete="new-password" style="margin-bottom: 0; padding-right: 40px;">
+        <button type="button" onclick="togglePasswordVisibility('profile-password')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px;">👁️</button>
+    </div>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Подтвердите пароль</label>
+    <div style="position: relative;">
+        <input type="password" id="profile-password-confirm" placeholder="Повторите пароль" autocomplete="new-password" style="margin-bottom: 0; padding-right: 40px;">
+        <button type="button" onclick="togglePasswordVisibility('profile-password-confirm')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px;">👁️</button>
+    </div>
+</div>
+    
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="submit" class="btn-main" style="flex: 1; min-width: 120px;">💾 Сохранить</button>
+        <button type="button" class="btn-secondary" onclick="closeProfileModal()" style="flex: 1; min-width: 120px;">Отмена</button>
+        <button type="button" class="btn-danger" onclick="logoutUser()" style="flex: 1; min-width: 120px;"> Выйти</button>
+    </div>
+</form>
     `;
     
     document.body.appendChild(modal);
 }
-
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}
 function closeProfileModal() {
     const modal = document.getElementById('modal-profile');
     if (modal) modal.remove();
@@ -2829,7 +2951,25 @@ function handleProfileAvatarUpload(event) {
 }
 
 function saveUserAvatar(avatarData) {
-    if (!currentUser || !currentUser.uid) return;
+    if (!currentUser || !currentUser.uid) {
+        // Если нет UID (локальный режим), сохраняем только локально
+        currentUser = currentUser || {};
+        currentUser.avatar = avatarData;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateHeaderAvatar();
+        
+        // Обновляем превью в модалке
+        const img = document.getElementById('profile-avatar-img');
+        const placeholder = document.getElementById('profile-avatar-placeholder');
+        if (img) {
+            img.src = avatarData;
+        } else if (placeholder) {
+            placeholder.outerHTML = `<img src="${avatarData}" id="profile-avatar-img" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #90caf9;">`;
+        }
+        
+        alert('✅ Аватарка сохранена!');
+        return;
+    }
     
     db.collection('users').doc(currentUser.uid).update({
         avatar: avatarData,
@@ -2851,7 +2991,12 @@ function saveUserAvatar(avatarData) {
         alert('✅ Аватарка сохранена!');
     }).catch(err => {
         console.error('Error saving avatar:', err);
-        alert('❌ Ошибка сохранения аватарки');
+        // Даже если ошибка с Firestore, сохраняем локально
+        currentUser = currentUser || {};
+        currentUser.avatar = avatarData;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateHeaderAvatar();
+        alert('️ Сохранено локально (ошибка сервера)');
     });
 }
 
@@ -2887,57 +3032,91 @@ function saveProfile(event) {
     const newPassword = document.getElementById('profile-password').value;
     const passwordConfirm = document.getElementById('profile-password-confirm').value;
     
-    if (!username || !email) {
-        alert(' Логин и email обязательны!');
+    // Только логин и email обязательны
+    if (!username) {
+        alert(' Логин обязателен!');
+        return;
+    }
+    
+    if (!email) {
+        alert('❌ Email обязателен!');
         return;
     }
     
     if (newPassword && newPassword !== passwordConfirm) {
-        alert(' Пароли не совпадают!');
+        alert('❌ Пароли не совпадают!');
         return;
     }
     
     if (newPassword && newPassword.length < 6) {
-        alert(' Пароль должен содержать минимум 6 символов!');
+        alert('❌ Пароль должен содержать минимум 6 символов!');
         return;
     }
     
     const updateData = {
-        firstName,
-        lastName,
-        username,
-        email,
-        birthDate,
-        gender,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        username: username,
+        email: email,
+        birthDate: birthDate || null,
+        gender: gender || null,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     
-    let updatePromise = db.collection('users').doc(currentUser.uid).update(updateData);
+    let updatePromise;
     
-    if (newPassword) {
+    if (currentUser && currentUser.uid) {
+        updatePromise = db.collection('users').doc(currentUser.uid).update(updateData);
+    } else {
+        // Локальный режим
+        updatePromise = Promise.resolve();
+    }
+    
+    if (newPassword && currentUser && currentUser.uid) {
         updatePromise = updatePromise.then(() => {
             return currentUser.updatePassword(newPassword);
         });
     }
     
     updatePromise.then(() => {
-        currentUser.firstName = firstName;
-        currentUser.lastName = lastName;
+        // Обновляем локальные данные
+        if (!currentUser) currentUser = {};
+        currentUser.firstName = firstName || currentUser.firstName;
+        currentUser.lastName = lastName || currentUser.lastName;
         currentUser.username = username;
         currentUser.email = email;
-        currentUser.birthDate = birthDate;
-        currentUser.gender = gender;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        currentUser.birthDate = birthDate || currentUser.birthDate;
+        currentUser.gender = gender || currentUser.gender;
+        
+        if (currentUser.uid) {
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        } else {
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
         updateHeaderAvatar();
         alert('✅ Профиль сохранён!');
         closeProfileModal();
     }).catch(err => {
         console.error('Error saving profile:', err);
+        
+        // Даже если ошибка с Firestore, сохраняем локально
+        if (!currentUser) currentUser = {};
+        currentUser.firstName = firstName || currentUser.firstName;
+        currentUser.lastName = lastName || currentUser.lastName;
+        currentUser.username = username;
+        currentUser.email = email;
+        currentUser.birthDate = birthDate || currentUser.birthDate;
+        currentUser.gender = gender || currentUser.gender;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateHeaderAvatar();
+        
         if (err.code === 'auth/requires-recent-login') {
-            alert(' Для смены пароля нужно войти заново');
+            alert('⚠️ Для смены пароля нужно войти заново. Данные сохранены локально.');
         } else {
-            alert('❌ Ошибка сохранения: ' + err.message);
+            alert('️ Сохранено локально (ошибка сервера)');
         }
+        closeProfileModal();
     });
 }
 
