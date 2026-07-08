@@ -299,9 +299,7 @@ body.hide-comments .inline-comment-input { display: none !important; }
 /* === КАРУСЕЛЬ ВКЛАДОК === */
 .carousel-container {
   overflow: hidden;
-  width: calc(100% + 30px);
-  margin-left: -15px;
-  margin-right: -15px;
+  width: 100%;
   margin-bottom: 15px;
   position: relative;
   padding: 10px 0;
@@ -423,7 +421,7 @@ body.light .carousel-dot.active { background: #7e57c2; }
 body.dark-white .carousel-dot { background: #555; }
 body.dark-white .carousel-dot.active { background: #7e57c2; }
 
-/* === ВКЛАДКА КОМАНДЫ === */
+/* === КАРТОЧКИ КОМАНД === */
 .team-card {
   background: #1e1e1e;
   border-radius: 12px;
@@ -450,16 +448,8 @@ body.dark-white .team-card { background: #1e1e1e; border-color: #333; }
 }
 body.light .team-card-title { color: #0d47a1; }
 body.dark-white .team-card-title { color: #90caf9; }
-.team-card-meta {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 10px;
-}
-.team-card-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+.team-card-meta { font-size: 12px; color: #888; margin-bottom: 10px; }
+.team-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .team-card-actions button {
   flex: 1;
   min-width: 0;
@@ -593,7 +583,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
 </div>
 <div class="instruction-content">
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👆</span><span class="instruction-card-title">Свайпы для навигации</span></div><div class="instruction-card-text">• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе или в общем списке<br>• На <b>главной</b>: свайп переключает вкладки карусели<br>• <b>Свайп влево</b> = вернуться назад</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👆</span><span class="instruction-card-title">Свайпы для навигации</span></div><div class="instruction-card-text">• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе или в общем списке<br>• На <b>главной</b>: свайп переключает вкладки карусели (бесконечно в обе стороны)<br>• <b>Свайп влево</b> = вернуться назад</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🔗</span><span class="instruction-card-title">Ссылки в песнях</span></div><div class="instruction-card-text">Вставьте <b>любую ссылку</b> на отдельной строке — она автоматически появится под названием песни.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">💬</span><span class="instruction-card-title">Комментарии к строкам</span></div><div class="instruction-card-text">Поставьте <code>**</code> в конце строки — справа появится поле для комментария (до 12 символов).</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">️</span><span class="instruction-card-title">Картинки в песнях</span></div><div class="instruction-card-text">Напишите <code>Картинка:</code> на отдельной строке — появится кнопка загрузки изображения.</div></div>
@@ -610,7 +600,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> → <code>.clcdb</code><br>• <b>📤 поделиться</b> → <code>.clcsong</code><br>• <b>📤 Поделиться</b> сет-листом → <code>.clcsetlist</code></div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div><div class="instruction-card-text">Кнопка <b>📄 PDF</b> — печать в 2 колонки.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Темы оформления</span></div><div class="instruction-card-text">• <b>🌙</b> — тёмная<br>• <b>☀️</b> — светлая<br>• <b>🌑</b> — тёмная, заголовки секций <b>цветом аккордов</b><br>• <b>VL</b> долгое нажатие — смена цветовой схемы</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👥</span><span class="instruction-card-title">Команды</span></div><div class="instruction-card-text">Создавайте команды (церкви, группы прославления) и делитесь с ними сет-листами. Каждая команда — отдельная вкладка в карусели.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👥</span><span class="instruction-card-title">Команды</span></div><div class="instruction-card-text">Создавайте команды (церкви, группы прославления) и делитесь с ними сет-листами. Каждая команда — отдельная вкладка в карусели. Можно присоединиться по ссылке-приглашению.</div></div>
 </div>
 <div class="instruction-footer">
 <button class="btn-main" onclick="showInstruction(false)">← Назад</button>
@@ -720,9 +710,16 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="modal-delete-setlist-choice" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2><p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button><button class="btn-danger-confirm" onclick="deleteSetlistChoice()">️ Удалить навсегда</button><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button></div></div></div>
 <div id="modal-archive-setlist" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Восстановить сет-лист?</h2><p id="archive-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-main" onclick="restoreSetlistChoice()">✅ Восстановить</button><button class="btn-cancel-confirm" onclick="closeModal('modal-archive-setlist')">Отмена</button></div></div></div>
 <div id="modal-image-delete" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2><p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button><button class="btn-cancel-confirm" onclick="closeModal('modal-image-delete')">Отмена</button></div></div></div>
-<div id="modal-team-edit" class="modal"><div class="modal-content"><h2>✏️ Редактировать команду</h2><input type="text" id="team-edit-name" placeholder="Название команды" style="margin-bottom: 10px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Пароль для присоединения (необязательно)</label><input type="text" id="team-edit-password" placeholder="Оставьте пустым, чтобы убрать пароль"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-team-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveTeamEdit()">Сохранить</button></div></div></div>
+
+<!-- МОДАЛКИ КОМАНД -->
+<div id="modal-team-edit" class="modal"><div class="modal-content"><h2>✏️ Редактировать команду</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Название команды</label><input type="text" id="team-edit-name" placeholder="Название команды"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Пароль для присоединения (необязательно)</label><input type="text" id="team-edit-password" placeholder="Оставьте пустым, чтобы убрать пароль"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-team-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveTeamEdit()">Сохранить</button></div></div></div>
+
 <div id="modal-team-invite" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">🔗 Ссылка-приглашение</h2><p style="font-size: 13px; color: #888; margin-bottom: 15px;">Отправьте эту ссылку участникам команды:</p><div id="team-invite-link" style="background: rgba(144, 202, 249, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(144, 202, 249, 0.4); word-break: break-all; font-size: 13px; color: #90caf9; margin-bottom: 15px; user-select: all;"></div><button class="btn-main" onclick="copyTeamInviteLink()">📋 Скопировать ссылку</button><button class="btn-secondary" style="width: 100%;" onclick="closeModal('modal-team-invite')">Закрыть</button></div></div>
-<div id="modal-team-password" class="modal"><div class="modal-content"><h2>🔐 Введите пароль команды</h2><p id="team-password-team-name" style="color: #888; margin-bottom: 15px;"></p><input type="password" id="team-password-input" placeholder="Пароль"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-team-password')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="confirmTeamPassword()">Войти</button></div></div></div>
+
+<div id="modal-join-team-link" class="modal"><div class="modal-content"><h2>🔗 Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-join-team-link')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
+
+<div id="modal-share-setlist" class="modal"><div class="modal-content"><h2>📤 Поделиться сет-листом</h2><p style="color: #888; margin-bottom: 15px;">Выберите способ:</p><div style="display: flex; flex-direction: column; gap: 10px;"><button class="btn-main" onclick="exportSetlistAsFile()">📁 Сохранить файл (.clcsetlist)</button><button class="btn-main" onclick="shareSetlistViaAPI()">📤 Отправить через систему</button><div id="share-to-team-section"></div></div><button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeModal('modal-share-setlist')">Отмена</button></div></div>
+
 <script>
 function formatDate(dateString) { const date = new Date(dateString); const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']; return `${date.getDate()} ${months[date.getMonth()]}`; }
 function formatSetlistDate(dateString, timeString) { let result = formatDate(dateString); if (timeString) result += `, ${timeString}`; return result; }
@@ -779,8 +776,8 @@ const MAX_TEAMS = 15;
 // === КАРУСЕЛЬ ===
 let carouselItems = [];
 let carouselActiveIndex = 0;
+let isTransitioning = false;
 let carouselTouchStartX = 0, carouselTouchStartY = 0, carouselTracking = false, carouselMoved = false;
-
 function buildCarouselItems() {
   carouselItems = [
     { id: 'songs',    type: 'songs',    label: 'Песни',      icon: '🎵' },
@@ -803,35 +800,43 @@ function escapeHtml(str) {
 }
 
 function renderCarousel() {
-  buildCarouselItems();
-  const track = document.getElementById('carousel-track');
-  if (!track) return;
-  if (carouselItems.length === 0) { track.innerHTML = ''; return; }
-  // Для циклической карусели клонируем крайние
-  const first = carouselItems[0];
-  const last = carouselItems[carouselItems.length - 1];
-  const extended = [last, ...carouselItems, first];
-  track.innerHTML = extended.map((item, idx) => {
-    const realIdx = idx - 1;
-    const isActive = realIdx === carouselActiveIndex;
-    const len = carouselItems.length;
-    const isNeighbor = Math.abs(realIdx - carouselActiveIndex) === 1 ||
-                       (carouselActiveIndex === 0 && realIdx === len - 1) ||
-                       (carouselActiveIndex === len - 1 && realIdx === 0);
-    const classes = ['carousel-item'];
-    if (isActive) classes.push('active');
-    if (isNeighbor && !isActive) classes.push('neighbor');
-    const badge = getTeamBadge(item);
-    return `<div class="${classes.join(' ')}" data-real-idx="${realIdx}" data-item-id="${item.id}" onclick="handleCarouselClick(${realIdx})">
-      <div class="carousel-item-inner">
-        <div class="carousel-item-icon">${item.icon}</div>
-        <div class="carousel-item-label">${escapeHtml(item.label)}</div>
-        ${badge ? `<div class="carousel-item-badge">${badge}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-  updateCarouselPosition(false);
-  renderCarouselIndicator();
+buildCarouselItems();
+const track = document.getElementById('carousel-track');
+if (!track) return;
+if (carouselItems.length === 0) { track.innerHTML = ''; return; }
+const first = carouselItems[0];
+const last = carouselItems[carouselItems.length - 1];
+const extended = [last, ...carouselItems, first];
+track.innerHTML = extended.map((item, idx) => {
+const realIdx = idx - 1;
+const isActive = realIdx === carouselActiveIndex;
+const len = carouselItems.length;
+const isNeighbor = Math.abs(realIdx - carouselActiveIndex) === 1 ||
+(carouselActiveIndex === 0 && realIdx === len - 1) ||
+(carouselActiveIndex === len - 1 && realIdx === 0);
+const classes = ['carousel-item'];
+if (isActive) classes.push('active');
+if (isNeighbor && !isActive) classes.push('neighbor');
+const badge = getTeamBadge(item);
+return `<div class="${classes.join(' ')}" data-real-idx="${realIdx}" data-item-id="${item.id}" onclick="handleCarouselClick(${realIdx})">
+<div class="carousel-item-inner">
+<div class="carousel-item-icon">${item.icon}</div>
+<div class="carousel-item-label">${escapeHtml(item.label)}</div>
+${badge ? `<div class="carousel-item-badge">${badge}</div>` : ''}
+</div>
+</div>`;
+}).join('');
+
+const container = document.getElementById('carousel-container');
+const itemWidth = container.offsetWidth / 3;
+if (itemWidth > 0) {
+const domIdx = carouselActiveIndex + 1;
+const translateX = itemWidth - domIdx * itemWidth;
+track.style.transition = 'none';
+track.style.transform = `translateX(${translateX}px)`;
+}
+
+renderCarouselIndicator();
 }
 
 function getTeamBadge(item) {
@@ -843,16 +848,28 @@ function getTeamBadge(item) {
   return null;
 }
 
-function updateCarouselPosition(animate = true) {
-  const track = document.getElementById('carousel-track');
-  if (!track) return;
-  const container = document.getElementById('carousel-container');
-  const itemWidth = container.offsetWidth / 3;
-  const domIdx = carouselActiveIndex + 1;
-  const translateX = itemWidth - domIdx * itemWidth;
-  track.style.transition = animate ? 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
-  track.style.transform = `translateX(${translateX}px)`;
+function updateCarouselBadges() {
+  document.querySelectorAll('.carousel-item').forEach(el => {
+    const itemId = el.dataset.itemId;
+    const item = carouselItems.find(i => i.id === itemId);
+    if (!item) return;
+    const badge = getTeamBadge(item);
+    const inner = el.querySelector('.carousel-item-inner');
+    if (!inner) return;
+    const existingBadge = inner.querySelector('.carousel-item-badge');
+    if (badge && !existingBadge) {
+      const badgeEl = document.createElement('div');
+      badgeEl.className = 'carousel-item-badge';
+      badgeEl.textContent = badge;
+      inner.appendChild(badgeEl);
+    } else if (!badge && existingBadge) {
+      existingBadge.remove();
+    } else if (badge && existingBadge) {
+      if (existingBadge.textContent !== badge) existingBadge.textContent = badge;
+    }
+  });
 }
+
 
 function renderCarouselIndicator() {
   const indicator = document.getElementById('carousel-indicator');
@@ -873,20 +890,95 @@ function handleCarouselClick(realIdx) {
 }
 
 function setCarouselIndex(newIdx, animate = true) {
-  const len = carouselItems.length;
-  if (len === 0) return;
-  carouselActiveIndex = ((newIdx % len) + len) % len;
-  updateCarouselPosition(animate);
-  renderCarouselIndicator();
-  document.querySelectorAll('.carousel-item').forEach(el => {
-    const ri = parseInt(el.dataset.realIdx);
-    el.classList.toggle('active', ri === carouselActiveIndex);
-    const isNeighbor = Math.abs(ri - carouselActiveIndex) === 1 ||
-                       (carouselActiveIndex === 0 && ri === len - 1) ||
-                       (carouselActiveIndex === len - 1 && ri === 0);
-    el.classList.toggle('neighbor', isNeighbor && ri !== carouselActiveIndex);
-  });
-  activateCarouselItem(carouselActiveIndex);
+const len = carouselItems.length;
+if (len === 0) return;
+
+if (isTransitioning && animate) return;
+
+const targetActive = ((newIdx % len) + len) % len;
+
+if (targetActive === carouselActiveIndex) {
+activateCarouselItem(carouselActiveIndex);
+return;
+}
+
+let delta = targetActive - carouselActiveIndex;
+while (delta > len / 2) delta -= len;
+while (delta < -len / 2) delta += len;
+
+carouselActiveIndex = targetActive;
+
+let domIdx;
+if (delta === -1 && carouselActiveIndex === len - 1) {
+domIdx = 0;
+} else if (delta === 1 && carouselActiveIndex === 0) {
+domIdx = len + 1;
+} else {
+domIdx = carouselActiveIndex + 1;
+}
+
+const container = document.getElementById('carousel-container');
+const itemWidth = container.offsetWidth / 3;
+if (itemWidth === 0) return;
+
+const translateX = itemWidth - domIdx * itemWidth;
+const track = document.getElementById('carousel-track');
+track.style.transition = animate ? 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+track.style.transform = `translateX(${translateX}px)`;
+
+if (animate) isTransitioning = true;
+
+renderCarouselIndicator();
+
+document.querySelectorAll('.carousel-item').forEach(el => {
+const ri = parseInt(el.dataset.realIdx);
+el.classList.toggle('active', ri === carouselActiveIndex);
+const isNeighbor = Math.abs(ri - carouselActiveIndex) === 1 ||
+(carouselActiveIndex === 0 && ri === len - 1) ||
+(carouselActiveIndex === len - 1 && ri === 0);
+el.classList.toggle('neighbor', isNeighbor && ri !== carouselActiveIndex);
+});
+
+activateCarouselItem(carouselActiveIndex);
+
+if (domIdx === 0 || domIdx === len + 1) {
+if (animate) {
+const onTransitionEnd = () => {
+track.removeEventListener('transitionend', onTransitionEnd);
+isTransitioning = false;
+const realDomIdx = carouselActiveIndex + 1;
+const realTranslateX = itemWidth - realDomIdx * itemWidth;
+track.style.transition = 'none';
+track.style.transform = `translateX(${realTranslateX}px)`;
+};
+track.addEventListener('transitionend', onTransitionEnd);
+} else {
+isTransitioning = false;
+const realDomIdx = carouselActiveIndex + 1;
+const realTranslateX = itemWidth - realDomIdx * itemWidth;
+track.style.transition = 'none';
+track.style.transform = `translateX(${realTranslateX}px)`;
+}
+} else {
+if (animate) {
+const onTransitionEnd = () => {
+track.removeEventListener('transitionend', onTransitionEnd);
+isTransitioning = false;
+};
+track.addEventListener('transitionend', onTransitionEnd);
+} else {
+isTransitioning = false;
+}
+}
+}
+
+function hideAllHomeViews() {
+  document.getElementById('home-view-songs').style.display = 'none';
+  document.getElementById('home-view-setlists').style.display = 'none';
+  const tv = document.getElementById('home-view-teams');
+  if (tv) tv.style.display = 'none';
+  const td = document.getElementById('home-view-team-detail');
+  if (td) td.style.display = 'none';
 }
 
 function activateCarouselItem(idx) {
@@ -916,13 +1008,6 @@ function activateCarouselItem(idx) {
   saveAppState();
 }
 
-function hideAllHomeViews() {
-  document.getElementById('home-view-songs').style.display = 'none';
-  document.getElementById('home-view-setlists').style.display = 'none';
-  document.getElementById('home-view-teams').style.display = 'none';
-  document.getElementById('home-view-team-detail').style.display = 'none';
-}
-
 function setupCarouselSwipe() {
   const container = document.getElementById('carousel-container');
   if (!container) return;
@@ -946,9 +1031,19 @@ function setupCarouselSwipe() {
     const dy = carouselTouchStartY - e.changedTouches[0].clientY;
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
       if (dx > 0) setCarouselIndex(carouselActiveIndex + 1);
-      else setCarouselIndex(carouselActiveIndex - 1);
+else setCarouselIndex(carouselActiveIndex - 1);
     }
   }, { passive: true });
+}
+
+function switchHomeView(view) {
+  currentHomeView = view;
+  const idx = carouselItems.findIndex(i => i.type === view);
+  if (idx !== -1 && idx !== carouselActiveIndex) {
+    setCarouselIndex(idx, true);
+  } else {
+    activateCarouselItem(carouselActiveIndex);
+  }
 }
 
 // === ВКЛАДКА КОМАНДЫ ===
@@ -957,8 +1052,9 @@ function showTeamsView() {
   view.style.display = 'block';
   let html = `<div style="padding: 10px 0;">
     <div style="text-align: center; margin-bottom: 20px;">
-      <button class="btn-main" style="margin-bottom: 0;" onclick="createTeamPrompt()">➕ Создать команду</button>
-      <p style="color: #888; font-size: 12px; margin-top: 8px;">Создано: ${teams.length} / ${MAX_TEAMS}</p>
+      <button class="btn-main" style="margin-bottom: 10px;" onclick="createTeamPrompt()">➕ Создать команду</button>
+      <button class="btn-pastel" style="width: 100%;" onclick="showJoinTeamByLinkModal()">🔗 Присоединиться к команде</button>
+      <p style="color: #888; font-size: 12px; margin-top: 10px;">Создано: ${teams.length} / ${MAX_TEAMS}</p>
     </div>`;
   if (teams.length === 0) {
     html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
@@ -1040,11 +1136,15 @@ function deleteTeam(teamId) {
   if (!team) return;
   if (!confirm(`Удалить команду "${team.name}"?\nСет-листы команды останутся в вашем личном архиве.`)) return;
   teams = teams.filter(t => t.id !== teamId);
-  // Снимаем привязку teamId с сет-листов (они остаются личными)
   setlists.forEach(sl => { if (sl.teamId === teamId) delete sl.teamId; });
   saveToStorage();
-  renderCarousel();
-  showTeamsView();
+  // Если мы были на вкладке этой команды — переключаемся на «Команды»
+  if (currentHomeView === 'team_' + teamId) {
+    setCarouselIndex(2, true);
+  } else {
+    renderCarousel();
+    showTeamsView();
+  }
 }
 
 function showTeamInvite(teamId) {
@@ -1068,6 +1168,91 @@ function copyTeamInviteLink() {
     document.body.removeChild(ta);
     alert('✅ Ссылка скопирована!');
   });
+}
+
+// === ПРИСОЕДИНЕНИЕ ПО ССЫЛКЕ ===
+function showJoinTeamByLinkModal() {
+  if (teams.length >= MAX_TEAMS) {
+    alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+    return;
+  }
+  document.getElementById('join-team-link-input').value = '';
+  document.getElementById('join-team-password-input').value = '';
+  document.getElementById('join-team-password-row').style.display = 'none';
+  document.getElementById('modal-join-team-link').classList.add('show');
+}
+
+function onJoinLinkInput() {
+  const link = document.getElementById('join-team-link-input').value.trim();
+  const parsed = parseTeamLink(link);
+  if (parsed && parsed.hasPwd) {
+    document.getElementById('join-team-password-row').style.display = 'block';
+  } else {
+    document.getElementById('join-team-password-row').style.display = 'none';
+  }
+}
+
+function parseTeamLink(link) {
+  if (!link) return null;
+  try {
+    const url = new URL(link.trim());
+    const teamId = url.searchParams.get('invite');
+    const hasPwd = url.searchParams.get('pwd') === '1';
+    return { teamId, hasPwd };
+  } catch {
+    if (link.trim().startsWith('team_')) {
+      return { teamId: link.trim(), hasPwd: false };
+    }
+    return null;
+  }
+}
+
+function submitJoinTeam() {
+  const link = document.getElementById('join-team-link-input').value.trim();
+  if (!link) {
+    alert('❌ Вставьте ссылку-приглашение или ID команды');
+    return;
+  }
+  const parsed = parseTeamLink(link);
+  if (!parsed || !parsed.teamId) {
+    alert('❌ Неверная ссылка. Используйте ссылку из кнопки «🔗 Пригласить»');
+    return;
+  }
+  if (teams.find(t => t.id === parsed.teamId)) {
+    alert('⚠️ Эта команда уже добавлена');
+    return;
+  }
+  if (parsed.hasPwd) {
+    const pwd = document.getElementById('join-team-password-input').value;
+    if (!pwd) {
+      alert('❌ Введите пароль');
+      return;
+    }
+    confirmJoinTeam(parsed.teamId, pwd);
+  } else {
+    confirmJoinTeam(parsed.teamId, '');
+  }
+}
+
+function confirmJoinTeam(teamId, password) {
+  if (teams.length >= MAX_TEAMS) {
+    alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+    return;
+  }
+  const name = prompt('Название команды (уточните у отправителя):');
+  if (!name || !name.trim()) return;
+  teams.push({
+    id: teamId,
+    name: name.trim(),
+    password: password,
+    createdAt: Date.now(),
+    joinedByLink: true
+  });
+  saveToStorage();
+  closeModal('modal-join-team-link');
+  renderCarousel();
+  showTeamsView();
+  alert(`✅ Вы присоединились к команде «${name}»!`);
 }
 
 // === ДЕТАЛЬНЫЙ ВИД КОМАНДЫ ===
@@ -1111,25 +1296,70 @@ function showTeamDetailView(teamId) {
   view.innerHTML = html;
 }
 
-// === ОБРАБОТКА ПРИГЛАШЕНИЙ ===
-function checkInviteOnLoad() {
-  const params = new URLSearchParams(window.location.search);
-  const inviteId = params.get('invite');
-  if (!inviteId) return;
-  // Приглашение обработается, когда будут команды (в онлайне)
-  // Пока просто сохраняем в localStorage
-  localStorage.setItem('clc_pending_invite', inviteId);
+// === ОТПРАВКА СЕТ-ЛИСТА В КОМАНДУ ===
+function exportSetlist() {
+  if (!currentSlId) return;
+  const sl = setlists.find(x => x.id === currentSlId);
+  if (!sl) return;
+  const modal = document.getElementById('modal-share-setlist');
+  if (!modal) {
+    exportSetlistAsFileDirect();
+    return;
+  }
+  const section = document.getElementById('share-to-team-section');
+  if (teams.length > 0) {
+    section.innerHTML = `
+      <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;">
+        <p style="color: #888; font-size: 13px; margin-bottom: 8px;">Отправить в команду:</p>
+        ${teams.map(t => `<button class="btn-pastel" style="width: 100%; margin-bottom: 6px; text-align: left;" onclick="shareSetlistToTeam(${sl.id}, '${t.id}')">🎸 ${escapeHtml(t.name)}</button>`).join('')}
+      </div>
+    `;
+  } else {
+    section.innerHTML = `<p style="color: #888; font-size: 12px; margin-top: 10px; text-align: center;">Создайте команду, чтобы отправлять сет-листы</p>`;
+  }
+  modal.classList.add('show');
 }
 
-// === СТАРЫЕ ФУНКЦИИ НАВИГАЦИИ (совместимость) ===
-function switchHomeView(view) {
-  currentHomeView = view;
-  const idx = carouselItems.findIndex(i => i.type === view);
-  if (idx !== -1 && idx !== carouselActiveIndex) {
-    setCarouselIndex(idx, true);
-  } else {
-    activateCarouselItem(carouselActiveIndex);
-  }
+function exportSetlistAsFile() {
+  closeModal('modal-share-setlist');
+  exportSetlistAsFileDirect();
+}
+
+function exportSetlistAsFileDirect() {
+  const sl = setlists.find(x => x.id === currentSlId);
+  if (!sl) return;
+  shareFile({ version: 2, type: 'setlist', app: 'Worship SetUP', data: { date: sl.date, time: sl.time || '', name: sl.name, songs: sl.songs.map(item => { const s = songs.find(x => x.id === item.id); return s ? exportSongFromSetlist(item, s) : null; }).filter(Boolean) } }, `${sl.date}_${sl.name}.clcsetlist`);
+}
+
+function shareSetlistViaAPI() {
+  closeModal('modal-share-setlist');
+  exportSetlistAsFileDirect();
+}
+
+function shareSetlistToTeam(setlistId, teamId) {
+  const sl = setlists.find(x => x.id === setlistId);
+  const team = teams.find(t => t.id === teamId);
+  if (!sl || !team) return;
+  if (!confirm(`Отправить сет-лист «${sl.name}» в команду «${team.name}»?`)) return;
+  const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+  setlists.push({
+    id: newSlId,
+    date: sl.date,
+    time: sl.time || '',
+    name: sl.name,
+    isArchived: false,
+    teamId: teamId,
+    originalId: sl.id,
+    sharedAt: Date.now(),
+    songs: sl.songs.map(item => ({...item}))
+  });
+  sl.sharedToTeams = sl.sharedToTeams || [];
+  if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
+  saveToStorage();
+  closeModal('modal-share-setlist');
+  renderSetlists();
+  renderCarousel();
+  alert(`✅ Сет-лист отправлен в команду «${team.name}»!\n\nТеперь он доступен во вкладке «${team.name}».`);
 }
 
 function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.split('/'); return convertBtoH(parts[0]) + '/' + convertBtoH(parts[1]); } if (chord.startsWith('B') && !chord.startsWith('Bb')) return 'H' + chord.substring(1); return chord; }
@@ -1272,7 +1502,7 @@ function saveAppState() { const activePage = document.querySelector('.page.activ
 function saveDefaultSettings() { localStorage.setItem('clc_defaults', JSON.stringify({ fontSize, columns: currentColumns })); }
 function toggleColorTheme() { if (document.body.classList.contains('violet')) { document.body.classList.remove('violet'); localStorage.setItem('clc_color', 'blue'); } else { document.body.classList.add('violet'); localStorage.setItem('clc_color', 'violet'); } }
 function showPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); if(id === 'page-home') { activateCarouselItem(carouselActiveIndex); } window.scrollTo(0, 0); saveAppState(); }
-function showInstruction(show) { if (show) { showPage('page-instruction'); } else { showPage('page-home'); setCarouselIndex(0, true); } }
+function showInstruction(show) { if (show) { showPage('page-instruction'); } else { setCarouselIndex(0, true); showPage('page-home'); } }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 function fillKeySelect(selectId, selectedValue, showOriginal) {
 const select = document.getElementById(selectId); select.innerHTML = '';
@@ -1323,7 +1553,7 @@ const countText = categoryFilter === 'fast' ? '🔥 Быстрые' : categoryFi
 if (countLabel) countLabel.innerText = countText;
 document.getElementById('songs-count').innerText = sorted.length;
 sorted.forEach(s => { const keyLabel = s.key ? ` <span style="color:#90caf9; font-size:12px;">[${s.key}]</span>` : ''; const authorText = s.author ? `<div style="color:#888; font-size:8px;">${s.author}</div>` : ''; const categoryIcon = s.category && CATEGORY_ICONS[s.category] ? `<div style="display: flex; flex-direction: column; align-items: center; margin-left: 8px;"><div style="font-size: 18px;">${CATEGORY_ICONS[s.category]}</div>${s.bpm ? `<div style="color:#888; font-size:8px;">${s.bpm} BPM</div>` : ''}</div>` : (s.bpm ? `<div style="display: flex; flex-direction: column; align-items: center; margin-left: 8px;"><div style="color:#888; font-size:8px;">${s.bpm} BPM</div></div>` : ''); const div = document.createElement('div'); div.className = 'list-item'; div.style.cursor = 'default'; div.innerHTML = `<div class="item-left" style="min-width: 0; flex: 1; display: flex; align-items: center;"><div style="min-width: 0; flex: 1;"><div class="item-title" style="max-height: 2.6em; line-height: 1.3;">${s.title}${keyLabel}</div>${authorText}</div>${categoryIcon}</div><div class="item-actions" style="display: flex; gap: 4px;"><button class="btn-icon" onclick="event.stopPropagation(); openMainSongEditor(${s.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); confirmDeleteSong(${s.id}, '${s.title.replace(/'/g, "\\'")}')">🗑️</button></div>`; div.onclick = () => clearSearchAndOpenSong(s.id); list.appendChild(div); const titleEl = div.querySelector('.item-title'); if (titleEl && titleEl.scrollHeight > titleEl.clientHeight) { titleEl.style.fontSize = '12px'; } });
-renderCarousel();
+updateCarouselBadges();
 }
 function confirmDeleteSong(id, name) { showDeleteConfirm('song', id, `Песню "${name}"`, () => { songs = songs.filter(s => s.id !== id); setlists.forEach(sl => sl.songs = sl.songs.filter(x => x.id !== id)); if (sectionNotes[id]) delete sectionNotes[id]; if (inlineComments[id]) delete inlineComments[id]; saveToStorage(); renderSongs(); }); }
 function openMainSongEditor(id = null) { currentSongId = id; openSongEditor(id, false); }
@@ -1377,10 +1607,11 @@ return dateA - dateB;
 filtered.forEach(sl => { const div = document.createElement('div'); div.className = 'list-item'; div.style.cursor = 'default';
 const isExpired = !sl.isArchived && isSetlistExpired(sl);
 const expiredClass = isExpired ? 'setlist-expired' : '';
+const sharedBadge = (sl.sharedToTeams && sl.sharedToTeams.length > 0) ? ` <span style="background: rgba(144, 202, 249, 0.3); color: #90caf9; font-size: 9px; padding: 1px 5px; border-radius: 4px; margin-left: 4px;">📤 ${sl.sharedToTeams.length}</span>` : '';
 let actions = sl.isArchived ? `<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>` : `<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
-div.innerHTML = `<div class="item-left ${expiredClass}" style="min-width: 0; flex: 1;"><div style="font-size: 10px; font-weight: bold; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${sl.name}</div><div style="font-size: 10px; color: ${isExpired ? '#ef5350' : dateColor}; margin-top: 2px;">${formatSetlistDate(sl.date, sl.time)} · ${sl.songs.length} песен</div></div><div class="item-actions" style="display: flex; gap: 4px;">${actions}</div>`;
+div.innerHTML = `<div class="item-left ${expiredClass}" style="min-width: 0; flex: 1;"><div style="font-size: 10px; font-weight: bold; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${sl.name}${sharedBadge}</div><div style="font-size: 10px; color: ${isExpired ? '#ef5350' : dateColor}; margin-top: 2px;">${formatSetlistDate(sl.date, sl.time)} · ${sl.songs.length} песен</div></div><div class="item-actions" style="display: flex; gap: 4px;">${actions}</div>`;
 div.onclick = () => clearSetlistSearchAndOpen(sl.id); list.appendChild(div); });
-renderCarousel();
+updateCarouselBadges();
 }
 function openSetlistModal() { document.getElementById('sl-date').value = getCurrentDate(); document.getElementById('sl-time').value = getCurrentTime(); document.getElementById('sl-name').value = ''; document.getElementById('modal-setlist').classList.add('show'); }
 function saveSetlist() { const date = document.getElementById('sl-date').value; const time = document.getElementById('sl-time').value; const name = document.getElementById('sl-name').value; if (!name || !date) return; const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; setlists.push({id: newId, date, time: time || '', name, isArchived: false, songs: []}); saveToStorage(); closeModal('modal-setlist'); renderSetlists(); }
@@ -1388,21 +1619,27 @@ function openEditSetlistModal(id) { const sl = setlists.find(x => x.id === id); 
 function saveEditSetlist() { const date = document.getElementById('edit-sl-date').value; const time = document.getElementById('edit-sl-time').value; const name = document.getElementById('edit-sl-name').value; if (!name || !date) return; const sl = setlists.find(x => x.id === currentSlId); if (sl) { sl.date = date; sl.time = time || ''; sl.name = name; } saveToStorage(); closeModal('modal-edit-setlist'); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; renderSlSongs(); } }
 function showSetlistDeleteChoice(id, name, isVl) { pendingSetlistAction = { id, name, isVl }; document.getElementById('delete-setlist-name').innerText = `"${name}"`; document.getElementById('modal-delete-setlist-choice').classList.add('show'); }
 function archiveSetlistChoice() { if (!pendingSetlistAction) return; const sl = setlists.find(x => x.id === pendingSetlistAction.id); if (sl) sl.isArchived = true; saveToStorage(); renderSetlists(); closeModal('modal-delete-setlist-choice'); pendingSetlistAction = null; }
-function deleteSetlistChoice() { if (!pendingSetlistAction) return; setlists = setlists.filter(x => x.id !== pendingSetlistAction.id); saveToStorage(); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { setCarouselIndex(1, true); } closeModal('modal-delete-setlist-choice'); pendingSetlistAction = null; }
+function deleteSetlistChoice() { if (!pendingSetlistAction) return; setlists = setlists.filter(x => x.id !== pendingSetlistAction.id); saveToStorage(); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { goBackFromSetlistDetail(); } closeModal('modal-delete-setlist-choice'); pendingSetlistAction = null; }
 function restoreSetlist(slId) { pendingSetlistAction = { id: slId }; document.getElementById('archive-setlist-name').innerText = `"${setlists.find(x => x.id === slId).name}"`; document.getElementById('modal-archive-setlist').classList.add('show'); }
 function restoreSetlistChoice() { if (!pendingSetlistAction) return; const sl = setlists.find(x => x.id === pendingSetlistAction.id); if (sl) sl.isArchived = false; saveToStorage(); renderSetlists(); closeModal('modal-archive-setlist'); pendingSetlistAction = null; }
-function archiveCurrentSetlist() { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; if (confirm(`Отправить "${sl.name}" в архив?`)) { sl.isArchived = true; saveToStorage(); setCarouselIndex(1, true); } }
+function archiveCurrentSetlist() { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; if (confirm(`Отправить "${sl.name}" в архив?`)) { sl.isArchived = true; saveToStorage(); goBackFromSetlistDetail(); } }
 function openSetlistDetail(id) { currentSlId = id; const sl = setlists.find(x => x.id === id); document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; document.getElementById('sl-subtitle').innerText = 'Сет-лист'; renderSlSongs(); showPage('page-setlist-detail'); }
 function goBackFromSetlistDetail() {
-const sl = setlists.find(x => x.id === currentSlId);
-if (sl && sl.teamId) {
-  // Возвращаемся во вкладку команды
-  const teamIdx = carouselItems.findIndex(i => i.type === 'team' && i.teamId === sl.teamId);
-  if (teamIdx !== -1) setCarouselIndex(teamIdx, true);
-  else setCarouselIndex(1, true);
-} else {
+  const sl = setlists.find(x => x.id === currentSlId);
+  if (sl && sl.teamId) {
+    const teamIdx = carouselItems.findIndex(i => i.type === 'team' && i.teamId === sl.teamId);
+    if (teamIdx !== -1) {
+      showPage('page-home');
+      setCarouselIndex(teamIdx, true);
+      return;
+    }
+  }
+  showPage('page-home');
   setCarouselIndex(1, true);
 }
+function goBackFromTeamDetail() {
+  showPage('page-home');
+  setCarouselIndex(2, true);
 }
 function updateSongOrder(songId, newOrderStr) { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; const newOrder = parseInt(newOrderStr); if (isNaN(newOrder) || newOrder < 1) { renderSlSongs(); return; } const ci = sl.songs.findIndex(x => x.id === songId); if (ci === -1) return; const ti = Math.min(Math.max(0, newOrder - 1), sl.songs.length - 1); if (ci !== ti) { const [moved] = sl.songs.splice(ci, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); renderSlSongs(); } }
 function handleOrderInputFocus(input, originalValue) { input.dataset.originalValue = originalValue; input.value = ''; }
@@ -1474,7 +1711,15 @@ else if (currentPageId === 'page-instruction' && diffX > 0) showInstruction(fals
 } }, { passive: true });
 }
 function setupVlButton() { const vlBtn = document.querySelector('.vl-worship-btn'); if (!vlBtn) return; let timer = null, pressed = false; const start = () => { pressed = false; timer = setTimeout(() => { pressed = true; toggleColorTheme(); if (navigator.vibrate) navigator.vibrate(30); }, 800); }; const cancel = () => clearTimeout(timer); const end = (e) => { clearTimeout(timer); if (pressed) { e.preventDefault(); e.stopPropagation(); pressed = false; } }; vlBtn.addEventListener('touchstart', start, { passive: true }); vlBtn.addEventListener('touchend', end); vlBtn.addEventListener('touchcancel', cancel); vlBtn.addEventListener('mousedown', start); vlBtn.addEventListener('mouseup', end); vlBtn.addEventListener('mouseleave', cancel); }
-function openExpressAdd() { document.getElementById('express-text').value = ''; document.getElementById('express-key-row').style.display = 'none'; document.getElementById('express-info').style.display = 'none'; document.getElementById('express-key-suggestions').innerHTML = ''; document.getElementById('express-save-btn').innerText = '⚡ Добавить'; document.getElementById('express-save-btn').dataset.detected = ''; document.getElementById('modal-express-add').classList.add('show'); }
+function openExpressAdd() { document.getElementById('express-text').value = ''; document.getElementById('express-key-row').style.display = 'none'; document.getElementById('express-info').style.display = 'none'; document.getElementById('express-key-suggestions').innerHTML = ''; document.getElementById('express-save-btn').innerText = '⚡ Добавить'; document.getElementById('express-save-btn').dataset.detected = ''; document.getElementById('modal-express-add').classList.add('show');
+  const keySelect = document.getElementById('express-key-select');
+  if (!keySelect.dataset.bound) {
+    keySelect.addEventListener('change', function() {
+      updateKeySuggestionButtons(this.value);
+    });
+    keySelect.dataset.bound = 'true';
+  }
+}
 function extractChordRoot(chord) { const normalized = convertBtoH(chord); const m = normalized.match(/^([A-H][#b]?)/); return m ? m[1] : null; }
 function isMinorChord(chord) { const normalized = convertBtoH(chord); const rootPart = normalized.split('/')[0]; if (/maj/i.test(rootPart)) return false; if (rootPart.length > 1 && /^m/i.test(rootPart.substring(1))) return true; return false; }
 function detectKeyFromChords(text) {
@@ -1939,7 +2184,6 @@ const chordpro = item.chordpro || s.chordpro;
 const key = item.key || s.key;
 return { title: s.title, author: s.author || '', key: key, originalKey: s.key, capo: item.capo || 0, bpm: s.bpm || '', category: s.category || '', chordpro: chordpro, sectionNotes: sectionNotes[s.id] || {}, inlineComments: inlineComments[s.id] || {} };
 }
-function exportSetlist() { if (!currentSlId) return; const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; shareFile({ version: 2, type: 'setlist', app: 'Worship SetUP', data: { date: sl.date, time: sl.time || '', name: sl.name, songs: sl.songs.map(item => { const s = songs.find(x => x.id === item.id); return s ? exportSongFromSetlist(item, s) : null; }).filter(Boolean) } }, `${sl.date}_${sl.name}.clcsetlist`); }
 function exportAllActiveSetlists() { const active = setlists.filter(sl => !sl.isArchived && !sl.teamId); if (!active.length) { alert('Нет актуальных сет-листов'); return; } shareFile({ version: 2, type: 'setlists-bulk', app: 'Worship SetUP', data: { setlists: active.map(sl => ({ date: sl.date, time: sl.time || '', name: sl.name, songs: sl.songs.map(item => { const s = songs.find(x => x.id === item.id); return s ? exportSongFromSetlist(item, s) : null; }).filter(Boolean) })) } }, `AllSetlists_${getCurrentDate()}.clcsetlist`); }
 function handleImportSetlist(event) { const files = event.target.files; if (!files?.length) return; let processed = 0, totalSongs = 0, totalSl = 0; const total = files.length; Array.from(files).forEach(file => { const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type === 'setlists-bulk' && data.data?.setlists) data.data.setlists.forEach(slData => { const r = importSingleSetlist(slData); totalSongs += r.songsAdded; totalSl++; }); else if (data.type === 'setlist' && data.data) { const r = importSingleSetlist(data.data); totalSongs += r.songsAdded; totalSl++; } else alert(`❌ "${file.name}" — не файл сет-листа`); } catch (err) { alert(`❌ Ошибка "${file.name}": ` + err.message); } if (++processed === total) { saveToStorage(); renderSetlists(); alert(`✅ Импортировано!
 Сет-листов: ${totalSl}
@@ -2007,7 +2251,7 @@ reader.readAsText(file);
 event.target.value = '';
 }
 function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn = prompt('Имя файла:', dn); if (fn === null) return; const cn = fn.trim() || dn; const final = cn.toLowerCase().endsWith('.clcdb') ? cn : cn + '.clcdb'; shareFile({ version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs, sectionNotes, inlineComments } }, final); }
-function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); renderSongs(); alert(`✅ Импорт!
+function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!
 Добавлено: ${added}
 Пропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 
@@ -2018,9 +2262,13 @@ renderCarousel();
 setupCarouselSwipe();
 const savedStateInit = JSON.parse(localStorage.getItem('clc_state') || '{}');
 if (savedStateInit.carouselIdx !== undefined && savedStateInit.carouselIdx < carouselItems.length) {
-  setCarouselIndex(savedStateInit.carouselIdx, false);
+carouselActiveIndex = savedStateInit.carouselIdx;
+renderCarousel();
+activateCarouselItem(carouselActiveIndex);
 } else {
-  setCarouselIndex(0, false);
+carouselActiveIndex = 0;
+renderCarousel();
+activateCarouselItem(0);
 }
 if (savedStateInit.page === 'page-song-view' || savedStateInit.page === 'page-setlist-detail') {
   // Уже обработано в loadFromStorage
@@ -2031,10 +2279,19 @@ setupSwipe();
 setupVlButton();
 applyBodyClasses();
 updateToggleButtonsUI();
-checkInviteOnLoad();
 window.addEventListener('resize', () => {
-  updatePdfOrCopyButton();
-  updateCarouselPosition(false);
+updatePdfOrCopyButton();
+const container = document.getElementById('carousel-container');
+const track = document.getElementById('carousel-track');
+if (container && track) {
+const itemWidth = container.offsetWidth / 3;
+if (itemWidth > 0) {
+const domIdx = carouselActiveIndex + 1;
+const translateX = itemWidth - domIdx * itemWidth;
+track.style.transition = 'none';
+track.style.transform = `translateX(${translateX}px)`;
+}
+}
 });
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => console.log('SW:', r.scope)).catch(console.error));
 </script>
