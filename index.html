@@ -881,12 +881,18 @@ function renderCarouselIndicator() {
 }
 
 function handleCarouselClick(realIdx) {
-  if (realIdx < 0 || realIdx >= carouselItems.length) return;
-  if (realIdx === carouselActiveIndex) {
-    activateCarouselItem(realIdx);
-    return;
-  }
-  setCarouselIndex(realIdx);
+const len = carouselItems.length;
+if (len === 0) return;
+// Нормализуем индекс (клики по клонам)
+let targetIdx;
+if (realIdx < 0) targetIdx = len - 1;
+else if (realIdx >= len) targetIdx = 0;
+else targetIdx = realIdx;
+if (targetIdx === carouselActiveIndex) {
+activateCarouselItem(targetIdx);
+return;
+}
+setCarouselIndex(targetIdx);
 }
 
 function setCarouselIndex(newIdx, animate = true) {
@@ -1686,10 +1692,30 @@ list.appendChild(div); });
 function setupSwipe() {
 if (!('ontouchstart' in window) && !navigator.maxTouchPoints) return;
 let startX = 0, startY = 0, tracking = false, currentPageId = null, isClick = false;
-document.addEventListener('touchstart', (e) => { if (e.target.closest('.modal') || e.target.closest('[contenteditable="true"]') || e.target.closest('.carousel-container') || ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return; startX = e.touches[0].clientX; startY = e.touches[0].clientY; tracking = true; isClick = true; currentPageId = document.querySelector('.page.active')?.id || null; }, { passive: true });
-document.addEventListener('touchmove', (e) => { if (!tracking) return; if (Math.abs(startX - e.touches[0].clientX) > 10 || Math.abs(startY - e.touches[0].clientY) > 10) isClick = false; }, { passive: true });
-document.addEventListener('touchend', (e) => { if (!tracking) return; tracking = false; if (isClick) return; const diffX = startX - e.changedTouches[0].clientX; const diffY = startY - e.changedTouches[0].clientY; if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-if (currentPageId === 'page-song-view') {
+document.addEventListener('touchstart', (e) => {
+if (e.target.closest('.modal') || e.target.closest('[contenteditable="true"]') || ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+startX = e.touches[0].clientX;
+startY = e.touches[0].clientY;
+tracking = true;
+isClick = true;
+currentPageId = document.querySelector('.page.active')?.id || null;
+}, { passive: true });
+document.addEventListener('touchmove', (e) => {
+if (!tracking) return;
+if (Math.abs(startX - e.touches[0].clientX) > 10 || Math.abs(startY - e.touches[0].clientY) > 10) isClick = false;
+}, { passive: true });
+document.addEventListener('touchend', (e) => {
+if (!tracking) return;
+tracking = false;
+if (isClick) return;
+const diffX = startX - e.changedTouches[0].clientX;
+const diffY = startY - e.changedTouches[0].clientY;
+if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+if (currentPageId === 'page-home') {
+// Свайп по главной странице — переключаем карусель
+if (diffX > 0) setCarouselIndex(carouselActiveIndex + 1);
+else setCarouselIndex(carouselActiveIndex - 1);
+} else if (currentPageId === 'page-song-view') {
 if (currentSlId) {
 const sl = setlists.find(x => x.id === currentSlId); if (!sl) return;
 const idx = sl.songs.findIndex(x => x.id === currentSongId);
@@ -1708,7 +1734,8 @@ if (diffX < 0) goBackFromSong();
 }
 } else if (currentPageId === 'page-setlist-detail' && diffX < 0) goBackFromSetlistDetail();
 else if (currentPageId === 'page-instruction' && diffX > 0) showInstruction(false);
-} }, { passive: true });
+}
+}, { passive: true });
 }
 function setupVlButton() { const vlBtn = document.querySelector('.vl-worship-btn'); if (!vlBtn) return; let timer = null, pressed = false; const start = () => { pressed = false; timer = setTimeout(() => { pressed = true; toggleColorTheme(); if (navigator.vibrate) navigator.vibrate(30); }, 800); }; const cancel = () => clearTimeout(timer); const end = (e) => { clearTimeout(timer); if (pressed) { e.preventDefault(); e.stopPropagation(); pressed = false; } }; vlBtn.addEventListener('touchstart', start, { passive: true }); vlBtn.addEventListener('touchend', end); vlBtn.addEventListener('touchcancel', cancel); vlBtn.addEventListener('mousedown', start); vlBtn.addEventListener('mouseup', end); vlBtn.addEventListener('mouseleave', cancel); }
 function openExpressAdd() { document.getElementById('express-text').value = ''; document.getElementById('express-key-row').style.display = 'none'; document.getElementById('express-info').style.display = 'none'; document.getElementById('express-key-suggestions').innerHTML = ''; document.getElementById('express-save-btn').innerText = '⚡ Добавить'; document.getElementById('express-save-btn').dataset.detected = ''; document.getElementById('modal-express-add').classList.add('show');
