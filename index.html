@@ -329,186 +329,6 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 @media (hover: hover) and (pointer: fine) and (min-width: 769px) { .mobile-only { display: none !important; } .desktop-only { display: flex; } .toolbar-row { grid-template-columns: repeat(5, 1fr); } #toolbar-row-3 { grid-template-columns: repeat(5, 1fr); } }
 @media (max-width: 480px) { body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); } .header h1.app-title { font-size: 12px; } .btn-main { padding: 14px; font-size: 14px; min-height: 48px; } .list-item { padding: 10px 12px; min-height: 56px; } .item-title { font-size: 14px; } .modal-content { padding: 15px; max-height: 85vh; } .theme-toggle, .vl-worship-btn { width: 44px; height: 44px; font-size: 20px; } .song-toolbar { padding: 10px; gap: 6px; } .toolbar-row { gap: 6px; } .toolbar-btn-item, .toolbar-select-item { height: 48px; } .toolbar-select-item select { font-size: 11px; } .song-section { padding: 6px; } .section-label { font-size: 13px; } .key-select-inline { min-width: 60px; font-size: 12px; padding: 4px 6px; padding-right: 20px; min-height: 36px; } .btn-icon { min-width: 36px; min-height: 36px; font-size: 18px; } .setlist-actions-row button { padding: 10px 6px; font-size: 13px; } .side-nav-btn { width: 44px; height: 70px; font-size: 24px; } .grid-btn { font-size: 13px; padding: 12px 6px; min-height: 48px; } .order-input { width: 36px; height: 32px; font-size: 13px; } .instruction-card { padding: 14px; } .instruction-card-title { font-size: 15px; } .instruction-card-text { font-size: 13px; } .btn-pastel { font-size: 13px; padding: 10px 8px; } .song-view-links { padding: 6px 10px; } .song-link { font-size: 12px; padding: 3px 6px; } .songs-count-row h2 { font-size: 16px; } .category-filter-select { font-size: 13px; min-height: 32px; } .carousel-item-inner { padding: 8px 4px; min-height: 50px; } .carousel-item-icon { font-size: 16px; } .carousel-item-label { font-size: 10px; } .carousel-item.active .carousel-item-label { font-size: 11px; } }
 @media (max-width: 768px) and (min-width: 481px) { .song-columns-2 { column-count: 2; } }
-/* Исправление центрирования на мобильных */
-@media (max-width: 768px) {
-    .modal-content {
-        width: calc(100% - 30px) !important;
-        max-width: 100% !important;
-        margin: 15px auto !important;
-    }
-    
-    .header {
-        padding: 10px 5px !important;
-    }
-    
-    .header-center {
-        flex: 1 !important;
-        min-width: 0 !important;
-    }
-    
-    .home-actions-row {
-        width: 100% !important;
-    }
-    
-    .home-actions-row.row-top {
-        grid-template-columns: 1fr !important;
-    }
-    
-    .home-actions-row.row-bottom {
-        grid-template-columns: 1fr 1fr !important;
-    }
-    
-    .btn-pastel {
-        width: 100% !important;
-        margin: 5px 0 !important;
-    }
-    
-    .songs-count-row {
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-    
-    .category-filter-select {
-        max-width: 100% !important;
-        width: 100% !important;
-    }
-    
-    .setlist-grid {
-        grid-template-columns: 1fr !important;
-    }
-    
-    .carousel-item {
-        flex: 0 0 100% !important;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 8px !important;
-    }
-    
-    .modal-content {
-        padding: 15px !important;
-    }
-    
-    .header h1.app-title {
-        font-size: 11px !important;
-    }
-    
-    .app-subtitle {
-        font-size: 13px !important;
-    }
-}
-/* Исправление мобильного вида */
-@media (max-width: 768px) {
-    body {
-        padding: 10px !important;
-        padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
-        overflow-x: hidden !important;
-    }
-    
-    .header {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 10px 5px !important;
-        gap: 5px !important;
-    }
-    
-    .header-left {
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .header-center {
-        flex: 1 !important;
-        text-align: center !important;
-        min-width: 0 !important;
-        overflow: hidden !important;
-    }
-    
-    .header-right {
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    #user-avatar-btn {
-        width: 42px !important;
-        height: 42px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .app-title {
-        font-size: 11px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-    
-    .app-subtitle {
-        font-size: 13px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-    
-    .home-actions-row {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-    
-    .btn-pastel {
-        width: 100% !important;
-        margin: 5px 0 !important;
-        min-height: 52px !important;
-    }
-    
-    .modal-content {
-        width: calc(100% - 20px) !important;
-        max-width: 100% !important;
-        margin: 10px auto !important;
-        padding: 15px !important;
-    }
-    
-    .carousel-container {
-        width: 100% !important;
-        overflow: hidden !important;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 8px !important;
-    }
-    
-    .header {
-        padding: 8px 3px !important;
-    }
-    
-    #user-avatar-btn {
-        width: 38px !important;
-        height: 38px !important;
-        font-size: 18px !important;
-    }
-    
-    .vl-worship-btn {
-        width: 38px !important;
-        height: 38px !important;
-        font-size: 14px !important;
-    }
-    
-    .app-title {
-        font-size: 10px !important;
-    }
-    
-    .app-subtitle {
-        font-size: 12px !important;
-    }
-}
 </style>
 </head>
 <body class="dark">
@@ -759,24 +579,14 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 </div>
 
 <div id="auth-register-form" style="display: none;">
-    <input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="margin-bottom: 10px;">
-    <input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="margin-bottom: 10px;">
-    <input type="text" id="auth-username" placeholder="Логин *" autocomplete="username" style="margin-bottom: 10px;">
-    <input type="email" id="auth-reg-email" placeholder="Email *" autocomplete="email" style="margin-bottom: 10px;">
-    <input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов)" autocomplete="new-password" style="margin-bottom: 10px;">
-    <input type="password" id="auth-reg-password-confirm" placeholder="Подтвердите пароль *" autocomplete="new-password" style="margin-bottom: 10px;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-        <input type="date" id="auth-birthdate" placeholder="Дата рождения" style="margin-bottom: 0;">
-        <select id="auth-gender" style="margin-bottom: 0;">
-            <option value="">Пол</option>
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
-        </select>
-    </div>
-    <button class="btn-main" onclick="registerWithEmail()">Зарегистрироваться</button>
-    <p style="text-align: center; margin-top: 15px;">
-        Уже есть аккаунт? <a href="#" onclick="showLoginForm(); return false;" style="color: #90caf9;">Войти</a>
-    </p>
+<input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="margin-bottom: 10px;">
+<input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="margin-bottom: 10px;">
+<input type="email" id="auth-reg-email" placeholder="Email *" autocomplete="email" style="margin-bottom: 10px;">
+<input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов)" autocomplete="new-password" style="margin-bottom: 15px;">
+<button class="btn-main" onclick="registerWithEmail()">Зарегистрироваться</button>
+<p style="text-align: center; margin-top: 15px;">
+Уже есть аккаунт? <a href="#" onclick="showLoginForm(); return false;" style="color: #90caf9;">Войти</a>
+</p>
 </div>
 
 <button class="btn-secondary" onclick="closeModal('modal-auth')" style="width: 100%; margin-top: 10px;">Отмена</button>
@@ -2573,21 +2383,6 @@ auth.onAuthStateChanged((user) => {
 function showAuthModal() {
 document.getElementById('modal-auth').classList.add('show');
 showLoginForm();
-function showAuthModal() {
-    // ... существующий код ...
-    
-    // Сбрасываем форму при открытии
-    document.getElementById('auth-email').value = '';
-    document.getElementById('auth-password').value = '';
-    document.getElementById('auth-firstname').value = '';
-    document.getElementById('auth-lastname').value = '';
-    document.getElementById('auth-username').value = '';
-    document.getElementById('auth-reg-email').value = '';
-    document.getElementById('auth-reg-password').value = '';
-    document.getElementById('auth-reg-password-confirm').value = '';
-    document.getElementById('auth-birthdate').value = '';
-    document.getElementById('auth-gender').value = '';
-}
 }
 
 function showLoginForm() {
@@ -2604,67 +2399,11 @@ document.getElementById('auth-modal-title').innerText = 'Регистрация'
 
 // Вход через email/пароль
 function loginWithEmail() {
-    const emailOrUsername = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    
-    if (!emailOrUsername || !password) {
-        alert('❌ Заполните все поля!');
-        return;
-    }
-    
-    let loginEmail = emailOrUsername;
-    
-    // Если это не email, ищем пользователя по username
-    if (!emailOrUsername.includes('@')) {
-        db.collection('users').where('username', '==', emailOrUsername).get()
-            .then(snapshot => {
-                if (snapshot.empty) {
-                    alert(' Пользователь не найден!');
-                    return;
-                }
-                const userDoc = snapshot.docs[0];
-                loginEmail = userDoc.data().email;
-                performLogin(loginEmail, password);
-            })
-            .catch(err => {
-                console.error('Error finding user:', err);
-                alert('❌ Ошибка поиска пользователя');
-            });
-    } else {
-        performLogin(loginEmail, password);
-    }
-}
-
-function performLogin(email, password) {
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            if (!user.emailVerified) {
-                alert('⚠️ Email не подтверждён! Проверьте почту.');
-                auth.signOut();
-                return;
-            }
-            return db.collection('users').doc(user.uid).get();
-        })
-        .then((doc) => {
-            if (doc && doc.exists) {
-                currentUser = { uid: doc.id, ...doc.data() };
-                isAuthenticated = true;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                updateHeaderAvatar();
-                closeModal('modal-auth');
-                alert('✅ Вы вошли в систему!');
-            }
-        })
-        .catch((err) => {
-            console.error('Login error:', err);
-            let message = '❌ Ошибка входа';
-            if (err.code === 'auth/user-not-found') message = '❌ Пользователь не найден';
-            else if (err.code === 'auth/wrong-password') message = '❌ Неверный пароль';
-            else if (err.code === 'auth/invalid-email') message = '❌ Неверный email';
-            else if (err.code === 'auth/too-many-requests') message = '❌ Слишком много попыток. Попробуйте позже';
-            alert(message);
-        });
+const email = document.getElementById('auth-email').value.trim();
+const password = document.getElementById('auth-password').value;
+if (!email || !password) { alert('Введите email и пароль'); return; }
+auth.signInWithEmailAndPassword(email, password)
+.catch((error) => alert('Ошибка входа: ' + error.message));
 }
 
 // Регистрация через email/пароль
@@ -2672,66 +2411,21 @@ function performLogin(email, password) {
 function registerWithEmail() {
     const firstName = document.getElementById('auth-firstname').value.trim();
     const lastName = document.getElementById('auth-lastname').value.trim();
-    const username = document.getElementById('auth-username').value.trim();
     const email = document.getElementById('auth-reg-email').value.trim();
     const password = document.getElementById('auth-reg-password').value;
-    const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
-    const birthDate = document.getElementById('auth-birthdate').value;
-    const gender = document.getElementById('auth-gender').value;
-    
-    if (!firstName || !username || !email || !password) {
-        alert('❌ Заполните все обязательные поля!');
-        return;
-    }
-    
-    if (password !== passwordConfirm) {
-        alert('❌ Пароли не совпадают!');
-        return;
-    }
-    
-    if (password.length < 6) {
-        alert('❌ Пароль должен содержать минимум 6 символов!');
-        return;
-    }
-    
-    // Проверяем уникальность username
-    db.collection('users').where('username', '==', username).get()
-        .then(snapshot => {
-            if (!snapshot.empty) {
-                alert('❌ Этот логин уже занят!');
-                return;
-            }
-            
-            return auth.createUserWithEmailAndPassword(email, password);
+    if (!firstName || !email || !password) { alert('Заполните обязательные поля'); return; }
+    if (password.length < 6) { alert('Пароль должен быть не менее 6 символов'); return; }
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((cred) => {
+            // 🔽 ОТПРАВКА ПИСЬМА ПОДТВЕРЖДЕНИЯ
+            return cred.user.sendEmailVerification()
+                .then(() => {
+                    alert('✅ Аккаунт создан!\n\n📧 На ' + email + ' отправлено письмо с подтверждением.\nПерейдите по ссылке в нём, затем войдите в приложение.');
+                    return cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
+                })
+                .then(() => auth.signOut()); // выходим, чтобы пользователь вошёл заново после подтверждения
         })
-        .then((userCredential) => {
-            const user = userCredential.user;
-            return user.sendEmailVerification().then(() => {
-                return db.collection('users').doc(user.uid).set({
-                    firstName,
-                    lastName,
-                    username,
-                    email,
-                    birthDate,
-                    gender,
-                    avatar: null,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            });
-        })
-        .then(() => {
-            alert('✅ Регистрация успешна! Письмо с подтверждением отправлено на ' + email);
-            showLoginForm();
-        })
-        .catch((err) => {
-            console.error('Registration error:', err);
-            let message = '❌ Ошибка регистрации';
-            if (err.code === 'auth/email-already-in-use') message = '❌ Email уже используется';
-            else if (err.code === 'auth/weak-password') message = '❌ Слабый пароль';
-            else if (err.code === 'auth/invalid-email') message = '❌ Неверный email';
-            alert(message);
-        });
+        .catch((error) => alert('Ошибка регистрации: ' + error.message));
 }
 
 // Вход через Google
@@ -2809,351 +2503,11 @@ logout();
 // Обработка кнопки авторизации
 // Обработка кнопки авторизации
 function handleAuthButton() {
-    if (isAuthenticated && currentUser) {
-        showProfileModal();
-    } else {
-        showAuthModal();
-    }
+if (!isAuthenticated) {
+showAuthModal();
+} else {
+showUserMenu();
 }
-function showProfileModal() {
-    if (!currentUser) return;
-    
-    const modal = document.createElement('div');
-    modal.className = 'modal show';
-    modal.id = 'modal-profile';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 500px;">
-            <h2 style="text-align:center; color: #90caf9; margin-bottom: 20px;">Мой профиль</h2>
-            
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div id="profile-avatar-container" style="position: relative; display: inline-block;">
-                    ${currentUser.avatar ? 
-                        `<img src="${currentUser.avatar}" id="profile-avatar-img" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #90caf9;">` :
-                        `<div id="profile-avatar-placeholder" style="width: 120px; height: 120px; border-radius: 50%; background: #9575cd; display: flex; align-items: center; justify-content: center; font-size: 48px; border: 3px solid #90caf9;">👤</div>`
-                    }
-                </div>
-                <div style="margin-top: 10px;">
-                    <input type="file" id="profile-avatar-input" accept="image/*" style="display: none;" onchange="handleProfileAvatarUpload(event)">
-                    <button class="btn-pastel" onclick="document.getElementById('profile-avatar-input').click()" style="font-size: 13px;">
-                        📷 ${currentUser.avatar ? 'Изменить фото' : 'Добавить фото'}
-                    </button>
-                    ${currentUser.avatar ? `<button class="btn-danger" onclick="removeProfileAvatar()" style="font-size: 13px; margin-left: 10px;">Удалить фото</button>` : ''}
-                </div>
-            </div>
-            
-            <form onsubmit="saveProfile(event)">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-        <div>
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
-            <input type="text" id="profile-firstname" value="${currentUser.firstName || ''}" placeholder="Ваше имя" autocomplete="given-name" style="margin-bottom: 0;">
-        </div>
-        <div>
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
-            <input type="text" id="profile-lastname" value="${currentUser.lastName || ''}" placeholder="Ваша фамилия" autocomplete="family-name" style="margin-bottom: 0;">
-        </div>
-    </div>
-    
-    <div style="margin-bottom: 10px;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
-        <input type="text" id="profile-username" value="${currentUser.username || ''}" placeholder="Ваш логин" autocomplete="username" style="margin-bottom: 0;">
-    </div>
-    
-    <div style="margin-bottom: 10px;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
-        <input type="email" id="profile-email" value="${currentUser.email || ''}" placeholder="Ваш email" autocomplete="email" style="margin-bottom: 0;">
-    </div>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-        <div>
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Дата рождения</label>
-            <input type="date" id="profile-birthdate" value="${currentUser.birthDate || ''}" style="margin-bottom: 0;">
-        </div>
-        <div>
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
-            <select id="profile-gender" style="margin-bottom: 0;">
-                <option value="">Не указан</option>
-                <option value="male" ${currentUser.gender === 'male' ? 'selected' : ''}>Мужской</option>
-                <option value="female" ${currentUser.gender === 'female' ? 'selected' : ''}>Женский</option>
-            </select>
-        </div>
-    </div>
-    
-    <div style="margin-bottom: 10px;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль (оставьте пустым, чтобы не менять)</label>
-    <div style="position: relative;">
-        <input type="password" id="profile-password" placeholder="Новый пароль" autocomplete="new-password" style="margin-bottom: 0; padding-right: 40px;">
-        <button type="button" onclick="togglePasswordVisibility('profile-password')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px;">👁️</button>
-    </div>
-</div>
-
-<div style="margin-bottom: 20px;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Подтвердите пароль</label>
-    <div style="position: relative;">
-        <input type="password" id="profile-password-confirm" placeholder="Повторите пароль" autocomplete="new-password" style="margin-bottom: 0; padding-right: 40px;">
-        <button type="button" onclick="togglePasswordVisibility('profile-password-confirm')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px;">👁️</button>
-    </div>
-</div>
-    
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button type="submit" class="btn-main" style="flex: 1; min-width: 120px;">💾 Сохранить</button>
-        <button type="button" class="btn-secondary" onclick="closeProfileModal()" style="flex: 1; min-width: 120px;">Отмена</button>
-        <button type="button" class="btn-danger" onclick="logoutUser()" style="flex: 1; min-width: 120px;"> Выйти</button>
-    </div>
-</form>
-    `;
-    
-    document.body.appendChild(modal);
-}
-function togglePasswordVisibility(inputId) {
-    const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-        input.type = 'text';
-    } else {
-        input.type = 'password';
-    }
-}
-function closeProfileModal() {
-    const modal = document.getElementById('modal-profile');
-    if (modal) modal.remove();
-}
-
-function handleProfileAvatarUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    if (!file.type.startsWith('image/')) {
-        alert(' Пожалуйста, выберите изображение');
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        // Сжимаем изображение
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const size = 256;
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            const minDim = Math.min(img.width, img.height);
-            const sx = (img.width - minDim) / 2;
-            const sy = (img.height - minDim) / 2;
-            ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
-            const avatarData = canvas.toDataURL('image/jpeg', 0.8);
-            
-            // Сохраняем в Firestore
-            saveUserAvatar(avatarData);
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-function saveUserAvatar(avatarData) {
-    if (!currentUser || !currentUser.uid) {
-        // Если нет UID (локальный режим), сохраняем только локально
-        currentUser = currentUser || {};
-        currentUser.avatar = avatarData;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateHeaderAvatar();
-        
-        // Обновляем превью в модалке
-        const img = document.getElementById('profile-avatar-img');
-        const placeholder = document.getElementById('profile-avatar-placeholder');
-        if (img) {
-            img.src = avatarData;
-        } else if (placeholder) {
-            placeholder.outerHTML = `<img src="${avatarData}" id="profile-avatar-img" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #90caf9;">`;
-        }
-        
-        alert('✅ Аватарка сохранена!');
-        return;
-    }
-    
-    db.collection('users').doc(currentUser.uid).update({
-        avatar: avatarData,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        currentUser.avatar = avatarData;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateHeaderAvatar();
-        
-        // Обновляем превью в модалке
-        const img = document.getElementById('profile-avatar-img');
-        const placeholder = document.getElementById('profile-avatar-placeholder');
-        if (img) {
-            img.src = avatarData;
-        } else if (placeholder) {
-            placeholder.outerHTML = `<img src="${avatarData}" id="profile-avatar-img" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #90caf9;">`;
-        }
-        
-        alert('✅ Аватарка сохранена!');
-    }).catch(err => {
-        console.error('Error saving avatar:', err);
-        // Даже если ошибка с Firestore, сохраняем локально
-        currentUser = currentUser || {};
-        currentUser.avatar = avatarData;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateHeaderAvatar();
-        alert('️ Сохранено локально (ошибка сервера)');
-    });
-}
-
-function removeProfileAvatar() {
-    if (!currentUser || !currentUser.uid) return;
-    
-    if (!confirm('Удалить аватарку?')) return;
-    
-    db.collection('users').doc(currentUser.uid).update({
-        avatar: firebase.firestore.FieldValue.delete(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        currentUser.avatar = null;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateHeaderAvatar();
-        closeProfileModal();
-        showProfileModal();
-    }).catch(err => {
-        console.error('Error removing avatar:', err);
-        alert('❌ Ошибка удаления аватарки');
-    });
-}
-
-function saveProfile(event) {
-    event.preventDefault();
-    
-    const firstName = document.getElementById('profile-firstname').value.trim();
-    const lastName = document.getElementById('profile-lastname').value.trim();
-    const username = document.getElementById('profile-username').value.trim();
-    const email = document.getElementById('profile-email').value.trim();
-    const birthDate = document.getElementById('profile-birthdate').value;
-    const gender = document.getElementById('profile-gender').value;
-    const newPassword = document.getElementById('profile-password').value;
-    const passwordConfirm = document.getElementById('profile-password-confirm').value;
-    
-    // Только логин и email обязательны
-    if (!username) {
-        alert(' Логин обязателен!');
-        return;
-    }
-    
-    if (!email) {
-        alert('❌ Email обязателен!');
-        return;
-    }
-    
-    if (newPassword && newPassword !== passwordConfirm) {
-        alert('❌ Пароли не совпадают!');
-        return;
-    }
-    
-    if (newPassword && newPassword.length < 6) {
-        alert('❌ Пароль должен содержать минимум 6 символов!');
-        return;
-    }
-    
-    const updateData = {
-        firstName: firstName || null,
-        lastName: lastName || null,
-        username: username,
-        email: email,
-        birthDate: birthDate || null,
-        gender: gender || null,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    
-    let updatePromise;
-    
-    if (currentUser && currentUser.uid) {
-        updatePromise = db.collection('users').doc(currentUser.uid).update(updateData);
-    } else {
-        // Локальный режим
-        updatePromise = Promise.resolve();
-    }
-    
-    if (newPassword && currentUser && currentUser.uid) {
-        updatePromise = updatePromise.then(() => {
-            return currentUser.updatePassword(newPassword);
-        });
-    }
-    
-    updatePromise.then(() => {
-        // Обновляем локальные данные
-        if (!currentUser) currentUser = {};
-        currentUser.firstName = firstName || currentUser.firstName;
-        currentUser.lastName = lastName || currentUser.lastName;
-        currentUser.username = username;
-        currentUser.email = email;
-        currentUser.birthDate = birthDate || currentUser.birthDate;
-        currentUser.gender = gender || currentUser.gender;
-        
-        if (currentUser.uid) {
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        } else {
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        }
-        
-        updateHeaderAvatar();
-        alert('✅ Профиль сохранён!');
-        closeProfileModal();
-    }).catch(err => {
-        console.error('Error saving profile:', err);
-        
-        // Даже если ошибка с Firestore, сохраняем локально
-        if (!currentUser) currentUser = {};
-        currentUser.firstName = firstName || currentUser.firstName;
-        currentUser.lastName = lastName || currentUser.lastName;
-        currentUser.username = username;
-        currentUser.email = email;
-        currentUser.birthDate = birthDate || currentUser.birthDate;
-        currentUser.gender = gender || currentUser.gender;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateHeaderAvatar();
-        
-        if (err.code === 'auth/requires-recent-login') {
-            alert('⚠️ Для смены пароля нужно войти заново. Данные сохранены локально.');
-        } else {
-            alert('️ Сохранено локально (ошибка сервера)');
-        }
-        closeProfileModal();
-    });
-}
-
-function logoutUser() {
-    if (!confirm('Вы действительно хотите выйти?')) return;
-    
-    auth.signOut().then(() => {
-        currentUser = null;
-        isAuthenticated = false;
-        localStorage.removeItem('currentUser');
-        updateHeaderAvatar();
-        closeProfileModal();
-        alert('✅ Вы вышли из системы');
-    }).catch(err => {
-        console.error('Error signing out:', err);
-        alert('❌ Ошибка выхода');
-    });
-}
-
-function updateHeaderAvatar() {
-    const avatarBtn = document.getElementById('user-avatar-btn');
-    if (!avatarBtn) return;
-    
-    if (isAuthenticated && currentUser && currentUser.avatar) {
-        avatarBtn.innerHTML = `<img src="${currentUser.avatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-        avatarBtn.style.background = 'transparent';
-        avatarBtn.style.border = '2px solid #90caf9';
-    } else if (isAuthenticated && currentUser) {
-        const initials = ((currentUser.firstName?.[0] || '') + (currentUser.lastName?.[0] || '')).toUpperCase() || '👤';
-        avatarBtn.innerHTML = initials;
-        avatarBtn.style.background = '#9575cd';
-        avatarBtn.style.border = 'none';
-    } else {
-        avatarBtn.innerHTML = '👤';
-        avatarBtn.style.background = '#9575cd';
-        avatarBtn.style.border = 'none';
-    }
 }
 // Добавить кнопку "Пользователи" в команду
 function showTeamMembers(teamId) {
