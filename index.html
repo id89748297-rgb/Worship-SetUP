@@ -17,6 +17,10 @@
 <link rel="apple-touch-icon" sizes="152x152" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="167x167" href="icon-180.png">
 <title>Worship SetUP</title>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { touch-action: manipulation; }
@@ -332,7 +336,10 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 <div class="header">
 <div class="header-left"><button class="vl-worship-btn" onclick="showInstruction(true)" title="Инструкция">VL</button></div>
 <div class="header-center"><h1 class="app-title">Worship SetUP</h1><div id="home-page-subtitle" class="app-subtitle">песни</div></div>
-<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button></div>
+<div class="header-right">
+<button id="user-avatar-btn" onclick="showUserMenu()" style="width:48px;height:48px;border-radius:50%;border:none;background:#9575cd;color:white;font-size:20px;cursor:pointer;margin-left:8px;display:none;align-items:center;justify-content:center;"></button>
+<button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+</div>
 </div>
 <div class="carousel-container" id="carousel-container">
 <div class="carousel-track" id="carousel-track"></div>
@@ -549,8 +556,62 @@ body.dark-white .carousel-dot.active { background: #7e57c2; }
 <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('modal-team-invite')">Закрыть</button>
 </div></div>
 <div id="modal-join-team-link" class="modal"><div class="modal-content"><h2> Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-join-team-link')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
+<!-- Модальное окно авторизации -->
+<div id="modal-auth" class="modal">
+<div class="modal-content" style="max-width: 400px;">
+<h2 id="auth-modal-title" style="text-align:center; color: #90caf9; margin-bottom: 20px;">Вход</h2>
+
+<div id="auth-login-form">
+<input type="email" id="auth-email" placeholder="Email" autocomplete="email" style="margin-bottom: 10px;">
+<input type="password" id="auth-password" placeholder="Пароль" autocomplete="current-password" style="margin-bottom: 15px;">
+<button class="btn-main" onclick="loginWithEmail()">Войти</button>
+<button class="btn-secondary" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 8px; font-size: 13px;">📧 Повторно отправить письмо подтверждения</button>
+<p style="text-align: center; margin: 15px 0; color: #888;">или</p>
+<button class="btn-pastel" onclick="loginWithGoogle()" style="width: 100%;">🔵 Войти через Google</button>
+<button class="btn-pastel" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 10px; font-size: 13px;">
+📧 Отправить письмо подтверждения повторно
+</button>
+<p style="text-align: center; margin-top: 15px;">
+Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
+</p>
+</div>
+
+<div id="auth-register-form" style="display: none;">
+<input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="margin-bottom: 10px;">
+<input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="margin-bottom: 10px;">
+<input type="email" id="auth-reg-email" placeholder="Email *" autocomplete="email" style="margin-bottom: 10px;">
+<input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов)" autocomplete="new-password" style="margin-bottom: 15px;">
+<button class="btn-main" onclick="registerWithEmail()">Зарегистрироваться</button>
+<p style="text-align: center; margin-top: 15px;">
+Уже есть аккаунт? <a href="#" onclick="showLoginForm(); return false;" style="color: #90caf9;">Войти</a>
+</p>
+</div>
+
+<button class="btn-secondary" onclick="closeModal('modal-auth')" style="width: 100%; margin-top: 10px;">Отмена</button>
+</div>
+</div>
 <div id="modal-share-setlist" class="modal"><div class="modal-content"><h2>📤 Поделиться сет-листом</h2><p style="color: #888; margin-bottom: 15px;">Выберите способ:</p><div style="display: flex; flex-direction: column; gap: 10px;"><button class="btn-main" onclick="exportSetlistAsFile()">📁 Сохранить файл (.clcsetlist)</button><button class="btn-main" onclick="shareSetlistViaAPI()">📤 Отправить через систему</button><div id="share-to-team-section"></div></div><button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeModal('modal-share-setlist')">Отмена</button></div></div>
 <script>
+// Firebase конфигурация
+const firebaseConfig = {
+  apiKey: "AIzaSyAEIdFyiap3SYI2u8IclrkITcG7NozsO_g",
+  authDomain: "setup-fab0b.firebaseapp.com",
+  databaseURL: "https://setup-fab0b-default-rtdb.firebaseio.com",
+  projectId: "setup-fab0b",
+  storageBucket: "setup-fab0b.appspot.com",
+  messagingSenderId: "826626129430",
+  appId: "1:826626129430:web:87cad2d8720e003c7abf37"
+};
+
+// Инициализация Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Глобальные переменные для авторизации
+let currentUser = null;
+let isAuthenticated = false;
+let authChecked = false;
 function formatDate(dateString) { const date = new Date(dateString); const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']; return `${date.getDate()} ${months[date.getMonth()]}`; }
 function formatSetlistDate(dateString, timeString) { let result = formatDate(dateString); if (timeString) result += `, ${timeString}`; return result; }
 function getCurrentDate() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
@@ -930,6 +991,11 @@ showTeamDetailView(teamId);
 }
 }
 function createTeamPrompt() {
+if (!isAuthenticated) {
+alert('❌ Для создания команды нужно войти в систему');
+showAuthModal();
+return;
+}
 if (teams.length >= MAX_TEAMS) {
 alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
 return;
@@ -1060,6 +1126,11 @@ alert('✅ ID команды скопирован!');
 });
 }
 function showJoinTeamByLinkModal() {
+if (!isAuthenticated) {
+alert('❌ Для присоединения к команде нужно войти в систему');
+showAuthModal();
+return;
+}
 if (teams.length >= MAX_TEAMS) {
 alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
 return;
@@ -2272,6 +2343,169 @@ event.target.value = '';
 }
 function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn = prompt('Имя файла:', dn); if (fn === null) return; const cn = fn.trim() || dn; const final = cn.toLowerCase().endsWith('.clcdb') ? cn : cn + '.clcdb'; shareFile({ version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs, sectionNotes, inlineComments } }, final); }
 function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!\nДобавлено: ${added}\nПропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
+// === АВТОРИЗАЦИЯ FIREBASE ===
+
+// Слушатель состояния авторизации
+// === АВТОРИЗАЦИЯ FIREBASE ===
+// Слушатель состояния авторизации
+auth.onAuthStateChanged((user) => {
+    authChecked = true;
+    if (user) {
+        // 🔽 ПРОВЕРКА ПОДТВЕРЖДЕНИЯ EMAIL
+        if (!user.emailVerified) {
+            const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+            if (!isGoogleUser) {
+                alert('⚠️ Ваш email не подтверждён!\n\nПроверьте почту и перейдите по ссылке из письма.\nЕсли письмо не пришло — нажмите «📧 Отправить письмо повторно» в окне входа.');
+                auth.signOut();
+                return;
+            }
+        }
+        
+        currentUser = user;
+        isAuthenticated = true;
+        saveUserProfile(user);
+        closeModal('modal-auth');
+        updateUserAvatar();
+        renderCarousel();
+    } else {
+        currentUser = null;
+        isAuthenticated = false;
+        updateUserAvatar();
+        if (!localStorage.getItem('clc_auth_shown')) {
+            showAuthModal();
+            localStorage.setItem('clc_auth_shown', 'true');
+        }
+    }
+});
+
+function showAuthModal() {
+document.getElementById('modal-auth').classList.add('show');
+showLoginForm();
+}
+
+function showLoginForm() {
+document.getElementById('auth-login-form').style.display = 'block';
+document.getElementById('auth-register-form').style.display = 'none';
+document.getElementById('auth-modal-title').innerText = 'Вход';
+}
+
+function showRegisterForm() {
+document.getElementById('auth-login-form').style.display = 'none';
+document.getElementById('auth-register-form').style.display = 'block';
+document.getElementById('auth-modal-title').innerText = 'Регистрация';
+}
+
+// Вход через email/пароль
+function loginWithEmail() {
+const email = document.getElementById('auth-email').value.trim();
+const password = document.getElementById('auth-password').value;
+if (!email || !password) { alert('Введите email и пароль'); return; }
+auth.signInWithEmailAndPassword(email, password)
+.catch((error) => alert('Ошибка входа: ' + error.message));
+}
+
+// Регистрация через email/пароль
+// Регистрация через email/пароль
+function registerWithEmail() {
+    const firstName = document.getElementById('auth-firstname').value.trim();
+    const lastName = document.getElementById('auth-lastname').value.trim();
+    const email = document.getElementById('auth-reg-email').value.trim();
+    const password = document.getElementById('auth-reg-password').value;
+    if (!firstName || !email || !password) { alert('Заполните обязательные поля'); return; }
+    if (password.length < 6) { alert('Пароль должен быть не менее 6 символов'); return; }
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((cred) => {
+            // 🔽 ОТПРАВКА ПИСЬМА ПОДТВЕРЖДЕНИЯ
+            return cred.user.sendEmailVerification()
+                .then(() => {
+                    alert('✅ Аккаунт создан!\n\n📧 На ' + email + ' отправлено письмо с подтверждением.\nПерейдите по ссылке в нём, затем войдите в приложение.');
+                    return cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
+                })
+                .then(() => auth.signOut()); // выходим, чтобы пользователь вошёл заново после подтверждения
+        })
+        .catch((error) => alert('Ошибка регистрации: ' + error.message));
+}
+
+// Вход через Google
+function loginWithGoogle() {
+const provider = new firebase.auth.GoogleAuthProvider();
+auth.signInWithPopup(provider).catch((error) => alert('Ошибка: ' + error.message));
+}
+// Повторная отправка письма подтверждения
+function resendVerificationEmail() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    if (!email || !password) { 
+        alert('Введите email и пароль, чтобы войти и отправить письмо'); 
+        return; 
+    }
+    auth.signInWithEmailAndPassword(email, password)
+        .then((cred) => {
+            if (cred.user.emailVerified) {
+                alert('✅ Email уже подтверждён!');
+                closeModal('modal-auth');
+            } else {
+                return cred.user.sendEmailVerification().then(() => {
+                    alert('✅ Письмо отправлено на ' + email);
+                    return auth.signOut();
+                });
+            }
+        })
+        .catch((err) => alert('Ошибка: ' + err.message));
+}
+// Выход
+function logout() {
+if (confirm('Выйти из аккаунта?')) {
+auth.signOut();
+localStorage.removeItem('clc_auth_shown');
+location.reload();
+}
+}
+
+// Сохранение профиля пользователя
+function saveUserProfile(user) {
+if (!db) return;
+db.collection('users').doc(user.uid).set({
+email: user.email,
+displayName: user.displayName,
+photoURL: user.photoURL,
+lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+}, { merge: true });
+}
+
+// Обновление аватара пользователя в шапке
+function updateUserAvatar() {
+const btn = document.getElementById('user-avatar-btn');
+if (!btn) return;
+if (isAuthenticated && currentUser) {
+btn.style.display = 'flex';
+if (currentUser.photoURL) {
+btn.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+} else {
+btn.innerText = '👤';
+}
+} else {
+btn.style.display = 'none';
+}
+}
+
+// Меню пользователя
+function showUserMenu() {
+if (!currentUser) return;
+const name = currentUser.displayName || currentUser.email;
+const email = currentUser.email;
+if (confirm(`Пользователь: ${name}\nEmail: ${email}\n\nНажмите OK для выхода`)) {
+logout();
+}
+}
+
+// Добавить кнопку "Пользователи" в команду
+function showTeamMembers(teamId) {
+const team = teams.find(t => t.id === teamId);
+if (!team) return;
+const members = []; // Здесь будет логика получения пользователей команды
+alert(`Команда: ${team.name}\n\nФункция в разработке...\nЗдесь будет список участников команды.`);
+}
 loadFromStorage();
 buildCarouselItems();
 renderCarousel();
