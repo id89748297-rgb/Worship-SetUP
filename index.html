@@ -44,7 +44,7 @@ body.dark-white .section-extra { color: #90caf9 !important; opacity: 0.85 !impor
 .header h1.app-title { font-size: 12px; margin: 0; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 .app-subtitle { font-size: 14px; color: #9575cd; text-align: center; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; }
 body.light .app-subtitle { color: #7e57c2; }
-body.dark-white .app-subtitle { color: #90caf9; }
+body.dark-white .app-subtitle { color: #9575cd; }
 .header-subtitle { font-size: 12px; color: #888; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 .header-center .setlist-name-inline { font-size: 12px; color: #90caf9; font-weight: bold; display: block; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .header-center .song-title-main { font-size: 16px; color: #90caf9; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
@@ -295,218 +295,35 @@ body.hide-comments .section-note-input,
 body.hide-comments .inline-comment-input { display: none !important; }
 .mobile-only { display: flex; }
 .desktop-only { display: none; }
-
-/* === КАРУСЕЛЬ ВКЛАДОК === */
-.carousel-container {
-  overflow: hidden;
-  width: 100%;
-  margin-bottom: 15px;
-  position: relative;
-  padding: 10px 0;
-  touch-action: pan-y;
-}
-.carousel-track {
-  display: flex;
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: transform;
-}
-.carousel-item {
-  flex: 0 0 calc(100% / 3);
-  min-height: 64px;
-  padding: 8px 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.3s;
-}
-.carousel-item-inner {
-  width: 100%;
-  padding: 10px 6px;
-  border-radius: 12px;
-  background: #2a2a2a;
-  color: #888;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.3s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-height: 56px;
-  border: 1px solid transparent;
-  position: relative;
-}
-body.light .carousel-item-inner {
-  background: rgba(126, 87, 194, 0.08);
-  color: #666;
-}
-body.dark-white .carousel-item-inner {
-  background: #2a2a2a;
-  color: #888;
-}
-.carousel-item.active .carousel-item-inner {
-  background: #9575cd;
-  color: #fff;
-  transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(149, 117, 205, 0.4);
-  border-color: #b39ddb;
-  font-weight: bold;
-}
-body.light .carousel-item.active .carousel-item-inner {
-  background: #7e57c2;
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(126, 87, 194, 0.4);
-}
-body.dark-white .carousel-item.active .carousel-item-inner {
-  background: #7e57c2;
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(126, 87, 194, 0.4);
-}
-.carousel-item.neighbor .carousel-item-inner {
-  transform: scale(0.95);
-  opacity: 0.75;
-}
-.carousel-item-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-.carousel-item-label {
-  font-size: 11px;
-  line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-.carousel-item.active .carousel-item-label {
-  font-size: 12px;
-}
-.carousel-item-badge {
-  position: absolute;
-  top: 4px;
-  right: 8px;
-  background: #ef5350;
-  color: white;
-  font-size: 9px;
-  font-weight: bold;
-  padding: 2px 5px;
-  border-radius: 8px;
-  min-width: 16px;
-  text-align: center;
-}
-.carousel-indicator {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-.carousel-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #555;
-  transition: all 0.3s;
-}
-.carousel-dot.active {
-  background: #9575cd;
-  width: 18px;
-  border-radius: 3px;
-}
+.carousel-container { overflow: hidden; width: 100%; margin-bottom: 15px; position: relative; padding: 10px 0; touch-action: pan-y; }
+.carousel-track { display: flex; transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); will-change: transform; }
+.carousel-item { flex: 0 0 calc(100% / 3); min-height: 64px; padding: 8px 6px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; user-select: none; transition: all 0.3s; }
+.carousel-item-inner { width: 100%; padding: 10px 6px; border-radius: 12px; background: #2a2a2a; color: #888; font-size: 13px; font-weight: 500; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; border: 1px solid transparent; position: relative; }
+body.light .carousel-item-inner { background: rgba(126, 87, 194, 0.08); color: #666; }
+body.dark-white .carousel-item-inner { background: #2a2a2a; color: #888; }
+.carousel-item.active .carousel-item-inner { background: #9575cd; color: #fff; transform: scale(1.08); box-shadow: 0 4px 16px rgba(149, 117, 205, 0.4); border-color: #b39ddb; font-weight: bold; }
+body.light .carousel-item.active .carousel-item-inner { background: #7e57c2; color: #fff; box-shadow: 0 4px 16px rgba(126, 87, 194, 0.4); }
+body.dark-white .carousel-item.active .carousel-item-inner { background: #7e57c2; color: #fff; box-shadow: 0 4px 16px rgba(126, 87, 194, 0.4); }
+.carousel-item.neighbor .carousel-item-inner { transform: scale(0.95); opacity: 0.75; }
+.carousel-item-icon { font-size: 18px; line-height: 1; }
+.carousel-item-icon img { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; }
+.carousel-item.active .carousel-item-icon img { width: 36px; height: 36px; border-radius: 10px; }
+.carousel-item-label { font-size: 11px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.carousel-item.active .carousel-item-label { font-size: 12px; }
+.carousel-item-badge { position: absolute; top: 4px; right: 8px; background: #ef5350; color: white; font-size: 9px; font-weight: bold; padding: 2px 5px; border-radius: 8px; min-width: 16px; text-align: center; }
+.carousel-indicator { display: flex; justify-content: center; gap: 4px; margin-bottom: 10px; }
+.carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: #555; transition: all 0.3s; }
+.carousel-dot.active { background: #9575cd; width: 18px; border-radius: 3px; }
 body.light .carousel-dot { background: #ccc; }
 body.light .carousel-dot.active { background: #7e57c2; }
 body.dark-white .carousel-dot { background: #555; }
 body.dark-white .carousel-dot.active { background: #7e57c2; }
-
-/* === КАРТОЧКИ КОМАНД === */
-.team-card {
-  background: #1e1e1e;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  border: 1px solid #333;
-}
-body.light .team-card { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-color: #e0e0e0; }
-body.dark-white .team-card { background: #1e1e1e; border-color: #333; }
-.team-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.team-card-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: #90caf9;
-  flex: 1;
-  min-width: 0;
-}
-body.light .team-card-title { color: #0d47a1; }
-body.dark-white .team-card-title { color: #90caf9; }
-.team-card-meta { font-size: 12px; color: #888; margin-bottom: 10px; }
-.team-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.team-card-actions button {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 10px;
-  font-size: 13px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  touch-action: manipulation;
-}
-.team-btn-edit { background: rgba(144, 202, 249, 0.2); color: #90caf9; }
-body.light .team-btn-edit { background: rgba(25, 118, 210, 0.15); color: #0d47a1; }
-.team-btn-invite { background: rgba(179, 157, 219, 0.2); color: #b39ddb; }
-body.light .team-btn-invite { background: rgba(126, 87, 194, 0.2); color: #4527a0; }
-.team-btn-delete { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
-body.light .team-btn-delete { background: rgba(239, 83, 80, 0.15); color: #d32f2f; }
-
-@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
-.mobile-only { display: none !important; }
-.desktop-only { display: flex; }
-.toolbar-row { grid-template-columns: repeat(5, 1fr); }
-#toolbar-row-3 { grid-template-columns: repeat(5, 1fr); }
-}
-@media (max-width: 480px) {
-body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
-.header h1.app-title { font-size: 12px; }
-.btn-main { padding: 14px; font-size: 14px; min-height: 48px; }
-.list-item { padding: 10px 12px; min-height: 56px; }
-.item-title { font-size: 14px; }
-.modal-content { padding: 15px; max-height: 85vh; }
-.theme-toggle, .vl-worship-btn { width: 44px; height: 44px; font-size: 20px; }
-.song-toolbar { padding: 10px; gap: 6px; }
-.toolbar-row { gap: 6px; }
-.toolbar-btn-item, .toolbar-select-item { height: 48px; }
-.toolbar-select-item select { font-size: 11px; }
-.song-section { padding: 6px; }
-.section-label { font-size: 13px; }
-.key-select-inline { min-width: 60px; font-size: 12px; padding: 4px 6px; padding-right: 20px; min-height: 36px; }
-.btn-icon { min-width: 36px; min-height: 36px; font-size: 18px; }
-.setlist-actions-row button { padding: 10px 6px; font-size: 13px; }
-.side-nav-btn { width: 44px; height: 70px; font-size: 24px; }
-.grid-btn { font-size: 13px; padding: 12px 6px; min-height: 48px; }
-.order-input { width: 36px; height: 32px; font-size: 13px; }
-.instruction-card { padding: 14px; }
-.instruction-card-title { font-size: 15px; }
-.instruction-card-text { font-size: 13px; }
-.btn-pastel { font-size: 13px; padding: 10px 8px; }
-.song-view-links { padding: 6px 10px; }
-.song-link { font-size: 12px; padding: 3px 6px; }
-.songs-count-row h2 { font-size: 16px; }
-.category-filter-select { font-size: 13px; min-height: 32px; }
-.carousel-item-inner { padding: 8px 4px; min-height: 50px; }
-.carousel-item-icon { font-size: 16px; }
-.carousel-item-label { font-size: 10px; }
-.carousel-item.active .carousel-item-label { font-size: 11px; }
-}
+.team-list-avatar { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #9575cd; }
+.team-list-avatar-placeholder { width: 40px; height: 40px; border-radius: 10px; background: #9575cd; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.team-avatar-edit { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; margin: 10px auto; display: block; background: #9575cd; }
+.team-avatar-edit-placeholder { width: 64px; height: 64px; border-radius: 12px; background: #9575cd; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 10px auto; }
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) { .mobile-only { display: none !important; } .desktop-only { display: flex; } .toolbar-row { grid-template-columns: repeat(5, 1fr); } #toolbar-row-3 { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 480px) { body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top, 0px) + 10px); } .header h1.app-title { font-size: 12px; } .btn-main { padding: 14px; font-size: 14px; min-height: 48px; } .list-item { padding: 10px 12px; min-height: 56px; } .item-title { font-size: 14px; } .modal-content { padding: 15px; max-height: 85vh; } .theme-toggle, .vl-worship-btn { width: 44px; height: 44px; font-size: 20px; } .song-toolbar { padding: 10px; gap: 6px; } .toolbar-row { gap: 6px; } .toolbar-btn-item, .toolbar-select-item { height: 48px; } .toolbar-select-item select { font-size: 11px; } .song-section { padding: 6px; } .section-label { font-size: 13px; } .key-select-inline { min-width: 60px; font-size: 12px; padding: 4px 6px; padding-right: 20px; min-height: 36px; } .btn-icon { min-width: 36px; min-height: 36px; font-size: 18px; } .setlist-actions-row button { padding: 10px 6px; font-size: 13px; } .side-nav-btn { width: 44px; height: 70px; font-size: 24px; } .grid-btn { font-size: 13px; padding: 12px 6px; min-height: 48px; } .order-input { width: 36px; height: 32px; font-size: 13px; } .instruction-card { padding: 14px; } .instruction-card-title { font-size: 15px; } .instruction-card-text { font-size: 13px; } .btn-pastel { font-size: 13px; padding: 10px 8px; } .song-view-links { padding: 6px 10px; } .song-link { font-size: 12px; padding: 3px 6px; } .songs-count-row h2 { font-size: 16px; } .category-filter-select { font-size: 13px; min-height: 32px; } .carousel-item-inner { padding: 8px 4px; min-height: 50px; } .carousel-item-icon { font-size: 16px; } .carousel-item-label { font-size: 10px; } .carousel-item.active .carousel-item-label { font-size: 11px; } }
 @media (max-width: 768px) and (min-width: 481px) { .song-columns-2 { column-count: 2; } }
 </style>
 </head>
@@ -517,13 +334,10 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header-center"><h1 class="app-title">Worship SetUP</h1><div id="home-page-subtitle" class="app-subtitle">песни</div></div>
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button></div>
 </div>
-
-<!-- КАРУСЕЛЬ ВКЛАДОК -->
 <div class="carousel-container" id="carousel-container">
-  <div class="carousel-track" id="carousel-track"></div>
+<div class="carousel-track" id="carousel-track"></div>
 </div>
 <div class="carousel-indicator" id="carousel-indicator"></div>
-
 <div id="home-view-songs">
 <input type="text" id="songs-search" class="search-box" placeholder=" Поиск песен..." oninput="renderSongs()">
 <select id="songs-sort" class="sort-select" onchange="renderSongs()">
@@ -539,10 +353,10 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="home-actions-row row-top">
 <button class="btn-pastel" onclick="openExpressAdd()">⚡ Добавить песню (экспресс)</button>
 <button class="btn-pastel" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
-<button class="btn-pastel" onclick="openMainSongEditor()">+Добавить</button>
+<button class="btn-pastel" onclick="openMainSongEditor()">➕Добавить</button>
 </div>
 <div class="home-actions-row row-bottom">
-<button class="btn-pastel" onclick="exportDatabase()">📤 Экспорт базы</button>
+<button class="btn-pastel" onclick="exportDatabase()"> Экспорт базы</button>
 <button class="btn-pastel" onclick="document.getElementById('import-database-input').click()">📥 Импорт базы</button>
 </div>
 <input type="file" id="import-database-input" accept=".clcdb" style="display: none;" onchange="handleImportDatabase(event)">
@@ -561,8 +375,8 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 </div>
 <div id="home-view-setlists" style="display: none;">
 <div class="setlist-grid">
-<button class="btn-pastel grid-btn" onclick="openSetlistModal()">+ Создать сет-лист</button>
-<button class="btn-pastel grid-btn" onclick="document.getElementById('import-setlist-input').click()"> Загрузить сет-лист(ы)</button>
+<button class="btn-pastel grid-btn" onclick="openSetlistModal()">➕ Создать сет-лист</button>
+<button class="btn-pastel grid-btn" onclick="document.getElementById('import-setlist-input').click()">📥 Загрузить сет-лист(ы)</button>
 <div class="grid-btn tab-style active" onclick="switchTab('current', this)">Актуальные<span class="btn-subtext">сет-листы</span></div>
 <div class="grid-btn tab-style" onclick="switchTab('archive', this)">Архив<span class="btn-subtext">сет-листов</span></div>
 </div>
@@ -583,23 +397,23 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
 </div>
 <div class="instruction-content">
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👆</span><span class="instruction-card-title">Свайпы для навигации</span></div><div class="instruction-card-text">• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе или в общем списке<br>• На <b>главной</b>: свайп переключает вкладки карусели (бесконечно в обе стороны)<br>• <b>Свайп влево</b> = вернуться назад</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Свайпы для навигации</span></div><div class="instruction-card-text">• На странице <b>песни</b>: свайп влево/вправо переключает между песнями в сет-листе или в общем списке<br>• На <b>главной</b>: свайп переключает вкладки карусели (бесконечно в обе стороны)<br>• <b>Свайп влево</b> = вернуться назад</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🔗</span><span class="instruction-card-title">Ссылки в песнях</span></div><div class="instruction-card-text">Вставьте <b>любую ссылку</b> на отдельной строке — она автоматически появится под названием песни.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">💬</span><span class="instruction-card-title">Комментарии к строкам</span></div><div class="instruction-card-text">Поставьте <code>**</code> в конце строки — справа появится поле для комментария (до 12 символов).</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">️</span><span class="instruction-card-title">Картинки в песнях</span></div><div class="instruction-card-text">Напишите <code>Картинка:</code> на отдельной строке — появится кнопка загрузки изображения.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🖼️</span><span class="instruction-card-title">Картинки в песнях</span></div><div class="instruction-card-text">Напишите <code>Картинка:</code> на отдельной строке — появится кнопка загрузки изображения.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">✏️</span><span class="instruction-card-title">Редактирование блоков</span></div><div class="instruction-card-text">📱 <b>На телефоне</b>: <b>нажмите и удерживайте 2 секунды</b> на блоке (без движения пальца)<br>💻 <b>На компьютере</b>: <b>двойной клик мышью</b> по блоку</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎵</span><span class="instruction-card-title">Локальные изменения в сет-листе</span></div><div class="instruction-card-text">В сет-листе можно менять тональность, Capo, колонки, текст и скрытие текста — только для этого сет-листа. Помечается «(лок.)».</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🔢</span><span class="instruction-card-title">Нумерация в сет-листе</span></div><div class="instruction-card-text">Нажмите на номер песни — он очистится, можно ввести новый.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Нумерация в сет-листе</span></div><div class="instruction-card-text">Нажмите на номер песни — он очистится, можно ввести новый.</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📝</span><span class="instruction-card-title">Заметки на секциях</span></div><div class="instruction-card-text">В правом верхнем углу блока — поле для короткой заметки (до 12 символов).</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎼</span><span class="instruction-card-title">Дополнения к заголовкам</span></div><div class="instruction-card-text">После заголовка секции можно добавить информацию через двоеточие:<br>• <code>ПРИПЕВ: x2</code> — повтор 2 раза<br>• <code>БРИДЖ: ALL IN</code> — играть всем</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎸</span><span class="instruction-card-title">Capo и транспонирование</span></div><div class="instruction-card-text">Меняйте тональность — аккорды пересчитаются. <b>Capo</b> тоже транспонирует.</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">♯/♭</span><span class="instruction-card-title">Переключатель диезов/бемолей</span></div><div class="instruction-card-text">Кнопка <b>♯</b> переключает между диезами и бемолями.</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👁️</span><span class="instruction-card-title">Скрытие элементов</span></div><div class="instruction-card-text"><b>⬇️ ещё</b> во 2 ряду → 3 ряд с кнопками:<br>• <b>👁️ аккорды</b> — скрыть/показать аккорды<br>• <b>👁️ текст</b> — скрыть/показать текст (при скрытии аккорды сжимаются)<br>• <b>👁️ стрелки</b> — скрыть боковые кнопки<br>• <b>👁️ комм.</b> — скрыть заметки и комментарии<br>💻 На ПК кнопка ⬇️ тоже раскрывает 3 ряд.</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎼</span><span class="instruction-card-title">Метки в скобках</span></div><div class="instruction-card-text"><code>E (бросить) H (ALL IN)</code><br>• Текст в скобках может содержать пробелы<br>• Аккорд — транспонируется<br>• Не аккорд — отображается как метка</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Сохранение настроек</span></div><div class="instruction-card-text">💾 <b>На главной</b>: колонки — ко всем песням<br>💾 <b>В сет-листе</b>: всё локально (колонки, скрытие текста и т.д.)</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> → <code>.clcdb</code><br>• <b>📤 поделиться</b> → <code>.clcsong</code><br>• <b>📤 Поделиться</b> сет-листом → <code>.clcsetlist</code></div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">♯/♭</span><span class="instruction-card-title">Переключатель диезов/бемолей</span></div><div class="instruction-card-text">Кнопка <b></b> переключает между диезами и бемолями.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👁️</span><span class="instruction-card-title">Скрытие элементов</span></div><div class="instruction-card-text"><b>⬇️ ещё</b> во 2 ряду → 3 ряд с кнопками:<br>• <b>👁️ аккорды</b> — скрыть/показать аккорды<br>• <b>👁️ текст</b> — скрыть/показать текст (при скрытии аккорды сжимаются)<br>• <b>️ стрелки</b> — скрыть боковые кнопки<br>• <b>👁️ комм.</b> — скрыть заметки и комментарии<br>💻 На ПК кнопка ⬇️ тоже раскрывает 3 ряд.</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Метки в скобках</span></div><div class="instruction-card-text"><code>E (бросить) H (ALL IN)</code><br>• Текст в скобках может содержать пробелы<br>• Аккорд — транспонируется<br>• Не аккорд — отображается как метка</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">💾</span><span class="instruction-card-title">Сохранение настроек</span></div><div class="instruction-card-text">💾 <b>На главной</b>: колонки — ко всем песням<br>💾 <b>В сет-листе</b>: всё локально (колонки, скрытие текста и т.д.)</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📤</span><span class="instruction-card-title">Экспорт и импорт</span></div><div class="instruction-card-text">• <b>📤 Экспорт базы</b> → <code>.clcdb</code><br>• <b>📤 поделиться</b> → <code>.clcsong</code><br>• <b>📤 Поделиться</b> сет-листом → <code>.clcsetlist</code></div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">📄</span><span class="instruction-card-title">PDF и печать</span></div><div class="instruction-card-text">Кнопка <b>📄 PDF</b> — печать в 2 колонки.</div></div>
-<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon"></span><span class="instruction-card-title">Темы оформления</span></div><div class="instruction-card-text">• <b>🌙</b> — тёмная<br>• <b>☀️</b> — светлая<br>• <b>🌑</b> — тёмная, заголовки секций <b>цветом аккордов</b><br>• <b>VL</b> долгое нажатие — смена цветовой схемы</div></div>
+<div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">🎨</span><span class="instruction-card-title">Темы оформления</span></div><div class="instruction-card-text">• <b>🌙</b> — тёмная<br>• <b>☀️</b> — светлая<br>• <b>🌑</b> — тёмная, заголовки секций <b>цветом аккордов</b><br>• <b>VL</b> долгое нажатие — смена цветовой схемы</div></div>
 <div class="instruction-card"><div class="instruction-card-header"><span class="instruction-card-icon">👥</span><span class="instruction-card-title">Команды</span></div><div class="instruction-card-text">Создавайте команды (церкви, группы прославления) и делитесь с ними сет-листами. Каждая команда — отдельная вкладка в карусели. Можно присоединиться по ссылке-приглашению.</div></div>
 </div>
 <div class="instruction-footer">
@@ -615,7 +429,7 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
 </div>
 <div class="setlist-actions-row">
-<button class="btn-add-song-top" onclick="openAddSongToSlModal()">+ Добавить песню</button>
+<button class="btn-add-song-top" onclick="openAddSongToSlModal()"> Добавить песню</button>
 <button class="btn-edit-sl" onclick="openEditSetlistModal(currentSlId)">✏️ Редактировать</button>
 </div>
 <div class="setlist-actions-row">
@@ -632,16 +446,16 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <h1 id="song-view-title" class="song-title-main">Песня</h1>
 <div id="song-view-links" class="song-view-links"></div>
 </div>
-<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
+<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()"></button></div>
 </div>
 <div class="song-toolbar">
 <div class="toolbar-row">
-<div class="toolbar-select-item"><span>🎵</span><select class="key-select" id="key-select" onchange="changeKey(this.value)"></select></div>
+<div class="toolbar-select-item"><span></span><select class="key-select" id="key-select" onchange="changeKey(this.value)"></select></div>
 <div class="toolbar-select-item"><span>🎸</span><select class="capo-select" id="capo-select" onchange="changeCapo(this.value)">
 <option value="0">No Capo</option><option value="1">Capo 1</option><option value="2">Capo 2</option><option value="3">Capo 3</option><option value="4">Capo 4</option><option value="5">Capo 5</option><option value="6">Capo 6</option><option value="7">Capo 7</option><option value="8">Capo 8</option><option value="9">Capo 9</option><option value="10">Capo 10</option><option value="11">Capo 11</option>
 </select></div>
 <button class="toolbar-btn-item" id="btn-accidental" onclick="toggleAccidental()" title="Переключить ♯/♭" style="font-size: 18px;">♯</button>
-<button class="toolbar-btn-item" id="btn-pdf-or-copy" onclick="handlePdfOrCopy()" title="PDF/Копировать">📄 PDF</button>
+<button class="toolbar-btn-item" id="btn-pdf-or-copy" onclick="handlePdfOrCopy()" title="PDF/Копировать"> PDF</button>
 <div class="toolbar-select-item desktop-only"><span>📄</span><select class="columns-select" id="columns-select-desktop" onchange="changeColumns(this.value)"><option value="1">1 кол.</option><option value="2">2 кол.</option></select></div>
 </div>
 <div class="toolbar-row" style="margin-top: 8px;">
@@ -652,15 +466,15 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <button class="toolbar-btn-item desktop-only" onclick="downloadPdf()" title="PDF"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📄</span><span style="font-size: 8px; margin-top: 2px;">PDF</span></div></button>
 </div>
 <div class="toolbar-row" id="toolbar-row-3" style="margin-top: 8px; display: none;">
-<button class="toolbar-btn-item" id="btn-toggle-chords" onclick="toggleChordsVisibility()" title="Скрыть/показать аккорды"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="chords-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">аккорды</span></div></button>
+<button class="toolbar-btn-item" id="btn-toggle-chords" onclick="toggleChordsVisibility()" title="Скрыть/показать аккорды"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="chords-icon" style="font-size: 20px;">️</span><span style="font-size: 8px; margin-top: 2px;">аккорды</span></div></button>
 <button class="toolbar-btn-item" id="btn-toggle-lyrics" onclick="toggleLyricsVisibility()" title="Скрыть/показать текст"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="lyrics-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">текст</span></div></button>
 <button class="toolbar-btn-item" id="btn-toggle-arrows" onclick="toggleArrowsVisibility()" title="Скрыть/показать стрелки"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="arrows-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">стрелки</span></div></button>
-<button class="toolbar-btn-item" id="btn-toggle-comments" onclick="toggleCommentsVisibility()" title="Скрыть/показать комментарии"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="comments-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">комм.</span></div></button>
+<button class="toolbar-btn-item" id="btn-toggle-comments" onclick="toggleCommentsVisibility()" title="Скрыть/показать комментарии"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="comments-icon" style="font-size: 20px;">️</span><span style="font-size: 8px; margin-top: 2px;">комм.</span></div></button>
 <button class="toolbar-btn-item desktop-only" onclick="exportSong()" title="Поделиться"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📤</span><span style="font-size: 8px; margin-top: 2px;">поделиться</span></div></button>
 </div>
 <div class="toolbar-row mobile-only" id="toolbar-row-4" style="margin-top: 8px; display: none;">
 <button class="toolbar-btn-item" onclick="exportSong()" title="Поделиться"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📤</span><span style="font-size: 8px; margin-top: 2px;">поделиться</span></div></button>
-<div class="toolbar-select-item mobile-only"><span>📄</span><select class="columns-select" id="columns-select-mobile" onchange="changeColumns(this.value)"><option value="1">1 кол.</option><option value="2">2 кол.</option></select></div>
+<div class="toolbar-select-item mobile-only"><span></span><select class="columns-select" id="columns-select-mobile" onchange="changeColumns(this.value)"><option value="1">1 кол.</option><option value="2">2 кол.</option></select></div>
 <button class="toolbar-btn-item mobile-only" onclick="downloadPdf()" title="PDF"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📄</span><span style="font-size: 8px; margin-top: 2px;">PDF</span></div></button>
 </div>
 <button id="btn-save-all" class="btn-save-all" onclick="saveAllSettings()">💾 Сохранить настройки</button>
@@ -707,26 +521,42 @@ body { padding: 10px; font-size: 14px; padding-top: calc(env(safe-area-inset-top
 <div id="modal-edit-setlist" class="modal"><div class="modal-content"><h2>Редактировать сет-лист</h2><label>Дата:</label><input type="date" id="edit-sl-date"><label>Время:</label><input type="time" id="edit-sl-time"><label>Название:</label><input type="text" id="edit-sl-name"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-edit-setlist')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveEditSetlist()">Сохранить</button></div></div></div>
 <div id="modal-add-song" class="modal"><div class="modal-content"><h2>Добавить песню в сет-лист</h2><input type="text" class="search-box" id="add-song-search" placeholder="🔍 Поиск..." oninput="renderAddSongList()" autocomplete="off"><div id="add-song-list" class="add-song-list"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-add-song')" style="width: 100%;">Закрыть</button></div></div></div>
 <div id="modal-delete-confirm" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">⚠️ Внимание!</h2><p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Вы точно хотите удалить?<br><b>Нельзя будет вернуть!</b></p><p id="delete-item-name" style="font-weight: bold; margin-bottom: 20px; color: #90caf9;"></p><div style="display: flex; gap: 10px; justify-content: center;"><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-confirm')">Отмена</button><button class="btn-danger-confirm" id="btn-confirm-delete">Удалить</button></div></div></div>
-<div id="modal-delete-setlist-choice" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2><p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button><button class="btn-danger-confirm" onclick="deleteSetlistChoice()">️ Удалить навсегда</button><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button></div></div></div>
+<div id="modal-delete-setlist-choice" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2><p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button><button class="btn-danger-confirm" onclick="deleteSetlistChoice()">🗑️ Удалить навсегда</button><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button></div></div></div>
 <div id="modal-archive-setlist" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Восстановить сет-лист?</h2><p id="archive-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-main" onclick="restoreSetlistChoice()">✅ Восстановить</button><button class="btn-cancel-confirm" onclick="closeModal('modal-archive-setlist')">Отмена</button></div></div></div>
 <div id="modal-image-delete" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2><p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button><button class="btn-cancel-confirm" onclick="closeModal('modal-image-delete')">Отмена</button></div></div></div>
-
-<!-- МОДАЛКИ КОМАНД -->
-<div id="modal-team-edit" class="modal"><div class="modal-content"><h2>✏️ Редактировать команду</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Название команды</label><input type="text" id="team-edit-name" placeholder="Название команды"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Пароль для присоединения (необязательно)</label><input type="text" id="team-edit-password" placeholder="Оставьте пустым, чтобы убрать пароль"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-team-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveTeamEdit()">Сохранить</button></div></div></div>
-
-<div id="modal-team-invite" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">🔗 Ссылка-приглашение</h2><p style="font-size: 13px; color: #888; margin-bottom: 15px;">Отправьте эту ссылку участникам команды:</p><div id="team-invite-link" style="background: rgba(144, 202, 249, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(144, 202, 249, 0.4); word-break: break-all; font-size: 13px; color: #90caf9; margin-bottom: 15px; user-select: all;"></div><button class="btn-main" onclick="copyTeamInviteLink()">📋 Скопировать ссылку</button><button class="btn-secondary" style="width: 100%;" onclick="closeModal('modal-team-invite')">Закрыть</button></div></div>
-
-<div id="modal-join-team-link" class="modal"><div class="modal-content"><h2>🔗 Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-join-team-link')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
-
+<div id="modal-team-edit" class="modal"><div class="modal-content">
+<h2 id="team-modal-title">Создать команду</h2>
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Название команды <span class="required-star">*</span></label>
+<input type="text" id="team-edit-name" placeholder="Название команды">
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Пароль для присоединения (необязательно)</label>
+<input type="text" id="team-edit-password" placeholder="Оставьте пустым, чтобы убрать пароль">
+<label style="font-weight: bold; display: block; margin: 10px 0 5px;">🖼️ Аватарка команды (необязательно, квадратная)</label>
+<div id="team-avatar-preview-container" style="text-align: center; margin: 10px 0;"></div>
+<input type="file" id="team-edit-avatar" accept="image/*" style="margin-top: 5px;">
+<div class="modal-actions">
+<button class="btn-secondary" onclick="closeModal('modal-team-edit')">Отмена</button>
+<button class="btn-main" style="width: auto; margin:0;" onclick="saveTeamEdit()">Сохранить</button>
+</div>
+</div></div>
+<div id="modal-team-invite" class="modal"><div class="modal-content" style="text-align: center;">
+<h2 style="color: #90caf9; margin-bottom: 15px;">🔗 Пригласить в команду</h2>
+<p style="font-size: 13px; color: #888; margin-bottom: 10px;">Ссылка-приглашение:</p>
+<div id="team-invite-link" style="background: rgba(144, 202, 249, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(144, 202, 249, 0.4); word-break: break-all; font-size: 12px; color: #90caf9; margin-bottom: 10px; user-select: all;"></div>
+<button class="btn-main" onclick="copyTeamInviteLink()" style="margin-bottom: 15px;">📋 Скопировать ссылку</button>
+<p style="font-size: 13px; color: #888; margin-bottom: 10px;">ID команды:</p>
+<div id="team-invite-id" style="background: rgba(179, 157, 219, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(179, 157, 219, 0.4); word-break: break-all; font-size: 12px; color: #b39ddb; margin-bottom: 10px; user-select: all; font-family: monospace;"></div>
+<button class="btn-pastel" style="width: 100%;" onclick="copyTeamInviteId()">📋 Скопировать ID</button>
+<button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('modal-team-invite')">Закрыть</button>
+</div></div>
+<div id="modal-join-team-link" class="modal"><div class="modal-content"><h2> Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-join-team-link')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
 <div id="modal-share-setlist" class="modal"><div class="modal-content"><h2>📤 Поделиться сет-листом</h2><p style="color: #888; margin-bottom: 15px;">Выберите способ:</p><div style="display: flex; flex-direction: column; gap: 10px;"><button class="btn-main" onclick="exportSetlistAsFile()">📁 Сохранить файл (.clcsetlist)</button><button class="btn-main" onclick="shareSetlistViaAPI()">📤 Отправить через систему</button><div id="share-to-team-section"></div></div><button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeModal('modal-share-setlist')">Отмена</button></div></div>
-
 <script>
 function formatDate(dateString) { const date = new Date(dateString); const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']; return `${date.getDate()} ${months[date.getMonth()]}`; }
 function formatSetlistDate(dateString, timeString) { let result = formatDate(dateString); if (timeString) result += `, ${timeString}`; return result; }
 function getCurrentDate() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 function getCurrentTime() { const date = new Date(); return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`; }
 const CATEGORY_LABELS = { fast: '🔥 Б', medium: '🎵 С', slow: '🧎 M' };
-const CATEGORY_ICONS = { fast: '🔥', medium: '🎵', slow: '🧎' };
+const CATEGORY_ICONS = { fast: '🔥', medium: '🎵', slow: '' };
 const DIATONIC_CHORDS = {
 'C':  [{r:'C',m:false},{r:'D',m:true},{r:'E',m:true},{r:'F',m:false},{r:'G',m:false},{r:'A',m:true},{r:'H',m:true}],
 'C#': [{r:'C#',m:false},{r:'D#',m:true},{r:'F',m:true},{r:'F#',m:false},{r:'G#',m:false},{r:'A#',m:true},{r:'C',m:true}],
@@ -756,6 +586,7 @@ let toolbarExpanded = false;
 let savedScrollPosition = 0;
 let homeFilteredSongs = [];
 let homeSongIndex = -1;
+let currentTeamArchiveTeamId = null;
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'H'];
 const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'H'];
 const CHORD_RE = /^[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[0-9b]*(?:\/[A-H][#b]?(m|M|maj|min|dim|aug|sus|add|7|9|11|13|6|2|4|5|7sus4|sus2|sus4|maj7|min7|m7b5|dim7|aug7)?[0-9b]*)?$/i;
@@ -772,33 +603,53 @@ const PAIR_RE = new RegExp(`^${PAIR_RE_STR}$`, 'i');
 const SHARP_TO_FLAT = { 'C#': 'Db', 'D#': 'Eb', 'F#': 'Gb', 'G#': 'Ab', 'A#': 'Bb' };
 const FLAT_TO_SHARP = { 'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#' };
 const MAX_TEAMS = 15;
-
-// === КАРУСЕЛЬ ===
 let carouselItems = [];
 let carouselActiveIndex = 0;
 let isTransitioning = false;
 let carouselTouchStartX = 0, carouselTouchStartY = 0, carouselTracking = false, carouselMoved = false;
+let editingTeamId = null;
+let teamAvatarFile = null;
+
+function compressTeamImage(file, callback) {
+const reader = new FileReader();
+reader.onload = function(e) {
+const img = new Image();
+img.onload = function() {
+const canvas = document.createElement('canvas');
+const size = 128;
+canvas.width = size; canvas.height = size;
+const ctx = canvas.getContext('2d');
+const minDim = Math.min(img.width, img.height);
+const sx = (img.width - minDim) / 2;
+const sy = (img.height - minDim) / 2;
+ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+callback(canvas.toDataURL('image/jpeg', 0.75));
+};
+img.src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
+
 function buildCarouselItems() {
-  carouselItems = [
-    { id: 'songs',    type: 'songs',    label: 'Песни',      icon: '🎵' },
-    { id: 'setlists', type: 'setlists', label: 'Сет-листы',  icon: '📋' },
-    { id: 'teams',    type: 'teams',    label: 'Команды',    icon: '👥' }
-  ];
-  teams.forEach(t => {
-    carouselItems.push({
-      id: 'team_' + t.id,
-      type: 'team',
-      teamId: t.id,
-      label: t.name,
-      icon: '🎸'
-    });
-  });
+carouselItems = [
+{ id: 'songs',    type: 'songs',    label: 'Песни',      icon: '🎵' },
+{ id: 'setlists', type: 'setlists', label: 'Сет-листы',  icon: '📋' },
+{ id: 'teams',    type: 'teams',    label: 'Команды',    icon: '👥' }
+];
+teams.forEach(t => {
+carouselItems.push({
+id: 'team_' + t.id,
+type: 'team',
+teamId: t.id,
+label: t.name,
+icon: '🎸',
+avatar: t.avatar || null
+});
+});
 }
-
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
 function renderCarousel() {
 buildCarouselItems();
 const track = document.getElementById('carousel-track');
@@ -818,15 +669,17 @@ const classes = ['carousel-item'];
 if (isActive) classes.push('active');
 if (isNeighbor && !isActive) classes.push('neighbor');
 const badge = getTeamBadge(item);
+const iconHtml = item.type === 'team' && item.avatar
+? `<img src="${item.avatar}" alt="">`
+: item.icon;
 return `<div class="${classes.join(' ')}" data-real-idx="${realIdx}" data-item-id="${item.id}" onclick="handleCarouselClick(${realIdx})">
 <div class="carousel-item-inner">
-<div class="carousel-item-icon">${item.icon}</div>
+<div class="carousel-item-icon">${iconHtml}</div>
 <div class="carousel-item-label">${escapeHtml(item.label)}</div>
 ${badge ? `<div class="carousel-item-badge">${badge}</div>` : ''}
 </div>
 </div>`;
 }).join('');
-
 const container = document.getElementById('carousel-container');
 const itemWidth = container.offsetWidth / 3;
 if (itemWidth > 0) {
@@ -835,55 +688,48 @@ const translateX = itemWidth - domIdx * itemWidth;
 track.style.transition = 'none';
 track.style.transform = `translateX(${translateX}px)`;
 }
-
 renderCarouselIndicator();
 }
-
 function getTeamBadge(item) {
-  if (item.type !== 'team') return null;
-  const teamSetlists = setlists.filter(sl => sl.teamId === item.teamId && !sl.isArchived);
-  if (teamSetlists.length === 0) return null;
-  const withChanges = teamSetlists.filter(sl => sl.hasChanges).length;
-  if (withChanges > 0) return `⟳${withChanges}`;
-  return null;
+if (item.type !== 'team') return null;
+const teamSetlists = setlists.filter(sl => sl.teamId === item.teamId && !sl.isArchived);
+if (teamSetlists.length === 0) return null;
+const withChanges = teamSetlists.filter(sl => sl.hasChanges).length;
+if (withChanges > 0) return `⟳${withChanges}`;
+return null;
 }
-
 function updateCarouselBadges() {
-  document.querySelectorAll('.carousel-item').forEach(el => {
-    const itemId = el.dataset.itemId;
-    const item = carouselItems.find(i => i.id === itemId);
-    if (!item) return;
-    const badge = getTeamBadge(item);
-    const inner = el.querySelector('.carousel-item-inner');
-    if (!inner) return;
-    const existingBadge = inner.querySelector('.carousel-item-badge');
-    if (badge && !existingBadge) {
-      const badgeEl = document.createElement('div');
-      badgeEl.className = 'carousel-item-badge';
-      badgeEl.textContent = badge;
-      inner.appendChild(badgeEl);
-    } else if (!badge && existingBadge) {
-      existingBadge.remove();
-    } else if (badge && existingBadge) {
-      if (existingBadge.textContent !== badge) existingBadge.textContent = badge;
-    }
-  });
+document.querySelectorAll('.carousel-item').forEach(el => {
+const itemId = el.dataset.itemId;
+const item = carouselItems.find(i => i.id === itemId);
+if (!item) return;
+const badge = getTeamBadge(item);
+const inner = el.querySelector('.carousel-item-inner');
+if (!inner) return;
+const existingBadge = inner.querySelector('.carousel-item-badge');
+if (badge && !existingBadge) {
+const badgeEl = document.createElement('div');
+badgeEl.className = 'carousel-item-badge';
+badgeEl.textContent = badge;
+inner.appendChild(badgeEl);
+} else if (!badge && existingBadge) {
+existingBadge.remove();
+} else if (badge && existingBadge) {
+if (existingBadge.textContent !== badge) existingBadge.textContent = badge;
 }
-
-
+});
+}
 function renderCarouselIndicator() {
-  const indicator = document.getElementById('carousel-indicator');
-  if (!indicator) return;
-  if (carouselItems.length <= 1) { indicator.innerHTML = ''; return; }
-  indicator.innerHTML = carouselItems.map((_, idx) =>
-    `<div class="carousel-dot ${idx === carouselActiveIndex ? 'active' : ''}"></div>`
-  ).join('');
+const indicator = document.getElementById('carousel-indicator');
+if (!indicator) return;
+if (carouselItems.length <= 1) { indicator.innerHTML = ''; return; }
+indicator.innerHTML = carouselItems.map((_, idx) =>
+`<div class="carousel-dot ${idx === carouselActiveIndex ? 'active' : ''}"></div>`
+).join('');
 }
-
 function handleCarouselClick(realIdx) {
 const len = carouselItems.length;
 if (len === 0) return;
-// Нормализуем индекс (клики по клонам)
 let targetIdx;
 if (realIdx < 0) targetIdx = len - 1;
 else if (realIdx >= len) targetIdx = 0;
@@ -894,26 +740,19 @@ return;
 }
 setCarouselIndex(targetIdx);
 }
-
 function setCarouselIndex(newIdx, animate = true) {
 const len = carouselItems.length;
 if (len === 0) return;
-
 if (isTransitioning && animate) return;
-
 const targetActive = ((newIdx % len) + len) % len;
-
 if (targetActive === carouselActiveIndex) {
 activateCarouselItem(carouselActiveIndex);
 return;
 }
-
 let delta = targetActive - carouselActiveIndex;
 while (delta > len / 2) delta -= len;
 while (delta < -len / 2) delta += len;
-
 carouselActiveIndex = targetActive;
-
 let domIdx;
 if (delta === -1 && carouselActiveIndex === len - 1) {
 domIdx = 0;
@@ -922,20 +761,15 @@ domIdx = len + 1;
 } else {
 domIdx = carouselActiveIndex + 1;
 }
-
 const container = document.getElementById('carousel-container');
 const itemWidth = container.offsetWidth / 3;
 if (itemWidth === 0) return;
-
 const translateX = itemWidth - domIdx * itemWidth;
 const track = document.getElementById('carousel-track');
 track.style.transition = animate ? 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
 track.style.transform = `translateX(${translateX}px)`;
-
 if (animate) isTransitioning = true;
-
 renderCarouselIndicator();
-
 document.querySelectorAll('.carousel-item').forEach(el => {
 const ri = parseInt(el.dataset.realIdx);
 el.classList.toggle('active', ri === carouselActiveIndex);
@@ -944,9 +778,7 @@ const isNeighbor = Math.abs(ri - carouselActiveIndex) === 1 ||
 (carouselActiveIndex === len - 1 && ri === 0);
 el.classList.toggle('neighbor', isNeighbor && ri !== carouselActiveIndex);
 });
-
 activateCarouselItem(carouselActiveIndex);
-
 if (domIdx === 0 || domIdx === len + 1) {
 if (animate) {
 const onTransitionEnd = () => {
@@ -977,397 +809,531 @@ isTransitioning = false;
 }
 }
 }
-
 function hideAllHomeViews() {
-  document.getElementById('home-view-songs').style.display = 'none';
-  document.getElementById('home-view-setlists').style.display = 'none';
-  const tv = document.getElementById('home-view-teams');
-  if (tv) tv.style.display = 'none';
-  const td = document.getElementById('home-view-team-detail');
-  if (td) td.style.display = 'none';
+document.getElementById('home-view-songs').style.display = 'none';
+document.getElementById('home-view-setlists').style.display = 'none';
+const tv = document.getElementById('home-view-teams');
+if (tv) tv.style.display = 'none';
+const td = document.getElementById('home-view-team-detail');
+if (td) td.style.display = 'none';
 }
-
 function activateCarouselItem(idx) {
-  const item = carouselItems[idx];
-  if (!item) return;
-  const subtitle = document.getElementById('home-page-subtitle');
-  hideAllHomeViews();
-  if (item.type === 'songs') {
-    if (subtitle) subtitle.innerText = 'песни';
-    currentHomeView = 'songs';
-    document.getElementById('home-view-songs').style.display = 'block';
-    renderSongs();
-  } else if (item.type === 'setlists') {
-    if (subtitle) subtitle.innerText = 'сет-листы';
-    currentHomeView = 'setlists';
-    document.getElementById('home-view-setlists').style.display = 'block';
-    renderSetlists();
-  } else if (item.type === 'teams') {
-    if (subtitle) subtitle.innerText = 'команды';
-    currentHomeView = 'teams';
-    showTeamsView();
-  } else if (item.type === 'team') {
-    if (subtitle) subtitle.innerText = item.label;
-    currentHomeView = 'team_' + item.teamId;
-    showTeamDetailView(item.teamId);
-  }
-  saveAppState();
+const item = carouselItems[idx];
+if (!item) return;
+const subtitle = document.getElementById('home-page-subtitle');
+hideAllHomeViews();
+if (item.type === 'songs') {
+if (subtitle) subtitle.innerText = 'песни';
+currentHomeView = 'songs';
+document.getElementById('home-view-songs').style.display = 'block';
+renderSongs();
+} else if (item.type === 'setlists') {
+if (subtitle) subtitle.innerText = 'сет-листы';
+currentHomeView = 'setlists';
+document.getElementById('home-view-setlists').style.display = 'block';
+renderSetlists();
+} else if (item.type === 'teams') {
+if (subtitle) subtitle.innerText = 'команды';
+currentHomeView = 'teams';
+showTeamsView();
+} else if (item.type === 'team') {
+if (subtitle) subtitle.innerText = item.label;
+currentHomeView = 'team_' + item.teamId;
+showTeamDetailView(item.teamId);
 }
-
+saveAppState();
+}
 function setupCarouselSwipe() {
-  const container = document.getElementById('carousel-container');
-  if (!container) return;
-  container.addEventListener('touchstart', (e) => {
-    carouselTouchStartX = e.touches[0].clientX;
-    carouselTouchStartY = e.touches[0].clientY;
-    carouselTracking = true;
-    carouselMoved = false;
-  }, { passive: true });
-  container.addEventListener('touchmove', (e) => {
-    if (!carouselTracking) return;
-    const dx = Math.abs(e.touches[0].clientX - carouselTouchStartX);
-    const dy = Math.abs(e.touches[0].clientY - carouselTouchStartY);
-    if (dx > 8 || dy > 8) carouselMoved = true;
-  }, { passive: true });
-  container.addEventListener('touchend', (e) => {
-    if (!carouselTracking) return;
-    carouselTracking = false;
-    if (!carouselMoved) return;
-    const dx = carouselTouchStartX - e.changedTouches[0].clientX;
-    const dy = carouselTouchStartY - e.changedTouches[0].clientY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      if (dx > 0) setCarouselIndex(carouselActiveIndex + 1);
+const container = document.getElementById('carousel-container');
+if (!container) return;
+container.addEventListener('touchstart', (e) => {
+carouselTouchStartX = e.touches[0].clientX;
+carouselTouchStartY = e.touches[0].clientY;
+carouselTracking = true;
+carouselMoved = false;
+}, { passive: true });
+container.addEventListener('touchmove', (e) => {
+if (!carouselTracking) return;
+const dx = Math.abs(e.touches[0].clientX - carouselTouchStartX);
+const dy = Math.abs(e.touches[0].clientY - carouselTouchStartY);
+if (dx > 8 || dy > 8) carouselMoved = true;
+}, { passive: true });
+container.addEventListener('touchend', (e) => {
+if (!carouselTracking) return;
+carouselTracking = false;
+if (!carouselMoved) return;
+const dx = carouselTouchStartX - e.changedTouches[0].clientX;
+const dy = carouselTouchStartY - e.changedTouches[0].clientY;
+if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+if (dx > 0) setCarouselIndex(carouselActiveIndex + 1);
 else setCarouselIndex(carouselActiveIndex - 1);
-    }
-  }, { passive: true });
 }
-
+}, { passive: true });
+}
 function switchHomeView(view) {
-  currentHomeView = view;
-  const idx = carouselItems.findIndex(i => i.type === view);
-  if (idx !== -1 && idx !== carouselActiveIndex) {
-    setCarouselIndex(idx, true);
-  } else {
-    activateCarouselItem(carouselActiveIndex);
-  }
+currentHomeView = view;
+const idx = carouselItems.findIndex(i => i.type === view);
+if (idx !== -1 && idx !== carouselActiveIndex) {
+setCarouselIndex(idx, true);
+} else {
+activateCarouselItem(carouselActiveIndex);
 }
-
-// === ВКЛАДКА КОМАНДЫ ===
+}
 function showTeamsView() {
-  const view = document.getElementById('home-view-teams');
-  view.style.display = 'block';
-  let html = `<div style="padding: 10px 0;">
-    <div style="text-align: center; margin-bottom: 20px;">
-      <button class="btn-main" style="margin-bottom: 10px;" onclick="createTeamPrompt()">➕ Создать команду</button>
-      <button class="btn-pastel" style="width: 100%;" onclick="showJoinTeamByLinkModal()">🔗 Присоединиться к команде</button>
-      <p style="color: #888; font-size: 12px; margin-top: 10px;">Создано: ${teams.length} / ${MAX_TEAMS}</p>
-    </div>`;
-  if (teams.length === 0) {
-    html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
-      <div style="font-size: 48px; margin-bottom: 15px;">👥</div>
-      <p>У вас пока нет команд</p>
-      <p style="font-size: 13px; margin-top: 8px;">Создайте команду, чтобы делиться сет-листами</p>
-    </div>`;
-  } else {
-    teams.forEach(t => {
-      const teamSetlists = setlists.filter(sl => sl.teamId === t.id && !sl.isArchived);
-      html += `<div class="team-card">
-        <div class="team-card-header">
-          <div class="team-card-title">🎸 ${escapeHtml(t.name)}</div>
-        </div>
-        <div class="team-card-meta">
-          Создана: ${new Date(t.createdAt).toLocaleDateString('ru-RU')} · Сет-листов: ${teamSetlists.length}
-          ${t.password ? ' · 🔐 Есть пароль' : ''}
-        </div>
-        <div class="team-card-actions">
-          <button class="team-btn-edit" onclick="editTeam('${t.id}')">✏️ Изменить</button>
-          <button class="team-btn-invite" onclick="showTeamInvite('${t.id}')">🔗 Пригласить</button>
-          <button class="team-btn-delete" onclick="deleteTeam('${t.id}')">🗑️ Удалить</button>
-        </div>
-      </div>`;
-    });
-  }
-  html += `</div>`;
-  view.innerHTML = html;
+const view = document.getElementById('home-view-teams');
+view.style.display = 'block';
+let html = `<div style="padding: 10px 0;">
+<div style="text-align: center; margin-bottom: 20px;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+<button class="btn-pastel" style="margin: 0;" onclick="createTeamPrompt()">➕ Создать команду</button>
+<button class="btn-pastel" style="margin: 0;" onclick="showJoinTeamByLinkModal()">🔗 Присоединиться к команде</button>
+</div>
+<p style="color: #888; font-size: 12px; margin-top: 10px;">Создано: ${teams.length} / ${MAX_TEAMS}</p>
+</div>`;
+if (teams.length === 0) {
+html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
+<div style="font-size: 48px; margin-bottom: 15px;">👥</div>
+<p>У вас пока нет команд</p>
+<p style="font-size: 13px; margin-top: 8px;">Создайте команду, чтобы делиться сет-листами</p>
+</div>`;
+} else {
+teams.forEach(t => {
+const teamSetlists = setlists.filter(sl => sl.teamId === t.id && !sl.isArchived);
+const avatarHtml = t.avatar
+? `<img src="${t.avatar}" class="team-list-avatar" alt="">`
+: `<div class="team-list-avatar-placeholder">🎸</div>`;
+html += `<div class="list-item" style="cursor: pointer;" onclick="openTeamFromList('${t.id}')">
+<div class="item-left">
+${avatarHtml}
+<div style="min-width: 0; flex: 1;">
+<div class="item-title">${escapeHtml(t.name)}</div>
+<div class="item-sub">Сет-листов: ${teamSetlists.length}${t.password ? ' · 🔐' : ''}</div>
+</div>
+</div>
+<div class="item-actions" style="display: flex; gap: 4px;">
+<button class="btn-icon" onclick="event.stopPropagation(); editTeam('${t.id}')" title="Изменить">✏️</button>
+<button class="btn-icon" onclick="event.stopPropagation(); showTeamInvite('${t.id}')" title="Пригласить">🔗</button>
+<button class="btn-icon" onclick="event.stopPropagation(); deleteTeam('${t.id}')" title="Удалить" style="color: #ef5350;">🗑️</button>
+</div>
+</div>`;
+});
 }
-
+html += `</div>`;
+view.innerHTML = html;
+}
+function openTeamFromList(teamId) {
+const idx = carouselItems.findIndex(i => i.type === 'team' && i.teamId === teamId);
+if (idx !== -1) {
+setCarouselIndex(idx, true);
+} else {
+showTeamDetailView(teamId);
+}
+}
 function createTeamPrompt() {
-  if (teams.length >= MAX_TEAMS) {
-    alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
-    return;
-  }
-  const name = prompt('Название команды (церкви, группы):');
-  if (!name || !name.trim()) return;
-  const passwordInput = prompt('Пароль для присоединения (необязательно, оставь пустым если не нужен):');
-  const password = (passwordInput || '').trim();
-  const id = 'team_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-  teams.push({
-    id,
-    name: name.trim(),
-    password: password,
-    createdAt: Date.now()
-  });
-  saveToStorage();
-  renderCarousel();
-  showTeamsView();
-  alert(`✅ Команда "${name}" создана!`);
+if (teams.length >= MAX_TEAMS) {
+alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+return;
 }
-
-let editingTeamId = null;
+editingTeamId = null;
+teamAvatarFile = null;
+document.getElementById('team-modal-title').innerText = '➕ Создать команду';
+document.getElementById('team-edit-name').value = '';
+document.getElementById('team-edit-password').value = '';
+document.getElementById('team-edit-avatar').value = '';
+document.getElementById('team-avatar-preview-container').innerHTML = '';
+document.getElementById('modal-team-edit').classList.add('show');
+}
+function previewTeamAvatar(input) {
+const file = input.files[0];
+if (!file) return;
+if (!file.type.startsWith('image/')) {
+alert('❌ Пожалуйста, выберите изображение');
+return;
+}
+teamAvatarFile = file;
+const reader = new FileReader();
+reader.onload = function(e) {
+const container = document.getElementById('team-avatar-preview-container');
+container.innerHTML = `<img src="${e.target.result}" class="team-avatar-edit" alt="Preview">`;
+};
+reader.readAsDataURL(file);
+}
 function editTeam(teamId) {
-  const team = teams.find(t => t.id === teamId);
-  if (!team) return;
-  editingTeamId = teamId;
-  document.getElementById('team-edit-name').value = team.name;
-  document.getElementById('team-edit-password').value = team.password || '';
-  document.getElementById('modal-team-edit').classList.add('show');
+const team = teams.find(t => t.id === teamId);
+if (!team) return;
+editingTeamId = teamId;
+teamAvatarFile = null;
+document.getElementById('team-modal-title').innerText = '✏️ Редактировать команду';
+document.getElementById('team-edit-name').value = team.name;
+document.getElementById('team-edit-password').value = team.password || '';
+document.getElementById('team-edit-avatar').value = '';
+const container = document.getElementById('team-avatar-preview-container');
+if (team.avatar) {
+container.innerHTML = `<img src="${team.avatar}" class="team-avatar-edit" alt="Avatar"><div style="font-size: 12px; color: #888; margin-top: 5px;">Загрузите новое, чтобы заменить</div>`;
+} else {
+container.innerHTML = '<div class="team-avatar-edit-placeholder">🎸</div><div style="font-size: 12px; color: #888; margin-top: 5px;">Аватарка не установлена</div>';
 }
-
+document.getElementById('modal-team-edit').classList.add('show');
+}
 function saveTeamEdit() {
-  const team = teams.find(t => t.id === editingTeamId);
-  if (!team) return;
-  const newName = document.getElementById('team-edit-name').value.trim();
-  const newPassword = document.getElementById('team-edit-password').value.trim();
-  if (!newName) { alert('Введите название!'); return; }
-  team.name = newName;
-  team.password = newPassword;
-  saveToStorage();
-  closeModal('modal-team-edit');
-  renderCarousel();
-  showTeamsView();
+const newName = document.getElementById('team-edit-name').value.trim();
+const newPassword = document.getElementById('team-edit-password').value.trim();
+if (!newName) { alert('❌ Введите название команды!'); return; }
+
+function finalizeSave(avatarData) {
+if (editingTeamId) {
+const team = teams.find(t => t.id === editingTeamId);
+if (team) {
+team.name = newName;
+team.password = newPassword;
+if (avatarData !== undefined) team.avatar = avatarData;
+}
+} else {
+const id = 'team_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+teams.push({
+id,
+name: newName,
+password: newPassword,
+avatar: avatarData || null,
+createdAt: Date.now()
+});
+}
+saveToStorage();
+closeModal('modal-team-edit');
+renderCarousel();
+showTeamsView();
 }
 
+const avatarInput = document.getElementById('team-edit-avatar');
+if (avatarInput.files && avatarInput.files[0]) {
+compressTeamImage(avatarInput.files[0], finalizeSave);
+} else {
+finalizeSave(undefined);
+}
+}
 function deleteTeam(teamId) {
-  const team = teams.find(t => t.id === teamId);
-  if (!team) return;
-  if (!confirm(`Удалить команду "${team.name}"?\nСет-листы команды останутся в вашем личном архиве.`)) return;
-  teams = teams.filter(t => t.id !== teamId);
-  setlists.forEach(sl => { if (sl.teamId === teamId) delete sl.teamId; });
-  saveToStorage();
-  // Если мы были на вкладке этой команды — переключаемся на «Команды»
-  if (currentHomeView === 'team_' + teamId) {
-    setCarouselIndex(2, true);
-  } else {
-    renderCarousel();
-    showTeamsView();
-  }
+const team = teams.find(t => t.id === teamId);
+if (!team) return;
+if (!confirm(`Удалить команду "${team.name}"?\nСет-листы команды останутся в вашем личном архиве.`)) return;
+teams = teams.filter(t => t.id !== teamId);
+setlists.forEach(sl => { if (sl.teamId === teamId) delete sl.teamId; });
+saveToStorage();
+if (currentHomeView === 'team_' + teamId) {
+setCarouselIndex(2, true);
+} else {
+renderCarousel();
+showTeamsView();
 }
-
+}
 function showTeamInvite(teamId) {
-  const team = teams.find(t => t.id === teamId);
-  if (!team) return;
-  const baseUrl = window.location.origin + window.location.pathname;
-  const inviteUrl = `${baseUrl}?invite=${team.id}${team.password ? '&pwd=1' : ''}`;
-  document.getElementById('team-invite-link').innerText = inviteUrl;
-  document.getElementById('modal-team-invite').dataset.teamId = teamId;
-  document.getElementById('modal-team-invite').classList.add('show');
+const team = teams.find(t => t.id === teamId);
+if (!team) return;
+const baseUrl = window.location.origin + window.location.pathname;
+const inviteUrl = `${baseUrl}?invite=${team.id}${team.password ? '&pwd=1' : ''}`;
+document.getElementById('team-invite-link').innerText = inviteUrl;
+document.getElementById('team-invite-id').innerText = team.id;
+document.getElementById('modal-team-invite').dataset.teamId = teamId;
+document.getElementById('modal-team-invite').classList.add('show');
 }
-
 function copyTeamInviteLink() {
-  const link = document.getElementById('team-invite-link').innerText;
-  navigator.clipboard.writeText(link).then(() => alert('✅ Ссылка скопирована!')).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = link;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    alert('✅ Ссылка скопирована!');
-  });
+const link = document.getElementById('team-invite-link').innerText;
+navigator.clipboard.writeText(link).then(() => alert('✅ Ссылка скопирована!')).catch(() => {
+const ta = document.createElement('textarea');
+ta.value = link;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand('copy');
+document.body.removeChild(ta);
+alert('✅ Ссылка скопирована!');
+});
 }
-
-// === ПРИСОЕДИНЕНИЕ ПО ССЫЛКЕ ===
+function copyTeamInviteId() {
+const id = document.getElementById('team-invite-id').innerText;
+navigator.clipboard.writeText(id).then(() => alert('✅ ID команды скопирован!')).catch(() => {
+const ta = document.createElement('textarea');
+ta.value = id;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand('copy');
+document.body.removeChild(ta);
+alert('✅ ID команды скопирован!');
+});
+}
 function showJoinTeamByLinkModal() {
-  if (teams.length >= MAX_TEAMS) {
-    alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
-    return;
-  }
-  document.getElementById('join-team-link-input').value = '';
-  document.getElementById('join-team-password-input').value = '';
-  document.getElementById('join-team-password-row').style.display = 'none';
-  document.getElementById('modal-join-team-link').classList.add('show');
+if (teams.length >= MAX_TEAMS) {
+alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+return;
 }
-
+document.getElementById('join-team-link-input').value = '';
+document.getElementById('join-team-password-input').value = '';
+document.getElementById('join-team-password-row').style.display = 'none';
+document.getElementById('modal-join-team-link').classList.add('show');
+}
 function onJoinLinkInput() {
-  const link = document.getElementById('join-team-link-input').value.trim();
-  const parsed = parseTeamLink(link);
-  if (parsed && parsed.hasPwd) {
-    document.getElementById('join-team-password-row').style.display = 'block';
-  } else {
-    document.getElementById('join-team-password-row').style.display = 'none';
-  }
+const link = document.getElementById('join-team-link-input').value.trim();
+const parsed = parseTeamLink(link);
+if (parsed && parsed.hasPwd) {
+document.getElementById('join-team-password-row').style.display = 'block';
+} else {
+document.getElementById('join-team-password-row').style.display = 'none';
 }
-
+}
 function parseTeamLink(link) {
-  if (!link) return null;
-  try {
-    const url = new URL(link.trim());
-    const teamId = url.searchParams.get('invite');
-    const hasPwd = url.searchParams.get('pwd') === '1';
-    return { teamId, hasPwd };
-  } catch {
-    if (link.trim().startsWith('team_')) {
-      return { teamId: link.trim(), hasPwd: false };
-    }
-    return null;
-  }
+if (!link) return null;
+try {
+const url = new URL(link.trim());
+const teamId = url.searchParams.get('invite');
+const hasPwd = url.searchParams.get('pwd') === '1';
+return { teamId, hasPwd };
+} catch {
+if (link.trim().startsWith('team_')) {
+return { teamId: link.trim(), hasPwd: false };
 }
-
+return null;
+}
+}
 function submitJoinTeam() {
-  const link = document.getElementById('join-team-link-input').value.trim();
-  if (!link) {
-    alert('❌ Вставьте ссылку-приглашение или ID команды');
-    return;
-  }
-  const parsed = parseTeamLink(link);
-  if (!parsed || !parsed.teamId) {
-    alert('❌ Неверная ссылка. Используйте ссылку из кнопки «🔗 Пригласить»');
-    return;
-  }
-  if (teams.find(t => t.id === parsed.teamId)) {
-    alert('⚠️ Эта команда уже добавлена');
-    return;
-  }
-  if (parsed.hasPwd) {
-    const pwd = document.getElementById('join-team-password-input').value;
-    if (!pwd) {
-      alert('❌ Введите пароль');
-      return;
-    }
-    confirmJoinTeam(parsed.teamId, pwd);
-  } else {
-    confirmJoinTeam(parsed.teamId, '');
-  }
+const link = document.getElementById('join-team-link-input').value.trim();
+if (!link) {
+alert('❌ Вставьте ссылку-приглашение или ID команды');
+return;
 }
-
+const parsed = parseTeamLink(link);
+if (!parsed || !parsed.teamId) {
+alert('❌ Неверная ссылка. Используйте ссылку из кнопки «🔗 Пригласить»');
+return;
+}
+if (teams.find(t => t.id === parsed.teamId)) {
+alert('️ Эта команда уже добавлена');
+return;
+}
+if (parsed.hasPwd) {
+const pwd = document.getElementById('join-team-password-input').value;
+if (!pwd) {
+alert('❌ Введите пароль');
+return;
+}
+confirmJoinTeam(parsed.teamId, pwd);
+} else {
+confirmJoinTeam(parsed.teamId, '');
+}
+}
 function confirmJoinTeam(teamId, password) {
-  if (teams.length >= MAX_TEAMS) {
-    alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
-    return;
-  }
-  const name = prompt('Название команды (уточните у отправителя):');
-  if (!name || !name.trim()) return;
-  teams.push({
-    id: teamId,
-    name: name.trim(),
-    password: password,
-    createdAt: Date.now(),
-    joinedByLink: true
-  });
-  saveToStorage();
-  closeModal('modal-join-team-link');
-  renderCarousel();
-  showTeamsView();
-  alert(`✅ Вы присоединились к команде «${name}»!`);
+if (teams.length >= MAX_TEAMS) {
+alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+return;
 }
-
-// === ДЕТАЛЬНЫЙ ВИД КОМАНДЫ ===
+const name = prompt('Название команды (уточните у отправителя):');
+if (!name || !name.trim()) return;
+teams.push({
+id: teamId,
+name: name.trim(),
+password: password,
+avatar: null,
+createdAt: Date.now(),
+joinedByLink: true
+});
+saveToStorage();
+closeModal('modal-join-team-link');
+renderCarousel();
+showTeamsView();
+alert(`✅ Вы присоединились к команде «${name}»!`);
+}
+function openSetlistModalForTeam(teamId) {
+document.getElementById('sl-date').value = getCurrentDate();
+document.getElementById('sl-time').value = getCurrentTime();
+document.getElementById('sl-name').value = '';
+document.getElementById('modal-setlist').dataset.teamId = teamId;
+document.getElementById('modal-setlist').classList.add('show');
+}
 function showTeamDetailView(teamId) {
-  const view = document.getElementById('home-view-team-detail');
-  const team = teams.find(t => t.id === teamId);
-  if (!team) {
-    view.innerHTML = '<p style="color:#ef5350;text-align:center;padding:40px;">Команда не найдена</p>';
-    view.style.display = 'block';
-    return;
-  }
-  view.style.display = 'block';
-  const teamSetlists = setlists.filter(sl => sl.teamId === teamId);
-  let html = `<div style="padding: 10px 0;">
-    <div style="background: rgba(144, 202, 249, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(144, 202, 249, 0.3);">
-      <div style="font-size: 18px; font-weight: bold; color: #90caf9; margin-bottom: 5px;">🎸 ${escapeHtml(team.name)}</div>
-      <div style="font-size: 12px; color: #888;">Сет-листов: ${teamSetlists.length} · Создана: ${new Date(team.createdAt).toLocaleDateString('ru-RU')}</div>
-    </div>`;
-  if (teamSetlists.length === 0) {
-    html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
-      <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
-      <p>В этой команде пока нет сет-листов</p>
-      <p style="font-size: 13px; margin-top: 8px;">Отправьте сет-лист из вкладки «Сет-листы»</p>
-    </div>`;
-  } else {
-    teamSetlists.forEach(sl => {
-      const isExpired = !sl.isArchived && isSetlistExpired(sl);
-      const dateColor = isExpired ? '#ef5350' : (document.body.classList.contains('light') ? '#7e57c2' : '#9575cd');
-      const changesBadge = sl.hasChanges ? ' <span style="background: #ef5350; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">ИЗМЕНЕНО</span>' : '';
-      html += `<div class="list-item" style="cursor: pointer;" onclick="clearSetlistSearchAndOpen(${sl.id})">
-        <div class="item-left" style="${isExpired ? 'color: #ef5350;' : ''}">
-          <div style="min-width: 0; flex: 1;">
-            <div class="item-title">${escapeHtml(sl.name)}${changesBadge}</div>
-            <div class="item-sub" style="color: ${dateColor};">${formatSetlistDate(sl.date, sl.time)} · ${sl.songs.length} песен</div>
-          </div>
-        </div>
-      </div>`;
-    });
-  }
-  html += `</div>`;
-  view.innerHTML = html;
+const view = document.getElementById('home-view-team-detail');
+const team = teams.find(t => t.id === teamId);
+if (!team) {
+view.innerHTML = '<p style="color:#ef5350;text-align:center;padding:40px;">Команда не найдена</p>';
+view.style.display = 'block';
+return;
 }
+view.style.display = 'block';
+const teamSetlists = setlists.filter(sl => sl.teamId === teamId);
+const activeSetlists = teamSetlists.filter(sl => !sl.isArchived);
+const archivedSetlists = teamSetlists.filter(sl => sl.isArchived);
+const isArchiveMode = currentTeamArchiveTeamId === teamId;
+let listsToShow = isArchiveMode ? archivedSetlists : activeSetlists;
 
-// === ОТПРАВКА СЕТ-ЛИСТА В КОМАНДУ ===
+// Сортировка как во вкладке сет-листы
+listsToShow = [...listsToShow].sort((a, b) => {
+const dateA = new Date(a.date + 'T' + (a.time || '00:00')).getTime();
+const dateB = new Date(b.date + 'T' + (b.time || '00:00')).getTime();
+if (isArchiveMode) { 
+return dateB - dateA; 
+}
+const aExpired = isSetlistExpired(a);
+const bExpired = isSetlistExpired(b);
+if (aExpired && !bExpired) return 1;  // просроченные вниз
+if (!aExpired && bExpired) return -1; // актуальные вверх
+if (aExpired && bExpired) return dateB - dateA;
+return dateA - dateB;
+});
+const isLight = document.body.classList.contains('light');
+const dateColorBase = isLight ? '#7e57c2' : '#9575cd';
+let html = `<div style="padding: 10px 0;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">
+<button class="btn-pastel" style="margin:0;" onclick="openSetlistModalForTeam('${team.id}')">➕ Создать сет-лист</button>
+<button class="btn-pastel" style="margin:0;" onclick="showTeamInvite('${team.id}')">🔗 Пригласить</button>
+</div>`;
+// Кнопки переключения Актуальные/Архив
+html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">`;
+html += `<button class="btn-pastel" style="margin:0;${!isArchiveMode ? 'background:rgba(179,157,219,0.35);font-weight:bold;' : 'opacity:0.6;'}" onclick="toggleTeamArchive('${team.id}')">Актуальные (${activeSetlists.length})</button>`;
+html += `<button class="btn-pastel" style="margin:0;${isArchiveMode ? 'background:rgba(179,157,219,0.35);font-weight:bold;' : 'opacity:0.6;'}" onclick="toggleTeamArchive('${team.id}')">Архив (${archivedSetlists.length})</button>`;
+html += `</div>`;
+if (listsToShow.length === 0) {
+html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
+<div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+<p>${isArchiveMode ? 'Архив пуст' : 'В этой команде пока нет сет-листов'}</p>
+${!isArchiveMode ? '<p style="font-size: 13px; margin-top: 8px;">Нажмите «Создать сет-лист»</p>' : ''}
+</div>`;
+} else {
+listsToShow.forEach(sl => {
+const isExpired = !sl.isArchived && isSetlistExpired(sl);
+const dateColor = isExpired ? '#ef5350' : dateColorBase;
+const expiredClass = isExpired ? 'setlist-expired' : '';
+const changesBadge = sl.hasChanges ? ' <span style="background: #ef5350; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">ИЗМЕНЕНО</span>' : '';
+let actions = sl.isArchived 
+? `<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>` 
+: `<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
+html += `<div class="list-item ${expiredClass}" style="cursor: pointer;" onclick="clearSetlistSearchAndOpen(${sl.id})">
+<div class="item-left" style="min-width: 0; flex: 1;">
+<div style="min-width: 0; flex: 1;">
+<div class="item-title" style="${isExpired ? 'color: #ef5350;' : ''}">${escapeHtml(sl.name)}${changesBadge}</div>
+<div class="item-sub" style="color: ${dateColor};">${formatSetlistDate(sl.date, sl.time)} · ${sl.songs.length} песен</div>
+</div>
+</div>
+<div class="item-actions" style="display: flex; gap: 4px;">${actions}</div>
+</div>`;
+});
+}
+html += `</div>`;
+view.innerHTML = html;
+}
+function toggleTeamArchive(teamId) {
+currentTeamArchiveTeamId = (currentTeamArchiveTeamId === teamId) ? null : teamId;
+showTeamDetailView(teamId);
+}
+function openSetlistModalForTeam(teamId) {
+document.getElementById('sl-date').value = getCurrentDate();
+document.getElementById('sl-time').value = getCurrentTime();
+document.getElementById('sl-name').value = '';
+document.getElementById('modal-setlist').dataset.teamId = teamId;
+document.getElementById('modal-setlist').classList.add('show');
+}
+function openSetlistModalForTeam(teamId) {
+document.getElementById('sl-date').value = getCurrentDate();
+document.getElementById('sl-time').value = getCurrentTime();
+document.getElementById('sl-name').value = '';
+document.getElementById('modal-setlist').dataset.teamId = teamId;
+document.getElementById('modal-setlist').classList.add('show');
+}
+function toggleTeamArchive(teamId) {
+currentTeamArchiveTeamId = (currentTeamArchiveTeamId === teamId) ? null : teamId;
+showTeamDetailView(teamId);
+}
+function createSetlistForTeam(teamId) {
+const name = prompt('Название сет-листа:');
+if (!name || !name.trim()) return;
+const date = prompt('Дата (ДД.ММ.ГГГГ):', new Date().toLocaleDateString('ru-RU'));
+if (!date) return;
+const newId = setlists.length > 0 ? Math.max(...setlists.map(s => s.id)) + 1 : 1;
+setlists.push({
+id: newId, date: date.trim(), time: '', name: name.trim(),
+isArchived: false, teamId: teamId, songs: []
+});
+saveToStorage();
+showTeamDetailView(teamId);
+renderCarousel();
+}
 function exportSetlist() {
-  if (!currentSlId) return;
-  const sl = setlists.find(x => x.id === currentSlId);
-  if (!sl) return;
-  const modal = document.getElementById('modal-share-setlist');
-  if (!modal) {
-    exportSetlistAsFileDirect();
-    return;
-  }
-  const section = document.getElementById('share-to-team-section');
-  if (teams.length > 0) {
-    section.innerHTML = `
-      <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;">
-        <p style="color: #888; font-size: 13px; margin-bottom: 8px;">Отправить в команду:</p>
-        ${teams.map(t => `<button class="btn-pastel" style="width: 100%; margin-bottom: 6px; text-align: left;" onclick="shareSetlistToTeam(${sl.id}, '${t.id}')">🎸 ${escapeHtml(t.name)}</button>`).join('')}
-      </div>
-    `;
-  } else {
-    section.innerHTML = `<p style="color: #888; font-size: 12px; margin-top: 10px; text-align: center;">Создайте команду, чтобы отправлять сет-листы</p>`;
-  }
-  modal.classList.add('show');
+if (!currentSlId) return;
+const sl = setlists.find(x => x.id === currentSlId);
+if (!sl) return;
+const modal = document.getElementById('modal-share-setlist');
+if (!modal) {
+exportSetlistAsFileDirect();
+return;
 }
-
+const section = document.getElementById('share-to-team-section');
+if (teams.length > 0) {
+section.innerHTML = `
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;">
+<p style="color: #888; font-size: 13px; margin-bottom: 8px;">Отправить в команду:</p>
+${teams.map(t => `<button class="btn-pastel" style="width: 100%; margin-bottom: 6px; text-align: left;" onclick="shareSetlistToTeam(${sl.id}, '${t.id}')">🎸 ${escapeHtml(t.name)}</button>`).join('')}
+</div>
+`;
+} else {
+section.innerHTML = `<p style="color: #888; font-size: 12px; margin-top: 10px; text-align: center;">Создайте команду, чтобы отправлять сет-листы</p>`;
+}
+modal.classList.add('show');
+}
 function exportSetlistAsFile() {
-  closeModal('modal-share-setlist');
-  exportSetlistAsFileDirect();
+closeModal('modal-share-setlist');
+exportSetlistAsFileDirect();
 }
-
 function exportSetlistAsFileDirect() {
-  const sl = setlists.find(x => x.id === currentSlId);
-  if (!sl) return;
-  shareFile({ version: 2, type: 'setlist', app: 'Worship SetUP', data: { date: sl.date, time: sl.time || '', name: sl.name, songs: sl.songs.map(item => { const s = songs.find(x => x.id === item.id); return s ? exportSongFromSetlist(item, s) : null; }).filter(Boolean) } }, `${sl.date}_${sl.name}.clcsetlist`);
+const sl = setlists.find(x => x.id === currentSlId);
+if (!sl) return;
+shareFile({ version: 2, type: 'setlist', app: 'Worship SetUP', data: { date: sl.date, time: sl.time || '', name: sl.name, songs: sl.songs.map(item => { const s = songs.find(x => x.id === item.id); return s ? exportSongFromSetlist(item, s) : null; }).filter(Boolean) } }, `${sl.date}_${sl.name}.clcsetlist`);
 }
-
 function shareSetlistViaAPI() {
-  closeModal('modal-share-setlist');
-  exportSetlistAsFileDirect();
+closeModal('modal-share-setlist');
+exportSetlistAsFileDirect();
 }
-
 function shareSetlistToTeam(setlistId, teamId) {
-  const sl = setlists.find(x => x.id === setlistId);
-  const team = teams.find(t => t.id === teamId);
-  if (!sl || !team) return;
-  if (!confirm(`Отправить сет-лист «${sl.name}» в команду «${team.name}»?`)) return;
-  const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
-  setlists.push({
-    id: newSlId,
-    date: sl.date,
-    time: sl.time || '',
-    name: sl.name,
-    isArchived: false,
-    teamId: teamId,
-    originalId: sl.id,
-    sharedAt: Date.now(),
-    songs: sl.songs.map(item => ({...item}))
-  });
-  sl.sharedToTeams = sl.sharedToTeams || [];
-  if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
-  saveToStorage();
-  closeModal('modal-share-setlist');
-  renderSetlists();
-  renderCarousel();
-  alert(`✅ Сет-лист отправлен в команду «${team.name}»!\n\nТеперь он доступен во вкладке «${team.name}».`);
+const sl = setlists.find(x => x.id === setlistId);
+const team = teams.find(t => t.id === teamId);
+if (!sl || !team) return;
+if (!confirm(`Отправить сет-лист «${sl.name}» в команду «${team.name}»?`)) return;
+const existingSl = setlists.find(x =>
+x.teamId === teamId &&
+!x.isArchived &&
+x.name.toLowerCase() === sl.name.toLowerCase() &&
+x.date === sl.date
+);
+if (existingSl) {
+if (!confirm(`В команде «${team.name}» уже есть сет-лист «${sl.name}» от ${formatSetlistDate(sl.date, sl.time)}.\nЗаменить его содержимое?`)) {
+closeModal('modal-share-setlist');
+return;
 }
-
+existingSl.songs = sl.songs.map(item => ({...item}));
+existingSl.time = sl.time || '';
+existingSl.sharedAt = Date.now();
+existingSl.hasChanges = false;
+saveToStorage();
+closeModal('modal-share-setlist');
+renderSetlists();
+renderCarousel();
+alert(`✅ Сет-лист «${sl.name}» обновлён в команде «${team.name}»!`);
+} else {
+const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+setlists.push({
+id: newSlId,
+date: sl.date,
+time: sl.time || '',
+name: sl.name,
+isArchived: false,
+teamId: teamId,
+originalId: sl.id,
+sharedAt: Date.now(),
+songs: sl.songs.map(item => ({...item}))
+});
+sl.sharedToTeams = sl.sharedToTeams || [];
+if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
+saveToStorage();
+closeModal('modal-share-setlist');
+renderSetlists();
+renderCarousel();
+alert(`✅ Сет-лист отправлен в команду «${team.name}»!\nТеперь он доступен во вкладке «${team.name}».`);
+}
+}
 function convertBtoH(chord) { if (chord.includes('/')) { const parts = chord.split('/'); return convertBtoH(parts[0]) + '/' + convertBtoH(parts[1]); } if (chord.startsWith('B') && !chord.startsWith('Bb')) return 'H' + chord.substring(1); return chord; }
 function cleanWordForChordCheck(word) { return word.replace(/^[.,;:!?|()\-—–·\s]+|[.,;:!?|()\-—–·\s]+$/g, ''); }
 function convertAccidentals(chord, mode) {
@@ -1484,9 +1450,22 @@ return true;
 function loadFromStorage() {
 try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]'); sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}'); inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}'); teams = JSON.parse(localStorage.getItem('clc_teams') || '[]'); } catch { songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = []; }
 const savedTheme = localStorage.getItem('clc_theme');
-if (savedTheme === 'light') { document.body.classList.remove('dark'); document.body.classList.remove('dark-white'); document.body.classList.add('light'); updateThemeButtons('☀️'); }
-else if (savedTheme === 'dark-white') { document.body.classList.remove('dark'); document.body.classList.remove('light'); document.body.classList.add('dark-white'); updateThemeButtons('🌑'); }
-else { document.body.classList.add('dark'); document.body.classList.remove('light'); document.body.classList.remove('dark-white'); updateThemeButtons('🌙'); }
+if (savedTheme === 'light') {
+    document.body.classList.remove('dark');
+    document.body.classList.remove('dark-white');
+    document.body.classList.add('light');
+    updateThemeButtons('☀️');
+} else if (savedTheme === 'dark-white') {
+    document.body.classList.remove('dark');
+    document.body.classList.remove('light');
+    document.body.classList.add('dark-white');
+    updateThemeButtons('🌑');
+} else {
+    document.body.classList.add('dark');
+    document.body.classList.remove('light');
+    document.body.classList.remove('dark-white');
+    updateThemeButtons('🌙');
+}
 const savedColor = localStorage.getItem('clc_color');
 if (savedColor === 'violet') document.body.classList.add('violet'); else document.body.classList.remove('violet');
 currentHideArrows = localStorage.getItem('clc_hide_arrows') === 'true';
@@ -1503,7 +1482,9 @@ const savedCategoryFilter = localStorage.getItem('clc_category_filter');
 if (savedCategoryFilter) { const sel = document.getElementById('category-filter'); if (sel) sel.value = savedCategoryFilter; }
 }
 function saveToStorage() { localStorage.setItem('clc_songs', JSON.stringify(songs)); localStorage.setItem('clc_setlists', JSON.stringify(setlists)); localStorage.setItem('clc_section_notes', JSON.stringify(sectionNotes)); localStorage.setItem('clc_inline_comments', JSON.stringify(inlineComments)); localStorage.setItem('clc_teams', JSON.stringify(teams)); }
-function updateThemeButtons(icon) { document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon); }
+function updateThemeButtons(icon) {
+    document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon);
+}
 function saveAppState() { const activePage = document.querySelector('.page.active'); localStorage.setItem('clc_state', JSON.stringify({ page: activePage ? activePage.id : 'page-home', songId: currentSongId, slId: currentSlId, homeView: currentHomeView, tab: currentTab, carouselIdx: carouselActiveIndex })); }
 function saveDefaultSettings() { localStorage.setItem('clc_defaults', JSON.stringify({ fontSize, columns: currentColumns })); }
 function toggleColorTheme() { if (document.body.classList.contains('violet')) { document.body.classList.remove('violet'); localStorage.setItem('clc_color', 'blue'); } else { document.body.classList.add('violet'); localStorage.setItem('clc_color', 'violet'); } }
@@ -1620,7 +1601,23 @@ div.onclick = () => clearSetlistSearchAndOpen(sl.id); list.appendChild(div); });
 updateCarouselBadges();
 }
 function openSetlistModal() { document.getElementById('sl-date').value = getCurrentDate(); document.getElementById('sl-time').value = getCurrentTime(); document.getElementById('sl-name').value = ''; document.getElementById('modal-setlist').classList.add('show'); }
-function saveSetlist() { const date = document.getElementById('sl-date').value; const time = document.getElementById('sl-time').value; const name = document.getElementById('sl-name').value; if (!name || !date) return; const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; setlists.push({id: newId, date, time: time || '', name, isArchived: false, songs: []}); saveToStorage(); closeModal('modal-setlist'); renderSetlists(); }
+function saveSetlist() {
+const date = document.getElementById('sl-date').value;
+const time = document.getElementById('sl-time').value;
+const name = document.getElementById('sl-name').value;
+if (!name || !date) return;
+const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+const teamId = document.getElementById('modal-setlist').dataset.teamId || null;
+setlists.push({id: newId, date, time: time || '', name, isArchived: false, teamId: teamId, songs: []});
+saveToStorage();
+closeModal('modal-setlist');
+delete document.getElementById('modal-setlist').dataset.teamId;
+if (teamId) {
+showTeamDetailView(teamId);
+} else {
+renderSetlists();
+}
+}
 function openEditSetlistModal(id) { const sl = setlists.find(x => x.id === id); document.getElementById('edit-sl-date').value = sl.date; document.getElementById('edit-sl-time').value = sl.time || ''; document.getElementById('edit-sl-name').value = sl.name; currentSlId = id; document.getElementById('modal-edit-setlist').classList.add('show'); }
 function saveEditSetlist() { const date = document.getElementById('edit-sl-date').value; const time = document.getElementById('edit-sl-time').value; const name = document.getElementById('edit-sl-name').value; if (!name || !date) return; const sl = setlists.find(x => x.id === currentSlId); if (sl) { sl.date = date; sl.time = time || ''; sl.name = name; } saveToStorage(); closeModal('modal-edit-setlist'); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; renderSlSongs(); } }
 function showSetlistDeleteChoice(id, name, isVl) { pendingSetlistAction = { id, name, isVl }; document.getElementById('delete-setlist-name').innerText = `"${name}"`; document.getElementById('modal-delete-setlist-choice').classList.add('show'); }
@@ -1631,21 +1628,21 @@ function restoreSetlistChoice() { if (!pendingSetlistAction) return; const sl = 
 function archiveCurrentSetlist() { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; if (confirm(`Отправить "${sl.name}" в архив?`)) { sl.isArchived = true; saveToStorage(); goBackFromSetlistDetail(); } }
 function openSetlistDetail(id) { currentSlId = id; const sl = setlists.find(x => x.id === id); document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; document.getElementById('sl-subtitle').innerText = 'Сет-лист'; renderSlSongs(); showPage('page-setlist-detail'); }
 function goBackFromSetlistDetail() {
-  const sl = setlists.find(x => x.id === currentSlId);
-  if (sl && sl.teamId) {
-    const teamIdx = carouselItems.findIndex(i => i.type === 'team' && i.teamId === sl.teamId);
-    if (teamIdx !== -1) {
-      showPage('page-home');
-      setCarouselIndex(teamIdx, true);
-      return;
-    }
-  }
-  showPage('page-home');
-  setCarouselIndex(1, true);
+const sl = setlists.find(x => x.id === currentSlId);
+if (sl && sl.teamId) {
+const teamIdx = carouselItems.findIndex(i => i.type === 'team' && i.teamId === sl.teamId);
+if (teamIdx !== -1) {
+showPage('page-home');
+setCarouselIndex(teamIdx, true);
+return;
+}
+}
+showPage('page-home');
+setCarouselIndex(1, true);
 }
 function goBackFromTeamDetail() {
-  showPage('page-home');
-  setCarouselIndex(2, true);
+showPage('page-home');
+setCarouselIndex(2, true);
 }
 function updateSongOrder(songId, newOrderStr) { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; const newOrder = parseInt(newOrderStr); if (isNaN(newOrder) || newOrder < 1) { renderSlSongs(); return; } const ci = sl.songs.findIndex(x => x.id === songId); if (ci === -1) return; const ti = Math.min(Math.max(0, newOrder - 1), sl.songs.length - 1); if (ci !== ti) { const [moved] = sl.songs.splice(ci, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); renderSlSongs(); } }
 function handleOrderInputFocus(input, originalValue) { input.dataset.originalValue = originalValue; input.value = ''; }
@@ -1712,7 +1709,6 @@ const diffX = startX - e.changedTouches[0].clientX;
 const diffY = startY - e.changedTouches[0].clientY;
 if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
 if (currentPageId === 'page-home') {
-// Свайп по главной странице — переключаем карусель
 if (diffX > 0) setCarouselIndex(carouselActiveIndex + 1);
 else setCarouselIndex(carouselActiveIndex - 1);
 } else if (currentPageId === 'page-song-view') {
@@ -1739,13 +1735,13 @@ else if (currentPageId === 'page-instruction' && diffX > 0) showInstruction(fals
 }
 function setupVlButton() { const vlBtn = document.querySelector('.vl-worship-btn'); if (!vlBtn) return; let timer = null, pressed = false; const start = () => { pressed = false; timer = setTimeout(() => { pressed = true; toggleColorTheme(); if (navigator.vibrate) navigator.vibrate(30); }, 800); }; const cancel = () => clearTimeout(timer); const end = (e) => { clearTimeout(timer); if (pressed) { e.preventDefault(); e.stopPropagation(); pressed = false; } }; vlBtn.addEventListener('touchstart', start, { passive: true }); vlBtn.addEventListener('touchend', end); vlBtn.addEventListener('touchcancel', cancel); vlBtn.addEventListener('mousedown', start); vlBtn.addEventListener('mouseup', end); vlBtn.addEventListener('mouseleave', cancel); }
 function openExpressAdd() { document.getElementById('express-text').value = ''; document.getElementById('express-key-row').style.display = 'none'; document.getElementById('express-info').style.display = 'none'; document.getElementById('express-key-suggestions').innerHTML = ''; document.getElementById('express-save-btn').innerText = '⚡ Добавить'; document.getElementById('express-save-btn').dataset.detected = ''; document.getElementById('modal-express-add').classList.add('show');
-  const keySelect = document.getElementById('express-key-select');
-  if (!keySelect.dataset.bound) {
-    keySelect.addEventListener('change', function() {
-      updateKeySuggestionButtons(this.value);
-    });
-    keySelect.dataset.bound = 'true';
-  }
+const keySelect = document.getElementById('express-key-select');
+if (!keySelect.dataset.bound) {
+keySelect.addEventListener('change', function() {
+updateKeySuggestionButtons(this.value);
+});
+keySelect.dataset.bound = 'true';
+}
 }
 function extractChordRoot(chord) { const normalized = convertBtoH(chord); const m = normalized.match(/^([A-H][#b]?)/); return m ? m[1] : null; }
 function isMinorChord(chord) { const normalized = convertBtoH(chord); const rootPart = normalized.split('/')[0]; if (/maj/i.test(rootPart)) return false; if (rootPart.length > 1 && /^m/i.test(rootPart.substring(1))) return true; return false; }
@@ -1843,7 +1839,7 @@ if (!title) { alert('Не найдено название песни!'); return;
 const chordpro = contentLines.join('\n').trim();
 if (!chordpro) { alert('Добавьте текст песни!'); return; }
 if (songs.find(s => s.title.toLowerCase() === title.toLowerCase())) {
-alert(`⚠️ Песня "${title}" уже существует!`);
+alert(`️ Песня "${title}" уже существует!`);
 return;
 }
 const infoDiv = document.getElementById('express-info');
@@ -1880,31 +1876,27 @@ saveBtn.dataset.detected = 'manual';
 }
 }
 function selectKeySuggestion(key) {
-  const select = document.getElementById('express-key-select');
-  select.value = key;
-  updateKeySuggestionButtons(key);
+const select = document.getElementById('express-key-select');
+select.value = key;
+updateKeySuggestionButtons(key);
 }
 function updateKeySuggestionButtons(selectedKey) {
-  document.querySelectorAll('.key-suggestion-btn').forEach(btn => {
-    const btnKey = btn.dataset.key;
-    if (btnKey === selectedKey) {
-      btn.style.background = 'rgba(144, 202, 249, 0.5)';
-      btn.style.border = '2px solid #90caf9';
-      btn.style.transform = 'scale(1.08)';
-      btn.style.boxShadow = '0 0 8px rgba(144, 202, 249, 0.6)';
-    } else {
-      btn.style.background = 'rgba(144, 202, 249, 0.2)';
-      btn.style.border = '1px solid rgba(144, 202, 249, 0.6)';
-      btn.style.transform = 'scale(1)';
-      btn.style.boxShadow = 'none';
-    }
-  });
+document.querySelectorAll('.key-suggestion-btn').forEach(btn => {
+const btnKey = btn.dataset.key;
+if (btnKey === selectedKey) {
+btn.style.background = 'rgba(144, 202, 249, 0.5)';
+btn.style.border = '2px solid #90caf9';
+btn.style.transform = 'scale(1.08)';
+btn.style.boxShadow = '0 0 8px rgba(144, 202, 249, 0.6)';
+} else {
+btn.style.background = 'rgba(144, 202, 249, 0.2)';
+btn.style.border = '1px solid rgba(144, 202, 249, 0.6)';
+btn.style.transform = 'scale(1)';
+btn.style.boxShadow = 'none';
 }
-function finalizeExpressAdd(title, chordpro, key, bpm, author = '', category = '') { function getNextId(arr) { return arr.length === 0 ? 1 : arr.reduce((max, item) => Math.max(max, item.id), 0) + 1; } songs.push({ id: getNextId(songs), title, chordpro, key, author: author || '', bpm, category, createdAt: Date.now(), columns: currentColumns, fontSize }); saveToStorage(); closeModal('modal-express-add'); renderSongs(); alert(`✅ Песня "${title}" добавлена!
-Автор: ${author || '—'}
-Тональность: ${key}
-BPM: ${bpm || '—'}
-Категория: ${category ? CATEGORY_LABELS[category] : '—'}`); }
+});
+}
+function finalizeExpressAdd(title, chordpro, key, bpm, author = '', category = '') { function getNextId(arr) { return arr.length === 0 ? 1 : arr.reduce((max, item) => Math.max(max, item.id), 0) + 1; } songs.push({ id: getNextId(songs), title, chordpro, key, author: author || '', bpm, category, createdAt: Date.now(), columns: currentColumns, fontSize }); saveToStorage(); closeModal('modal-express-add'); renderSongs(); alert(`✅ Песня "${title}" добавлена!\nАвтор: ${author || '—'}\nТональность: ${key}\nBPM: ${bpm || '—'}\nКатегория: ${category ? CATEGORY_LABELS[category] : '—'}`); }
 function syncColumnsSelects(value) { const sel2 = document.getElementById('columns-select-mobile'); if (sel2) sel2.value = value; const selD = document.getElementById('columns-select-desktop'); if (selD) selD.value = value; }
 function updateToggleButtonsUI() {
 const chordsIcon = currentHideChords ? '🚫' : '👁️';
@@ -1943,13 +1935,26 @@ const row4 = document.getElementById('toolbar-row-4');
 const icon = document.getElementById('expand-icon');
 if (row3) row3.style.display = toolbarExpanded ? 'grid' : 'none';
 if (row4) row4.style.display = toolbarExpanded ? 'grid' : 'none';
-if (icon) icon.innerText = toolbarExpanded ? '⬆️' : '⬇️';
+if (icon) icon.innerText = toolbarExpanded ? '️⬆️' : '⬇️';
 }
 function toggleTheme() {
-const body = document.body;
-if (body.classList.contains('dark')) { body.classList.remove('dark'); body.classList.add('dark-white'); updateThemeButtons('🌑'); localStorage.setItem('clc_theme', 'dark-white'); }
-else if (body.classList.contains('dark-white')) { body.classList.remove('dark-white'); body.classList.add('light'); updateThemeButtons('☀️'); localStorage.setItem('clc_theme', 'light'); }
-else { body.classList.remove('light'); body.classList.add('dark'); updateThemeButtons('🌙'); localStorage.setItem('clc_theme', 'dark'); }
+    const body = document.body;
+    if (body.classList.contains('dark')) {
+        body.classList.remove('dark');
+        body.classList.add('dark-white');
+        updateThemeButtons('🌑');
+        localStorage.setItem('clc_theme', 'dark-white');
+    } else if (body.classList.contains('dark-white')) {
+        body.classList.remove('dark-white');
+        body.classList.add('light');
+        updateThemeButtons('️☀️');
+        localStorage.setItem('clc_theme', 'light');
+    } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        updateThemeButtons('🌙');
+        localStorage.setItem('clc_theme', 'dark');
+    }
 }
 function renderSongLinks(urls) {
 const container = document.getElementById('song-view-links');
@@ -2048,12 +2053,7 @@ item.hideChords = currentHideChords;
 item.hideLyrics = currentHideLyrics;
 saveToStorage();
 saveDefaultSettings();
-alert(`✅ Сохранено ЛОКАЛЬНО (в этом сет-листе):
-Тональность: ${currentKey}
-Capo: ${currentCapo}
-Колонки: ${currentColumns}
-Размер: ${fontSize}
-Текст: ${currentHideLyrics ? 'скрыт' : 'виден'}`);
+alert(`✅ Сохранено ЛОКАЛЬНО (в этом сет-листе):\nТональность: ${currentKey}\nCapo: ${currentCapo}\nКолонки: ${currentColumns}\nРазмер: ${fontSize}\nТекст: ${currentHideLyrics ? 'скрыт' : 'виден'}`);
 return;
 }
 }
@@ -2067,12 +2067,7 @@ song.hideChords = currentHideChords;
 song.hideLyrics = currentHideLyrics;
 saveToStorage();
 saveDefaultSettings();
-alert(`✅ Сохранено для ВСЕХ песен:
-Колонки: ${currentColumns}
-Размер: ${fontSize}
-♯/♭: ${currentAccidental}
-Аккорды: ${currentHideChords ? 'скрыты' : 'видны'}
-Текст: ${currentHideLyrics ? 'скрыт' : 'виден'}`);
+alert(`✅ Сохранено для ВСЕХ песен:\nКолонки: ${currentColumns}\nРазмер: ${fontSize}\n♯/♭: ${currentAccidental}\nАккорды: ${currentHideChords ? 'скрыты' : 'видны'}\nТекст: ${currentHideLyrics ? 'скрыт' : 'виден'}`);
 renderSongs();
 }
 }
@@ -2212,9 +2207,7 @@ const key = item.key || s.key;
 return { title: s.title, author: s.author || '', key: key, originalKey: s.key, capo: item.capo || 0, bpm: s.bpm || '', category: s.category || '', chordpro: chordpro, sectionNotes: sectionNotes[s.id] || {}, inlineComments: inlineComments[s.id] || {} };
 }
 function exportAllActiveSetlists() { const active = setlists.filter(sl => !sl.isArchived && !sl.teamId); if (!active.length) { alert('Нет актуальных сет-листов'); return; } shareFile({ version: 2, type: 'setlists-bulk', app: 'Worship SetUP', data: { setlists: active.map(sl => ({ date: sl.date, time: sl.time || '', name: sl.name, songs: sl.songs.map(item => { const s = songs.find(x => x.id === item.id); return s ? exportSongFromSetlist(item, s) : null; }).filter(Boolean) })) } }, `AllSetlists_${getCurrentDate()}.clcsetlist`); }
-function handleImportSetlist(event) { const files = event.target.files; if (!files?.length) return; let processed = 0, totalSongs = 0, totalSl = 0; const total = files.length; Array.from(files).forEach(file => { const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type === 'setlists-bulk' && data.data?.setlists) data.data.setlists.forEach(slData => { const r = importSingleSetlist(slData); totalSongs += r.songsAdded; totalSl++; }); else if (data.type === 'setlist' && data.data) { const r = importSingleSetlist(data.data); totalSongs += r.songsAdded; totalSl++; } else alert(`❌ "${file.name}" — не файл сет-листа`); } catch (err) { alert(`❌ Ошибка "${file.name}": ` + err.message); } if (++processed === total) { saveToStorage(); renderSetlists(); alert(`✅ Импортировано!
-Сет-листов: ${totalSl}
-Песен: ${totalSongs}`); } }; reader.readAsText(file); }); event.target.value = ''; }
+function handleImportSetlist(event) { const files = event.target.files; if (!files?.length) return; let processed = 0, totalSongs = 0, totalSl = 0; const total = files.length; Array.from(files).forEach(file => { const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type === 'setlists-bulk' && data.data?.setlists) data.data.setlists.forEach(slData => { const r = importSingleSetlist(slData); totalSongs += r.songsAdded; totalSl++; }); else if (data.type === 'setlist' && data.data) { const r = importSingleSetlist(data.data); totalSongs += r.songsAdded; totalSl++; } else alert(`❌ "${file.name}" — не файл сет-листа`); } catch (err) { alert(`❌ Ошибка "${file.name}": ` + err.message); } if (++processed === total) { saveToStorage(); renderSetlists(); alert(`✅ Импортировано!\nСет-листов: ${totalSl}\nПесен: ${totalSongs}`); } }; reader.readAsText(file); }); event.target.value = ''; }
 function importSingleSetlist(slData) {
 const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
 const newSongs = [];
@@ -2278,11 +2271,7 @@ reader.readAsText(file);
 event.target.value = '';
 }
 function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn = prompt('Имя файла:', dn); if (fn === null) return; const cn = fn.trim() || dn; const final = cn.toLowerCase().endsWith('.clcdb') ? cn : cn + '.clcdb'; shareFile({ version: 1, type: 'database', app: 'Worship SetUP', exportDate: new Date().toISOString(), data: { songs, sectionNotes, inlineComments } }, final); }
-function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!
-Добавлено: ${added}
-Пропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
-
-// === ИНИЦИАЛИЗАЦИЯ ===
+function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!\nДобавлено: ${added}\nПропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 loadFromStorage();
 buildCarouselItems();
 renderCarousel();
@@ -2298,14 +2287,16 @@ renderCarousel();
 activateCarouselItem(0);
 }
 if (savedStateInit.page === 'page-song-view' || savedStateInit.page === 'page-setlist-detail') {
-  // Уже обработано в loadFromStorage
 } else {
-  activateCarouselItem(carouselActiveIndex);
+activateCarouselItem(carouselActiveIndex);
 }
 setupSwipe();
 setupVlButton();
 applyBodyClasses();
 updateToggleButtonsUI();
+document.getElementById('team-edit-avatar').addEventListener('change', function() {
+previewTeamAvatar(this);
+});
 window.addEventListener('resize', () => {
 updatePdfOrCopyButton();
 const container = document.getElementById('carousel-container');
