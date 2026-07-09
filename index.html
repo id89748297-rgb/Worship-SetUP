@@ -1532,6 +1532,45 @@ document.body.removeChild(ta);
 alert('✅ Ссылка скопирована!');
 });
 }
+// === УДАЛЕНИЕ КОМАНДЫ ===
+function deleteTeam(teamId) {
+    const team = teams.find(t => t.id === teamId);
+    if (!team) return;
+
+    const activeSetlists = setlists.filter(sl => sl.teamId === teamId && !sl.isArchived);
+    let warning = `Команду «${team.name}»`;
+    if (activeSetlists.length > 0) {
+        warning += `\n\n⚠️ В команде ${activeSetlists.length} актуальных сет-листов — они тоже будут удалены!`;
+    }
+
+    showDeleteConfirm('team', teamId, warning, async () => {
+        // 1. Удаляем связанные сет-листы
+        setlists = setlists.filter(sl => sl.teamId !== teamId);
+        // 2. Удаляем саму команду
+        teams = teams.filter(t => t.id !== teamId);
+        saveToStorage();
+
+        // 3. Удаляем из Firestore (если авторизован)
+        if (isAuthenticated && currentUser) {
+            try {
+                await deleteTeamFromFirestore(teamId);
+            } catch (e) {
+                console.error('Ошибка удаления команды из облака:', e);
+            }
+        }
+
+        // 4. Обновляем UI
+        renderCarousel();
+        currentHomeView = 'teams';
+        const teamsIdx = carouselItems.findIndex(i => i.type === 'teams');
+        if (teamsIdx !== -1) {
+            carouselActiveIndex = teamsIdx;
+            activateCarouselItem(teamsIdx);
+        }
+
+        alert(`✅ Команда «${team.name}» удалена`);
+    });
+}
 function copyTeamInviteId() {
 const id = document.getElementById('team-invite-id').innerText;
 navigator.clipboard.writeText(id).then(() => alert('✅ ID команды скопирован!')).catch(() => {
@@ -1544,6 +1583,7 @@ document.body.removeChild(ta);
 alert('✅ ID команды скопирован!');
 });
 }
+
 function showJoinTeamByLinkModal() {
 if (!isAuthenticated) {
 alert('❌ Для присоединения к команде нужно войти в систему');
@@ -1609,25 +1649,59 @@ confirmJoinTeam(parsed.teamId, '');
 }
 }
 function confirmJoinTeam(teamId, password) {
-if (teams.length >= MAX_TEAMS) {
-alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
-return;
+    if (teams.length >= MAX_TEAMS) {
+        alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+        return;
+    }
+    const name = prompt('Название команды (уточните у отправителя):');
+    if (!name || !name.trim()) return;
+    
+    const newTeam = {
+        id: teamId,
+        name: name.trim(),
+        password: password,
+        avatar: null,
+        ownerId: null,
+        members: currentUser ? [currentUser.uid] : [],
+        createdAt: Date.now(),
+        joinedByLink: true
+    };
+    
+    // Добавляем локально
+    teams.push(newTeam);
+    saveToStorage();
+    
+    // ⬇️ НОВОЕ: Добавляем себя в members команды в Firestore
+    if (isAuthenticated && currentUser && db) {
+        addSelfToTeamMembers(teamId).catch(e => {
+            console.error('Ошибка добавления в members:', e);
+        });
+    }
+    
+    closeModal('modal-join-team-link');
+    renderCarousel();
+    showTeamsView();
+    alert(`✅ Вы присоединились к команде «${name}»!`);
 }
-const name = prompt('Название команды (уточните у отправителя):');
-if (!name || !name.trim()) return;
-teams.push({
-id: teamId,
-name: name.trim(),
-password: password,
-avatar: null,
-createdAt: Date.now(),
-joinedByLink: true
-});
-saveToStorage();
-closeModal('modal-join-team-link');
-renderCarousel();
-showTeamsView();
-alert(`✅ Вы присоединились к команде «${name}»!`);
+
+// Новая функция: добавить себя в members команды в Firestore
+async function addSelfToTeamMembers(teamId) {
+    if (!db || !currentUser) return;
+    try {
+        const teamRef = db.collection('teams').doc(teamId);
+        await db.runTransaction(async (transaction) => {
+            const doc = await transaction.get(teamRef);
+            if (!doc.exists) return;
+            const data = doc.data();
+            const members = data.members || [];
+            if (!members.includes(currentUser.uid)) {
+                members.push(currentUser.uid);
+                transaction.update(teamRef, { members: members });
+            }
+        });
+    } catch (e) {
+        console.error('Ошибка добавления в members:', e);
+    }
 }
 function openSetlistModalForTeam(teamId) {
 document.getElementById('sl-date').value = getCurrentDate();
@@ -1636,75 +1710,114 @@ document.getElementById('sl-name').value = '';
 document.getElementById('modal-setlist').dataset.teamId = teamId;
 document.getElementById('modal-setlist').classList.add('show');
 }
+function copySetlistToPersonal(setlistId) {
+  const sl = setlists.find(x => x.id === setlistId);
+  if (!sl) return;
+  
+  // Создаём копию без teamId (личный сет-лист)
+  const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+  const newSl = {
+    id: newId,
+    date: sl.date,
+    time: sl.time || '',
+    name: sl.name + ' (копия)',
+    isArchived: false,
+    teamId: null, // личный сет-лист
+    songs: sl.songs.map(item => ({...item})),
+    copiedFrom: sl.id,
+    copiedAt: Date.now()
+  };
+  
+  setlists.push(newSl);
+  saveToStorage();
+  renderSetlists();
+  showTeamDetailView(sl.teamId); // Обновляем вид команды
+  alert(`✅ Сет-лист «${sl.name}» добавлен в ваши сет-листы!`);
+}
 function showTeamDetailView(teamId) {
-const view = document.getElementById('home-view-team-detail');
-const team = teams.find(t => t.id === teamId);
-if (!team) {
-view.innerHTML = '<p style="color:#ef5350;text-align:center;padding:40px;">Команда не найдена</p>';
-view.style.display = 'block';
-return;
-}
-view.style.display = 'block';
-const teamSetlists = setlists.filter(sl => sl.teamId === teamId);
-const activeSetlists = teamSetlists.filter(sl => !sl.isArchived);
-const archivedSetlists = teamSetlists.filter(sl => sl.isArchived);
-const isArchiveMode = currentTeamArchiveTeamId === teamId;
-let listsToShow = isArchiveMode ? archivedSetlists : activeSetlists;
+  const view = document.getElementById('home-view-team-detail');
+  const team = teams.find(t => t.id === teamId);
+  if (!team) {
+    view.innerHTML = '<p style="color:#ef5350;text-align:center;padding:40px;">Команда не найдена</p>';
+    view.style.display = 'block';
+    return;
+  }
+  view.style.display = 'block';
+  const teamSetlists = setlists.filter(sl => sl.teamId === teamId);
+  const activeSetlists = teamSetlists.filter(sl => !sl.isArchived);
+  const archivedSetlists = teamSetlists.filter(sl => sl.isArchived);
+  const isArchiveMode = currentTeamArchiveTeamId === teamId;
+  let listsToShow = isArchiveMode ? archivedSetlists : activeSetlists;
+  
+  // Сортировка как во вкладке сет-листы
+  listsToShow = [...listsToShow].sort((a, b) => {
+    const dateA = new Date(a.date + 'T' + (a.time || '00:00')).getTime();
+    const dateB = new Date(b.date + 'T' + (b.time || '00:00')).getTime();
+    if (isArchiveMode) {
+      return dateB - dateA;
+    }
+    const aExpired = isSetlistExpired(a);
+    const bExpired = isSetlistExpired(b);
+    if (aExpired && !bExpired) return 1;
+    if (!aExpired && bExpired) return -1;
+    if (aExpired && bExpired) return dateB - dateA;
+    return dateA - dateB;
+  });
+  
+  const isLight = document.body.classList.contains('light');
+  const dateColorBase = isLight ? '#7e57c2' : '#9575cd';
+  let html = `<div style="padding: 10px 0;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">
+  <button class="btn-pastel" style="margin:0;" onclick="openSetlistModalForTeam('${team.id}')">➕ Создать сет-лист</button>
+  <button class="btn-pastel" style="margin:0;" onclick="showTeamInvite('${team.id}')">🔗 Пригласить</button>
+  </div>`;
 
-// Сортировка как во вкладке сет-листы
-listsToShow = [...listsToShow].sort((a, b) => {
-const dateA = new Date(a.date + 'T' + (a.time || '00:00')).getTime();
-const dateB = new Date(b.date + 'T' + (b.time || '00:00')).getTime();
-if (isArchiveMode) { 
-return dateB - dateA; 
-}
-const aExpired = isSetlistExpired(a);
-const bExpired = isSetlistExpired(b);
-if (aExpired && !bExpired) return 1;  // просроченные вниз
-if (!aExpired && bExpired) return -1; // актуальные вверх
-if (aExpired && bExpired) return dateB - dateA;
-return dateA - dateB;
-});
-const isLight = document.body.classList.contains('light');
-const dateColorBase = isLight ? '#7e57c2' : '#9575cd';
-let html = `<div style="padding: 10px 0;">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">
-<button class="btn-pastel" style="margin:0;" onclick="openSetlistModalForTeam('${team.id}')">➕ Создать сет-лист</button>
-<button class="btn-pastel" style="margin:0;" onclick="showTeamInvite('${team.id}')">🔗 Пригласить</button>
+ // ⬇️ НОВОЕ: Блок с участниками команды
+const membersCount = team.members ? team.members.length : 0;
+html += `<div style="background: rgba(144, 202, 249, 0.08); border: 1px solid rgba(144, 202, 249, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 15px;">
+<div style="font-size: 13px; color: #90caf9; font-weight: bold; margin-bottom: 6px;">👥 Участники: ${membersCount}</div>
+<div style="font-size: 12px; color: #888;">Все участники видят эти сет-листы в реальном времени</div>
 </div>`;
-// Кнопки переключения Актуальные/Архив
-html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">`;
-html += `<button class="btn-pastel" style="margin:0;${!isArchiveMode ? 'background:rgba(179,157,219,0.35);font-weight:bold;' : 'opacity:0.6;'}" onclick="toggleTeamArchive('${team.id}')">Актуальные (${activeSetlists.length})</button>`;
-html += `<button class="btn-pastel" style="margin:0;${isArchiveMode ? 'background:rgba(179,157,219,0.35);font-weight:bold;' : 'opacity:0.6;'}" onclick="toggleTeamArchive('${team.id}')">Архив (${archivedSetlists.length})</button>`;
-html += `</div>`;
-if (listsToShow.length === 0) {
-html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
-<div style="font-size: 48px; margin-bottom: 15px;">📋</div>
-<p>${isArchiveMode ? 'Архив пуст' : 'В этой команде пока нет сет-листов'}</p>
-${!isArchiveMode ? '<p style="font-size: 13px; margin-top: 8px;">Нажмите «Создать сет-лист»</p>' : ''}
-</div>`;
-} else {
-listsToShow.forEach(sl => {
-const isExpired = !sl.isArchived && isSetlistExpired(sl);
-const dateColor = isExpired ? '#ef5350' : dateColorBase;
-const expiredClass = isExpired ? 'setlist-expired' : '';
-const changesBadge = sl.hasChanges ? ' <span style="background: #ef5350; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">ИЗМЕНЕНО</span>' : '';
-let actions = sl.isArchived 
-? `<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>` 
-: `<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
-html += `<div class="list-item ${expiredClass}" style="cursor: pointer;" onclick="clearSetlistSearchAndOpen(${sl.id})">
-<div class="item-left" style="min-width: 0; flex: 1;">
-<div style="min-width: 0; flex: 1;">
-<div class="item-title" style="${isExpired ? 'color: #ef5350;' : ''}">${escapeHtml(sl.name)}${changesBadge}</div>
-<div class="item-sub" style="color: ${dateColor};">${formatSetlistDate(sl.date, sl.time)} · ${sl.songs.length} песен</div>
-</div>
-</div>
-<div class="item-actions" style="display: flex; gap: 4px;">${actions}</div>
-</div>`;
-});
-}
-html += `</div>`;
-view.innerHTML = html;
+ 
+  // Кнопки переключения Актуальные/Архив
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">`;
+  html += `<button class="btn-pastel" style="margin:0;${!isArchiveMode ? 'background:rgba(179,157,219,0.35);font-weight:bold;' : 'opacity:0.6;'}" onclick="toggleTeamArchive('${team.id}')">Актуальные (${activeSetlists.length})</button>`;
+  html += `<button class="btn-pastel" style="margin:0;${isArchiveMode ? 'background:rgba(179,157,219,0.35);font-weight:bold;' : 'opacity:0.6;'}" onclick="toggleTeamArchive('${team.id}')">Архив (${archivedSetlists.length})</button>`;
+  html += `</div>`;
+  
+  if (listsToShow.length === 0) {
+    html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
+    <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+    <p>${isArchiveMode ? 'Архив пуст' : 'В этой команде пока нет сет-листов'}</p>
+    ${!isArchiveMode ? '<p style="font-size: 13px; margin-top: 8px;">Нажмите «Создать сет-лист»</p>' : ''}
+    </div>`;
+  } else {
+    listsToShow.forEach(sl => {
+      const isExpired = !sl.isArchived && isSetlistExpired(sl);
+      const dateColor = isExpired ? '#ef5350' : dateColorBase;
+      const expiredClass = isExpired ? 'setlist-expired' : '';
+      const changesBadge = sl.hasChanges ? ' <span style="background: #ef5350; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">ИЗМЕНЕНО</span>' : '';
+      
+      // Кнопка "К себе" для копирования в личные сет-листы
+      const copyBtn = `<button class="btn-icon" onclick="event.stopPropagation(); copySetlistToPersonal(${sl.id})" title="Добавить к себе в сет-листы" style="color: #4caf50;">📥</button>`;
+      
+      let actions = sl.isArchived
+        ? `${copyBtn}<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`
+        : `${copyBtn}<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
+      
+      html += `<div class="list-item ${expiredClass}" style="cursor: pointer;" onclick="clearSetlistSearchAndOpen(${sl.id})">
+      <div class="item-left" style="min-width: 0; flex: 1;">
+        <div style="min-width: 0; flex: 1;">
+          <div class="item-title" style="${isExpired ? 'color: #ef5350;' : ''}">${escapeHtml(sl.name)}${changesBadge}</div>
+          <div class="item-sub" style="color: ${dateColor};">${formatSetlistDate(sl.date, sl.time)} · ${sl.songs.length} песен</div>
+        </div>
+      </div>
+      <div class="item-actions" style="display: flex; gap: 4px;">${actions}</div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+  view.innerHTML = html;
 }
 function toggleTeamArchive(teamId) {
 currentTeamArchiveTeamId = (currentTeamArchiveTeamId === teamId) ? null : teamId;
@@ -2113,10 +2226,63 @@ renderSetlists();
 function openEditSetlistModal(id) { const sl = setlists.find(x => x.id === id); document.getElementById('edit-sl-date').value = sl.date; document.getElementById('edit-sl-time').value = sl.time || ''; document.getElementById('edit-sl-name').value = sl.name; currentSlId = id; document.getElementById('modal-edit-setlist').classList.add('show'); }
 function saveEditSetlist() { const date = document.getElementById('edit-sl-date').value; const time = document.getElementById('edit-sl-time').value; const name = document.getElementById('edit-sl-name').value; if (!name || !date) return; const sl = setlists.find(x => x.id === currentSlId); if (sl) { sl.date = date; sl.time = time || ''; sl.name = name; } saveToStorage(); closeModal('modal-edit-setlist'); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; renderSlSongs(); } }
 function showSetlistDeleteChoice(id, name, isVl) { pendingSetlistAction = { id, name, isVl }; document.getElementById('delete-setlist-name').innerText = `"${name}"`; document.getElementById('modal-delete-setlist-choice').classList.add('show'); }
-function archiveSetlistChoice() { if (!pendingSetlistAction) return; const sl = setlists.find(x => x.id === pendingSetlistAction.id); if (sl) sl.isArchived = true; saveToStorage(); renderSetlists(); closeModal('modal-delete-setlist-choice'); pendingSetlistAction = null; }
-function deleteSetlistChoice() { if (!pendingSetlistAction) return; setlists = setlists.filter(x => x.id !== pendingSetlistAction.id); saveToStorage(); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { goBackFromSetlistDetail(); } closeModal('modal-delete-setlist-choice'); pendingSetlistAction = null; }
+function archiveSetlistChoice() { 
+    if (!pendingSetlistAction) return; 
+    const sl = setlists.find(x => x.id === pendingSetlistAction.id); 
+    if (sl) {
+        sl.isArchived = true; 
+        saveToStorage(); 
+        if (!document.getElementById('page-setlist-detail').classList.contains('active')) {
+            renderSetlists();
+            if (sl.teamId) showTeamDetailView(sl.teamId);
+        }
+    }
+    closeModal('modal-delete-setlist-choice'); 
+    pendingSetlistAction = null; 
+}
+function deleteSetlistChoice() { 
+    if (!pendingSetlistAction) return; 
+    const sl = setlists.find(x => x.id === pendingSetlistAction.id);
+    const teamId = sl ? sl.teamId : null;
+    const wasOnDetailPage = document.getElementById('page-setlist-detail').classList.contains('active');
+    
+    setlists = setlists.filter(x => x.id !== pendingSetlistAction.id); 
+    saveToStorage(); 
+    
+    if (wasOnDetailPage) { 
+        if (teamId) {
+            showPage('page-home');
+            const teamIdx = carouselItems.findIndex(i => i.type === 'team' && i.teamId === teamId);
+            if (teamIdx !== -1) {
+                setCarouselIndex(teamIdx, true);
+            } else {
+                setCarouselIndex(1, true);
+            }
+        } else {
+            showPage('page-home');
+            setCarouselIndex(1, true);
+        }
+    } else {
+        renderSetlists();
+        if (teamId) showTeamDetailView(teamId);
+    }
+    
+    closeModal('modal-delete-setlist-choice'); 
+    pendingSetlistAction = null; 
+}
 function restoreSetlist(slId) { pendingSetlistAction = { id: slId }; document.getElementById('archive-setlist-name').innerText = `"${setlists.find(x => x.id === slId).name}"`; document.getElementById('modal-archive-setlist').classList.add('show'); }
-function restoreSetlistChoice() { if (!pendingSetlistAction) return; const sl = setlists.find(x => x.id === pendingSetlistAction.id); if (sl) sl.isArchived = false; saveToStorage(); renderSetlists(); closeModal('modal-archive-setlist'); pendingSetlistAction = null; }
+function restoreSetlistChoice() { 
+    if (!pendingSetlistAction) return; 
+    const sl = setlists.find(x => x.id === pendingSetlistAction.id); 
+    if (sl) {
+        sl.isArchived = false; 
+        saveToStorage(); 
+        renderSetlists(); 
+        if (sl.teamId) showTeamDetailView(sl.teamId);
+    }
+    closeModal('modal-archive-setlist'); 
+    pendingSetlistAction = null; 
+}
 function archiveCurrentSetlist() { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; if (confirm(`Отправить "${sl.name}" в архив?`)) { sl.isArchived = true; saveToStorage(); goBackFromSetlistDetail(); } }
 function openSetlistDetail(id) { currentSlId = id; const sl = setlists.find(x => x.id === id); document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; document.getElementById('sl-subtitle').innerText = 'Сет-лист'; renderSlSongs(); showPage('page-setlist-detail'); }
 function goBackFromSetlistDetail() {
@@ -2766,6 +2932,14 @@ function exportDatabase() { const dn = `База_${getCurrentDate()}`; const fn 
 function handleImportDatabase(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.type !== 'database' || !data.data) { alert('❌ Не файл базы данных'); return; } const db = data.data; let added = 0, skipped = 0; if (db.songs) db.songs.forEach(is => { if (!songs.find(s => s.title.toLowerCase() === is.title.toLowerCase())) { const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1; songs.push({ id: nid, title: is.title, author: is.author || '', key: is.key || 'C', bpm: is.bpm || '', category: is.category || '', chordpro: is.chordpro || '', columns: is.columns || currentColumns, fontSize: is.fontSize || fontSize, createdAt: is.createdAt || Date.now() }); added++; } else skipped++; }); if (db.sectionNotes) Object.keys(db.sectionNotes).forEach(sid => { if (!sectionNotes[sid]) sectionNotes[sid] = {}; Object.assign(sectionNotes[sid], db.sectionNotes[sid]); }); if (db.inlineComments) Object.keys(db.inlineComments).forEach(sid => { if (!inlineComments[sid]) inlineComments[sid] = {}; Object.assign(inlineComments[sid], db.inlineComments[sid]); }); saveToStorage(); if (currentHomeView === 'songs') renderSongs(); else renderSetlists(); alert(`✅ Импорт!\nДобавлено: ${added}\nПропущено: ${skipped}`); } catch (err) { alert('❌ Ошибка: ' + err.message); } }; reader.readAsText(file); event.target.value = ''; }
 // === АВТОРИЗАЦИЯ FIREBASE ===
 let profileAvatarFile = null;
+// === ПЕРЕМЕННЫЕ КРОППЕРА ===
+let cropperImage = null;
+let cropperScale = 1;
+let cropperOffsetX = 0;
+let cropperOffsetY = 0;
+let cropperDragging = false;
+let cropperLastX = 0;
+let cropperLastY = 0;
 let profileAvatarData = null;
 
 function compressProfileImage(file, callback) {
@@ -3155,12 +3329,17 @@ function resendVerificationEmail() {
 }
 
 function logout() {
-  if (confirm('Выйти из аккаунта?')) {
+if (confirm('Выйти из аккаунта?')) {
+    // ⬇️ НОВОЕ: Останавливаем realtime-подписки на команды
+    if (typeof stopTeamsRealtimeSync === 'function') {
+        stopTeamsRealtimeSync();
+    }
+    
     auth.signOut();
     localStorage.removeItem('clc_auth_shown');
     closeModal('modal-profile');
     location.reload();
-  }
+}
 }
 
 async function saveUserProfile(user) {
@@ -3258,7 +3437,26 @@ async function loadTeamsFromFirestore() {
     return [];
   }
 }
-
+async function syncSetlistToCloud(sl) {
+    if (!db || !currentUser || !sl.teamId) return;
+    try {
+        sl.updatedAt = Date.now();
+        await db.collection('teams').doc(sl.teamId)
+            .collection('setlists').doc(String(sl.id)).set({
+                id: sl.id,
+                date: sl.date,
+                time: sl.time || '',
+                name: sl.name,
+                isArchived: sl.isArchived || false,
+                songs: sl.songs || [],
+                sharedAt: sl.sharedAt || null,
+                hasChanges: sl.hasChanges || false,
+                updatedAt: sl.updatedAt
+            }, { merge: true });
+    } catch (e) {
+        console.error('Ошибка синхронизации сет-листа:', e);
+    }
+}
 // Сохранить сет-лист команды в Firestore
 async function saveTeamSetlistToFirestore(teamId, setlist) {
   if (!db || !currentUser) return;
@@ -3285,49 +3483,154 @@ async function deleteTeamSetlistFromFirestore(teamId, setlistId) {
 }
 
 // Полная синхронизация: загрузить команды и их сет-листы
+// === REALTIME СИНХРОНИЗАЦИЯ КОМАНД ===
+let teamsUnsubscribers = [];
+let teamSetlistsUnsubscribers = [];
+let subscribedTeamIds = new Set();
+
 async function syncTeamsFromCloud() {
-  const cloudTeams = await loadTeamsFromFirestore();
-  // Объединяем с локальными (чтобы не потерять несохранённые)
-  cloudTeams.forEach(ct => {
-    const localIdx = teams.findIndex(t => t.id === ct.id);
-    if (localIdx === -1) {
-      // Новая команда из облака — добавляем
-      teams.push({
-        id: ct.id,
-        name: ct.name,
-        password: ct.password,
-        avatar: ct.avatar,
-        ownerId: ct.ownerId,
-        members: ct.members,
-        createdAt: ct.createdAt
-      });
-      // Добавляем сет-листы команды
-      ct.setlists.forEach(sl => {
-        if (!setlists.find(s => s.id === sl.id)) {
-          setlists.push(sl);
-        }
-      });
-    } else {
-      // Команда уже есть локально — обновляем данные
-      teams[localIdx].name = ct.name;
-      teams[localIdx].avatar = ct.avatar;
-      teams[localIdx].password = ct.password;
-      teams[localIdx].members = ct.members;
-      // Синхронизируем сет-листы
-      ct.setlists.forEach(csl => {
-        const localSl = setlists.find(s => s.id === csl.id);
-        if (!localSl) {
-          setlists.push(csl);
-        } else {
-          // Обновляем существующий
-          Object.assign(localSl, csl);
-        }
-      });
+    if (!db || !currentUser) return;
+    
+    // Отписываемся от старых подписок
+    stopTeamsRealtimeSync();
+    
+    try {
+        // Подписка на все команды пользователя (владелец или участник)
+        const teamsQuery = db.collection('teams')
+            .where('members', 'array-contains', currentUser.uid);
+        
+        const teamsUnsub = teamsQuery.onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                const teamData = change.doc.data();
+                
+                if (change.type === 'added' || change.type === 'modified') {
+                    handleTeamUpsert(teamData);
+                    subscribeToTeamSetlists(teamData.id);
+                } else if (change.type === 'removed') {
+                    handleTeamDelete(teamData.id);
+                }
+            });
+            
+            buildCarouselItems();
+            renderCarousel();
+            if (currentHomeView === 'teams') showTeamsView();
+            else if (currentHomeView?.startsWith('team_')) {
+                const teamId = currentHomeView.replace('team_', '');
+                showTeamDetailView(teamId);
+            }
+        }, (error) => {
+            console.error('Ошибка подписки на команды:', error);
+        });
+        
+        teamsUnsubscribers.push(teamsUnsub);
+    } catch (e) {
+        console.error('Ошибка запуска realtime синхронизации:', e);
     }
-  });
-  saveToStorage();
-  renderCarousel();
-  activateCarouselItem(carouselActiveIndex);
+}
+
+function stopTeamsRealtimeSync() {
+    teamsUnsubscribers.forEach(unsub => unsub());
+    teamsUnsubscribers = [];
+    teamSetlistsUnsubscribers.forEach(unsub => unsub());
+    teamSetlistsUnsubscribers = [];
+    subscribedTeamIds.clear();
+}
+
+// Обработка добавления/обновления команды из облака
+function handleTeamUpsert(teamData) {
+    const localIdx = teams.findIndex(t => t.id === teamData.id);
+    const teamObj = {
+        id: teamData.id,
+        name: teamData.name,
+        password: teamData.password || '',
+        avatar: teamData.avatar || null,
+        ownerId: teamData.ownerId,
+        members: teamData.members || [],
+        createdAt: teamData.createdAt
+    };
+    
+    if (localIdx === -1) {
+        teams.push(teamObj);
+    } else {
+        teams[localIdx] = { ...teams[localIdx], ...teamObj };
+    }
+    saveToStorage();
+}
+
+// Обработка удаления команды из облака
+function handleTeamDelete(teamId) {
+    teams = teams.filter(t => t.id !== teamId);
+    setlists = setlists.filter(sl => sl.teamId !== teamId);
+    saveToStorage();
+}
+
+// === ПОДПИСКА НА СЕТ-ЛИСТЫ КОНКРЕТНОЙ КОМАНДЫ ===
+function subscribeToTeamSetlists(teamId) {
+    if (subscribedTeamIds.has(teamId)) return;
+    subscribedTeamIds.add(teamId);
+    
+    const unsub = db.collection('teams').doc(teamId)
+        .collection('setlists')
+        .onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                const slData = change.doc.data();
+                const slObj = {
+                    id: slData.id,
+                    date: slData.date,
+                    time: slData.time || '',
+                    name: slData.name,
+                    isArchived: slData.isArchived || false,
+                    teamId: teamId,
+                    songs: slData.songs || [],
+                    sharedAt: slData.sharedAt || null,
+                    hasChanges: slData.hasChanges || false,
+                    updatedAt: slData.updatedAt || 0
+                };
+                
+                if (change.type === 'added' || change.type === 'modified') {
+                    handleSetlistUpsert(slObj);
+                } else if (change.type === 'removed') {
+                    handleSetlistDelete(slData.id);
+                }
+            });
+            
+            if (currentHomeView === `team_${teamId}`) {
+                showTeamDetailView(teamId);
+            }
+            renderSetlists();
+            updateCarouselBadges();
+        }, (error) => {
+            console.error('Ошибка подписки на сет-листы команды:', error);
+        });
+    
+    teamSetlistsUnsubscribers.push(unsub);
+}
+
+// Обновление/добавление сет-листа из облака
+function handleSetlistUpsert(slObj) {
+    const localIdx = setlists.findIndex(s => s.id === slObj.id && s.teamId === slObj.teamId);
+    
+    if (localIdx !== -1) {
+        const local = setlists[localIdx];
+        const localUpdated = local.updatedAt || 0;
+        const cloudUpdated = slObj.updatedAt || 0;
+        
+        // Если локальная версия новее на > 2 сек — это наши несохранённые изменения
+        if (localUpdated > cloudUpdated + 2000) {
+            return;
+        }
+        
+        setlists[localIdx] = { ...local, ...slObj };
+    } else {
+        setlists.push(slObj);
+    }
+    saveToStorage();
+}
+
+// Удаление сет-листа из облака
+function handleSetlistDelete(slId) {
+    setlists = setlists.filter(s => s.id !== slId);
+    saveToStorage();
 }
 function updateUserAvatar() {
   const btn = document.getElementById('user-avatar-btn');
@@ -3430,129 +3733,120 @@ function closeCropper() {
   document.getElementById('cropper-modal').classList.remove('show');
   cropperImage = null;
 }
-
-function drawCropper() {
-  if (!cropperImage) return;
-  const canvas = document.getElementById('cropper-canvas');
-  const wrap = document.getElementById('cropper-wrap');
-  const size = Math.min(wrap.clientWidth, wrap.clientHeight, 400);
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, size, size);
-  ctx.save();
-  ctx.translate(size / 2 + cropperOffsetX, size / 2 + cropperOffsetY);
-  ctx.scale(cropperScale, cropperScale);
-  const img = cropperImage;
-  const minDim = Math.min(img.width, img.height);
-  const sx = (img.width - minDim) / 2;
-  const sy = (img.height - minDim) / 2;
-  ctx.drawImage(img, sx, sy, minDim, minDim, -minDim / 2, -minDim / 2, minDim, minDim);
-  ctx.restore();
-}
-
 function setupCropperEvents() {
     const canvas = document.getElementById('cropper-canvas');
-    const zoomSlider = document.getElementById('cropper-zoom');
+    const zoomInput = document.getElementById('cropper-zoom');
+    if (!canvas) return;
 
-    // 🔧 НОВОЕ: Преобразование клиентских координат в координаты canvas
-    function getCanvasCoords(clientX, clientY) {
+    const CANVAS_SIZE = 400;
+
+    function getScale() {
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        return {
-            x: (clientX - rect.left) * scaleX,
-            y: (clientY - rect.top) * scaleY
-        };
+        if (rect.width === 0) return 1;
+        return CANVAS_SIZE / rect.width;
     }
 
-    zoomSlider.addEventListener('input', function() {
-        cropperScale = parseFloat(this.value);
+    // === МЫШЬ (ПК) ===
+    canvas.addEventListener('mousedown', (e) => {
+        cropperDragging = true;
+        cropperLastX = e.clientX;
+        cropperLastY = e.clientY;
+        canvas.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!cropperDragging) return;
+        const scale = getScale();
+        cropperOffsetX += (e.clientX - cropperLastX) * scale;
+        cropperOffsetY += (e.clientY - cropperLastY) * scale;
+        cropperLastX = e.clientX;
+        cropperLastY = e.clientY;
         drawCropper();
     });
 
-    // Touch события
-    canvas.addEventListener('touchstart', function(e) {
+    window.addEventListener('mouseup', () => {
+        if (cropperDragging) {
+            cropperDragging = false;
+            canvas.style.cursor = 'grab';
+        }
+    });
+
+    // === ПАЛЕЦ (ТЕЛЕФОН) ===
+    canvas.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
             cropperDragging = true;
-            const coords = getCanvasCoords(e.touches[0].clientX, e.touches[0].clientY);
-            cropperLastX = coords.x;
-            cropperLastY = coords.y;
-        } else if (e.touches.length === 2) {
-            cropperDragging = false;
-            cropperLastPinchDist = getTouchDist(e.touches);
-        }
-    }, { passive: true });
-
-    canvas.addEventListener('touchmove', function(e) {
-        e.preventDefault();
-        if (e.touches.length === 1 && cropperDragging) {
-            const coords = getCanvasCoords(e.touches[0].clientX, e.touches[0].clientY);
-            const dx = coords.x - cropperLastX;
-            const dy = coords.y - cropperLastY;
-            cropperOffsetX += dx;
-            cropperOffsetY += dy;
-            cropperLastX = coords.x;
-            cropperLastY = coords.y;
-            drawCropper();
-        } else if (e.touches.length === 2) {
-            const dist = getTouchDist(e.touches);
-            const delta = dist / cropperLastPinchDist;
-            cropperScale = Math.max(0.3, Math.min(3, cropperScale * delta));
-            cropperLastPinchDist = dist;
-            zoomSlider.value = cropperScale;
-            drawCropper();
+            cropperLastX = e.touches[0].clientX;
+            cropperLastY = e.touches[0].clientY;
+            e.preventDefault();
         }
     }, { passive: false });
 
-    canvas.addEventListener('touchend', function() { cropperDragging = false; });
-
-    // Mouse события (для ПК)
-    canvas.addEventListener('mousedown', function(e) {
-        cropperDragging = true;
-        const coords = getCanvasCoords(e.clientX, e.clientY);
-        cropperLastX = coords.x;
-        cropperLastY = coords.y;
-    });
-
-    canvas.addEventListener('mousemove', function(e) {
-        if (!cropperDragging) return;
-        const coords = getCanvasCoords(e.clientX, e.clientY);
-        const dx = coords.x - cropperLastX;
-        const dy = coords.y - cropperLastY;
-        cropperOffsetX += dx;
-        cropperOffsetY += dy;
-        cropperLastX = coords.x;
-        cropperLastY = coords.y;
+    canvas.addEventListener('touchmove', (e) => {
+        if (!cropperDragging || e.touches.length !== 1) return;
+        const scale = getScale();
+        cropperOffsetX += (e.touches[0].clientX - cropperLastX) * scale;
+        cropperOffsetY += (e.touches[0].clientY - cropperLastY) * scale;
+        cropperLastX = e.touches[0].clientX;
+        cropperLastY = e.touches[0].clientY;
         drawCropper();
-    });
-
-    canvas.addEventListener('mouseup', function() { cropperDragging = false; });
-    canvas.addEventListener('mouseleave', function() { cropperDragging = false; });
-
-    canvas.addEventListener('wheel', function(e) {
         e.preventDefault();
-        const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        cropperScale = Math.max(0.3, Math.min(3, cropperScale * delta));
-        zoomSlider.value = cropperScale;
-        drawCropper();
     }, { passive: false });
+
+    canvas.addEventListener('touchend', () => { cropperDragging = false; });
+    canvas.addEventListener('touchcancel', () => { cropperDragging = false; });
+
+    canvas.style.cursor = 'grab';
+    canvas.style.touchAction = 'none';
+
+    // === ЗУМ (слайдер) ===
+    if (zoomInput) {
+        zoomInput.addEventListener('input', (e) => {
+            cropperScale = parseFloat(e.target.value);
+            drawCropper();
+        });
+    }
 }
-
+function drawCropper() {
+    if (!cropperImage) return;
+    const canvas = document.getElementById('cropper-canvas');
+    const wrap = document.getElementById('cropper-wrap');
+    
+    // 🔧 ФИКСИРОВАННЫЙ размер canvas — всегда 400
+    // Это гарантирует, что координаты всегда в одних и тех же единицах
+    const size = 400;
+    canvas.width = size;
+    canvas.height = size;
+    
+    // CSS-размер canvas подстраиваем под wrap
+    const cssSize = Math.min(wrap.clientWidth, wrap.clientHeight, 400);
+    canvas.style.width = cssSize + 'px';
+    canvas.style.height = cssSize + 'px';
+    
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, size, size);
+    ctx.save();
+    ctx.translate(size / 2 + cropperOffsetX, size / 2 + cropperOffsetY);
+    ctx.scale(cropperScale, cropperScale);
+    const img = cropperImage;
+    const minDim = Math.min(img.width, img.height);
+    const sx = (img.width - minDim) / 2;
+    const sy = (img.height - minDim) / 2;
+    ctx.drawImage(img, sx, sy, minDim, minDim, -minDim / 2, -minDim / 2, minDim, minDim);
+    ctx.restore();
+}
 function saveCroppedAvatar() {
     if (!cropperImage) return;
-    const canvas = document.createElement('canvas');
+
     const outputSize = 256;
+    const canvas = document.createElement('canvas');
     canvas.width = outputSize;
     canvas.height = outputSize;
     const ctx = canvas.getContext('2d');
     const img = cropperImage;
 
-    // 🔧 ИСПРАВЛЕНО: берём реальный размер canvas, а не вычисляем через wrap
-    const displayCanvas = document.getElementById('cropper-canvas');
-    const displaySize = displayCanvas.width; // Внутренний размер = size из drawCropper()
-
-    const scale = outputSize / displaySize;
+    const DISPLAY_SIZE = 400;
+    const scale = outputSize / DISPLAY_SIZE;
     const totalScale = cropperScale * scale;
     const offsetX = cropperOffsetX * scale;
     const offsetY = cropperOffsetY * scale;
@@ -3561,8 +3855,10 @@ function saveCroppedAvatar() {
     ctx.beginPath();
     ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
     ctx.clip();
+
     ctx.translate(outputSize / 2 + offsetX, outputSize / 2 + offsetY);
     ctx.scale(totalScale, totalScale);
+
     const minDim = Math.min(img.width, img.height);
     const sx = (img.width - minDim) / 2;
     const sy = (img.height - minDim) / 2;
