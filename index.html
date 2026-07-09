@@ -640,12 +640,12 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </div>
 <input type="email" id="auth-reg-email" placeholder="Email *" autocomplete="email" style="margin-bottom: 10px;">
 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-  <input type="date" id="auth-birthdate" style="flex: 1;">
-  <select id="auth-gender" style="flex: 1;">
-    <option value="">Пол</option>
-    <option value="male">Мужской</option>
-    <option value="female">Женский</option>
-  </select>
+    <input type="number" id="auth-age" placeholder="Возраст" min="1" max="120" style="flex: 1;">
+    <select id="auth-gender" style="flex: 1;">
+        <option value="">Пол</option>
+        <option value="male">Мужской</option>
+        <option value="female">Женский</option>
+    </select>
 </div>
 <div style="position: relative; margin-bottom: 10px;">
   <input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов) *" autocomplete="new-password" style="padding-right: 44px;">
@@ -678,14 +678,10 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
 <input type="text" id="profile-username" placeholder="username" autocomplete="username">
 <div style="display: flex; gap: 8px;">
-  <div style="flex: 1;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
-    <input type="text" id="profile-firstname" autocomplete="given-name">
-  </div>
-  <div style="flex: 1;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
-    <input type="text" id="profile-lastname" autocomplete="family-name">
-  </div>
+<div style="flex: 1;">
+    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Возраст</label>
+    <input type="number" id="profile-age" placeholder="Возраст" min="1" max="120">
+</div>
 </div>
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
 <input type="email" id="profile-email" autocomplete="email" disabled style="opacity: 0.7;">
@@ -2635,7 +2631,7 @@ async function registerWithEmail() {
   const email = document.getElementById('auth-reg-email').value.trim();
   const password = document.getElementById('auth-reg-password').value;
   const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
-  const birthdate = document.getElementById('auth-birthdate').value;
+  const age = document.getElementById('auth-age').value;
   const gender = document.getElementById('auth-gender').value;
 
   if (!username || !firstName || !email || !password) {
@@ -2662,7 +2658,7 @@ async function registerWithEmail() {
       email: email, displayName: `${firstName} ${lastName}`,
       firstName: firstName, lastName: lastName,
       username: username.toLowerCase(),
-      birthdate: birthdate || null, gender: gender || null,
+      age: age ? parseInt(age) : null, gender: gender || null,
       photoURL: null,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -2674,36 +2670,7 @@ async function registerWithEmail() {
     alert('Ошибка регистрации: ' + error.message);
   }
 }
-// Табы Email/Логин
-function switchAuthTab(tab) {
-  const emailInput = document.getElementById('auth-email');
-  const usernameInput = document.getElementById('auth-username');
-  const tabEmail = document.getElementById('tab-email');
-  const tabLogin = document.getElementById('tab-login');
-  if (tab === 'email') {
-    emailInput.style.display = 'block';
-    usernameInput.style.display = 'none';
-    tabEmail.classList.add('active');
-    tabLogin.classList.remove('active');
-  } else {
-    emailInput.style.display = 'none';
-    usernameInput.style.display = 'block';
-    tabEmail.classList.remove('active');
-    tabLogin.classList.add('active');
-  }
-}
 
-// Показать/скрыть пароль
-function togglePassword(inputId, btn) {
-  const input = document.getElementById(inputId);
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.innerText = '';
-  } else {
-    input.type = 'password';
-    btn.innerText = '️';
-  }
-}
 function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).catch((error) => alert('Ошибка: ' + error.message));
@@ -2927,44 +2894,54 @@ function getTouchDist(touches) {
   const dy = touches[0].clientY - touches[1].clientY;
   return Math.sqrt(dx * dx + dy * dy);
 }
-
 function saveCroppedAvatar() {
-  if (!cropperImage) return;
-  const canvas = document.createElement('canvas');
-  const size = 256;
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-
-  // Рисуем изображение с учётом смещения и масштаба
-  const img = cropperImage;
-  const minDim = Math.min(img.width, img.height);
-  const sx = (img.width - minDim) / 2;
-  const sy = (img.height - minDim) / 2;
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-  ctx.clip();
-
-  // Масштабируем так, чтобы круглая маска (260px на экране) соответствовала 256px
-  const displaySize = Math.min(document.getElementById('cropper-wrap').clientWidth,
-                                document.getElementById('cropper-wrap').clientHeight, 400);
-  const cropScale = (size / 260) * cropperScale * (minDim / displaySize);
-
-  ctx.translate(size / 2 + cropperOffsetX * (size / displaySize),
-                size / 2 + cropperOffsetY * (size / displaySize));
-  ctx.scale(cropScale, cropScale);
-  ctx.drawImage(img, sx, sy, minDim, minDim, -minDim / 2, -minDim / 2, minDim, minDim);
-  ctx.restore();
-
-  profileAvatarData = canvas.toDataURL('image/jpeg', 0.85);
-  document.getElementById('profile-avatar-preview').innerHTML = `<img src="${profileAvatarData}" alt="">`;
-  document.getElementById('profile-remove-avatar-btn').style.display = 'block';
-  profileAvatarFile = null;
-  closeCropper();
+    if (!cropperImage) return;
+    
+    const canvas = document.createElement('canvas');
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    
+    const img = cropperImage;
+    const wrap = document.getElementById('cropper-wrap');
+    const displaySize = Math.min(wrap.clientWidth, wrap.clientHeight, 400);
+    
+    // Масштаб: сколько пикселей canvas приходится на 1 пиксель экрана
+    const screenToCanvas = size / displaySize;
+    
+    // Общий масштаб изображения
+    const totalScale = cropperScale * screenToCanvas;
+    
+    // Смещение в координатах canvas
+    const offsetX = cropperOffsetX * screenToCanvas;
+    const offsetY = cropperOffsetY * screenToCanvas;
+    
+    ctx.save();
+    
+    // Круглая маска
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.clip();
+    
+    // Перемещаемся в центр с учётом смещения
+    ctx.translate(size / 2 + offsetX, size / 2 + offsetY);
+    ctx.scale(totalScale, totalScale);
+    
+    // Рисуем квадратную часть изображения по центру
+    const minDim = Math.min(img.width, img.height);
+    const sx = (img.width - minDim) / 2;
+    const sy = (img.height - minDim) / 2;
+    
+    ctx.drawImage(img, sx, sy, minDim, minDim, -minDim / 2, -minDim / 2, minDim, minDim);
+    ctx.restore();
+    
+    profileAvatarData = canvas.toDataURL('image/jpeg', 0.85);
+    document.getElementById('profile-avatar-preview').innerHTML = `<img src="${profileAvatarData}" alt="">`;
+    document.getElementById('profile-remove-avatar-btn').style.display = 'block';
+    profileAvatarFile = null;
+    closeCropper();
 }
-
 function removeProfileAvatar() {
   profileAvatarData = null;
   profileAvatarFile = null;
@@ -2978,7 +2955,7 @@ async function saveProfile() {
   const username = document.getElementById('profile-username').value.trim().toLowerCase();
   const firstName = document.getElementById('profile-firstname').value.trim();
   const lastName = document.getElementById('profile-lastname').value.trim();
-  const birthdate = document.getElementById('profile-birthdate').value;
+  const age = document.getElementById('profile-age').value;
   const gender = document.getElementById('profile-gender').value;
   const newPassword = document.getElementById('profile-new-password').value;
   const confirmPassword = document.getElementById('profile-confirm-password').value;
@@ -3011,7 +2988,7 @@ async function saveProfile() {
     const updateData = {
       username: username, firstName: firstName, lastName: lastName,
       displayName: `${firstName} ${lastName}`,
-      birthdate: birthdate || null, gender: gender || null,
+      age: age ? parseInt(age) : null, gender: gender || null,
       photoURL: profileAvatarData || null,
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
     };
