@@ -896,9 +896,12 @@ reader.readAsDataURL(file);
 function buildCarouselItems() {
 carouselItems = [
 { id: 'songs',    type: 'songs',    label: 'Песни',      icon: '🎵' },
-{ id: 'setlists', type: 'setlists', label: 'Сет-листы',  icon: '📋' },
-{ id: 'teams',    type: 'teams',    label: 'Команды',    icon: '👥' }
+{ id: 'setlists', type: 'setlists', label: 'Сет-листы',  icon: '📋' }
 ];
+
+// Команды видны ТОЛЬКО авторизованным пользователям
+if (isAuthenticated) {
+carouselItems.push({ id: 'teams', type: 'teams', label: 'Команды', icon: '👥' });
 teams.forEach(t => {
 carouselItems.push({
 id: 'team_' + t.id,
@@ -909,6 +912,7 @@ icon: '🎸',
 avatar: t.avatar || null
 });
 });
+}
 }
 function escapeHtml(str) {
 return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2559,31 +2563,53 @@ function compressProfileImage(file, callback) {
 }
 
 auth.onAuthStateChanged(async (user) => {
-  authChecked = true;
-  if (user) {
-    if (!user.emailVerified) {
-      const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-      if (!isGoogleUser) {
-        alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-        auth.signOut();
-        return;
-      }
-    }
-    currentUser = user;
-    isAuthenticated = true;
-    await loadUserProfileFromFirestore(user);
-    closeModal('modal-auth');
-    updateUserAvatar();
-    renderCarousel();
-  } else {
-    currentUser = null;
-    isAuthenticated = false;
-    updateUserAvatar();
-    if (!localStorage.getItem('clc_auth_shown')) {
-      showAuthModal();
-      localStorage.setItem('clc_auth_shown', 'true');
-    }
-  }
+authChecked = true;
+if (user) {
+if (!user.emailVerified) {
+const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+if (!isGoogleUser) {
+alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+auth.signOut();
+return;
+}
+}
+currentUser = user;
+isAuthenticated = true;
+await loadUserProfileFromFirestore(user);
+closeModal('modal-auth');
+updateUserAvatar();
+
+// Перестраиваем карусель с командами
+buildCarouselItems();
+renderCarousel();
+
+// Восстанавливаем позицию карусели
+const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
+if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
+carouselActiveIndex = savedState.carouselIdx;
+} else {
+carouselActiveIndex = 0;
+}
+activateCarouselItem(carouselActiveIndex);
+
+} else {
+currentUser = null;
+isAuthenticated = false;
+updateUserAvatar();
+
+// Перестраиваем карусель БЕЗ команд
+buildCarouselItems();
+renderCarousel();
+
+// Возвращаемся на первую вкладку
+carouselActiveIndex = 0;
+activateCarouselItem(0);
+
+if (!localStorage.getItem('clc_auth_shown')) {
+showAuthModal();
+localStorage.setItem('clc_auth_shown', 'true');
+}
+}
 });
 
 async function loadUserProfileFromFirestore(user) {
@@ -2601,10 +2627,6 @@ async function loadUserProfileFromFirestore(user) {
 function showAuthModal() {
   document.getElementById('modal-auth').classList.add('show');
   showLoginForm();
-}
-function showAuthModal() {
-document.getElementById('modal-auth').classList.add('show');
-showLoginForm();
 }
 
 function switchAuthTab(mode) {
@@ -2678,60 +2700,6 @@ async function loginWithEmail() {
 	} catch (error) {
 		alert('Ошибка входа: ' + error.message);
 	}
-}
-async function registerWithEmail() {
-    const username = document.getElementById('auth-reg-username').value.trim().toLowerCase();
-    const firstName = document.getElementById('auth-firstname').value.trim();
-    const lastName = document.getElementById('auth-lastname').value.trim();
-    const email = document.getElementById('auth-reg-email').value.trim();
-    const password = document.getElementById('auth-reg-password').value;
-    const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
-    const birthdayMonth = document.getElementById('auth-birthday-month').value;
-    const birthdayDay = document.getElementById('auth-birthday-day').value;
-    const gender = document.getElementById('auth-gender').value;
-
-    if (!username || !firstName || !email || !password) {
-        alert('❌ Заполните все обязательные поля');
-        return;
-    }
-    if (username.length < 3) { alert('❌ Логин: минимум 3 символа'); return; }
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('❌ Логин: только латиница, цифры и _'); return; }
-    if (password.length < 6) { alert('❌ Пароль: минимум 6 символов'); return; }
-    if (password !== passwordConfirm) { alert('❌ Пароли не совпадают'); return; }
-
-    try {
-        const existing = await db.collection('usernames').doc(username).get();
-        if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
-
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
-        await cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
-
-        await db.collection('usernames').doc(username).set({
-            uid: cred.user.uid,
-            email: email,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        await db.collection('users').doc(cred.user.uid).set({
-            username: username,
-            firstName: firstName,
-            lastName: lastName,
-            displayName: `${firstName} ${lastName}`,
-            birthdayMonth: birthdayMonth || null,
-            birthdayDay: birthdayDay ? parseInt(birthdayDay) : null,
-            gender: gender || null,
-            photoURL: null,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        await cred.user.sendEmailVerification();
-        alert('✅ Регистрация успешна! Проверьте почту для подтверждения email.');
-        await auth.signOut();
-        showLoginForm();
-    } catch (e) {
-        alert('Ошибка: ' + e.message);
-    }
 }
 async function registerWithEmail() {
 	const username = document.getElementById('auth-reg-username').value.trim().toLowerCase();
@@ -2849,35 +2817,58 @@ alert('Ошибка сохранения: ' + e.message);
 }
 
 function loginWithGoogle() {
-	const provider = new firebase.auth.GoogleAuthProvider();
-	auth.signInWithPopup(provider).then(async (result) => {
-		const user = result.user;
-		// Проверяем, есть ли пользователь в базе
-		const userDoc = await db.collection('users').doc(user.uid).get();
-		if (!userDoc.exists) {
-			// Создаём запись в usernames (логин из email)
-			const autoUsername = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
-			await db.collection('usernames').doc(autoUsername).set({
-				uid: user.uid,
-				email: user.email,
-				createdAt: firebase.firestore.FieldValue.serverTimestamp()
-			});
-			// Создаём профиль
-			await db.collection('users').doc(user.uid).set({
-				username: autoUsername,
-				firstName: user.displayName?.split(' ')[0] || '',
-				lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-				displayName: user.displayName || '',
-				email: user.email,
-				photoURL: user.photoURL || null,
-				birthdayMonth: null,
-				birthdayDay: null,
-				gender: null,
-				createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-				lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-			});
-		}
-	}).catch((error) => alert('Ошибка: ' + error.message));
+const provider = new firebase.auth.GoogleAuthProvider();
+auth.signInWithPopup(provider)
+.then(async (result) => {
+const user = result.user;
+try {
+const userDoc = await db.collection('users').doc(user.uid).get();
+if (!userDoc.exists) {
+const autoUsername = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
+let uniqueUsername = autoUsername;
+let counter = 1;
+
+while (true) {
+const usernameDoc = await db.collection('usernames').doc(uniqueUsername).get();
+if (!usernameDoc.exists) break;
+uniqueUsername = autoUsername + counter;
+counter++;
+}
+
+await db.collection('usernames').doc(uniqueUsername).set({
+uid: user.uid,
+email: user.email,
+createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+await db.collection('users').doc(user.uid).set({
+username: uniqueUsername,
+firstName: user.displayName?.split(' ')[0] || '',
+lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+displayName: user.displayName || '',
+email: user.email,
+photoURL: user.photoURL || null,
+birthdayMonth: null,
+birthdayDay: null,
+gender: null,
+createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+});
+}
+} catch (e) {
+console.error('Ошибка создания профиля:', e);
+}
+})
+.catch((error) => {
+console.error('Ошибка входа через Google:', error);
+let errorMsg = 'Ошибка входа';
+if (error.code === 'auth/popup-blocked') errorMsg = 'Всплывающее окно заблокировано. Разрешите всплывающие окна для этого сайта.';
+else if (error.code === 'auth/popup-closed-by-user') errorMsg = 'Окно закрыто';
+else if (error.code === 'auth/cancelled-popup-request') errorMsg = 'Запрос отменен';
+else if (error.code === 'auth/network-request-failed') errorMsg = 'Ошибка сети';
+else errorMsg = error.message;
+alert('❌ ' + errorMsg);
+});
 }
 
 function resendVerificationEmail() {
