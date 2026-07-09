@@ -635,25 +635,47 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <div id="auth-register-form" style="display: none;">
 <input type="text" id="auth-reg-username" placeholder="Логин (уникальный) *" autocomplete="username" style="margin-bottom: 10px;">
 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-  <input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="flex: 1;">
-  <input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="flex: 1;">
+<input type="text" id="auth-firstname" placeholder="Имя *" autocomplete="given-name" style="flex: 1;">
+<input type="text" id="auth-lastname" placeholder="Фамилия" autocomplete="family-name" style="flex: 1;">
 </div>
 <input type="email" id="auth-reg-email" placeholder="Email *" autocomplete="email" style="margin-bottom: 10px;">
 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-    <input type="number" id="auth-age" placeholder="Возраст" min="1" max="120" style="flex: 1;">
-    <select id="auth-gender" style="flex: 1;">
-        <option value="">Пол</option>
-        <option value="male">Мужской</option>
-        <option value="female">Женский</option>
-    </select>
+<div style="flex: 1;">
+<label style="font-weight: bold; display: block; margin-bottom: 5px; font-size: 13px;">🎂 День рождения</label>
+<div style="display: flex; gap: 8px;">
+<select id="auth-birthday-month" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee; font-size: 14px;">
+<option value="">Месяц</option>
+<option value="1">Январь</option>
+<option value="2">Февраль</option>
+<option value="3">Март</option>
+<option value="4">Апрель</option>
+<option value="5">Май</option>
+<option value="6">Июнь</option>
+<option value="7">Июль</option>
+<option value="8">Август</option>
+<option value="9">Сентябрь</option>
+<option value="10">Октябрь</option>
+<option value="11">Ноябрь</option>
+<option value="12">Декабрь</option>
+</select>
+<select id="auth-birthday-day" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee; font-size: 14px;">
+<option value="">День</option>
+</select>
+</div>
+</div>
+<select id="auth-gender" style="flex: 1;">
+<option value="">Пол</option>
+<option value="male">Мужской</option>
+<option value="female">Женский</option>
+</select>
 </div>
 <div style="position: relative; margin-bottom: 10px;">
-  <input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов) *" autocomplete="new-password" style="padding-right: 44px;">
-  <button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password', this)">👁️</button>
+<input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов) *" autocomplete="new-password" style="padding-right: 44px;">
+<button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password', this)">👁️</button>
 </div>
 <div style="position: relative; margin-bottom: 15px;">
-  <input type="password" id="auth-reg-password-confirm" placeholder="Повторите пароль *" autocomplete="new-password" style="padding-right: 44px;">
-  <button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password-confirm', this)">👁️</button>
+<input type="password" id="auth-reg-password-confirm" placeholder="Повторите пароль *" autocomplete="new-password" style="padding-right: 44px;">
+<button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password-confirm', this)">👁️</button>
 </div>
 <button class="btn-main" onclick="registerWithEmail()">Зарегистрироваться</button>
 <p style="text-align: center; margin-top: 15px;">
@@ -664,65 +686,85 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <button class="btn-secondary" onclick="closeModal('modal-auth')" style="width: 100%; margin-top: 10px;">Отмена</button>
 </div>
 </div>
+
 <div id="modal-profile" class="modal">
 <div class="modal-content" style="max-width: 480px;">
 <h2 style="text-align: center; color: #90caf9; margin-bottom: 15px;">👤 Мой профиль</h2>
 <div style="text-align: center; margin-bottom: 15px;">
-  <div id="profile-avatar-preview" class="profile-avatar-preview">👤</div>
-  <label class="btn-pastel" style="display: inline-block; cursor: pointer; padding: 8px 16px; font-size: 13px;">
-    📷 Загрузить аватар
-    <input type="file" id="profile-avatar-input" accept="image/*" style="display: none;" onchange="previewProfileAvatar(this)">
-  </label>
-  <button class="btn-icon" id="profile-remove-avatar-btn" onclick="removeProfileAvatar()" style="display: none; margin: 5px auto; color: #ef5350;" title="Удалить аватар">🗑️ Удалить аватар</button>
+<div id="profile-avatar-preview" class="profile-avatar-preview">👤</div>
+<label class="btn-pastel" style="display: inline-block; cursor: pointer; padding: 8px 16px; font-size: 13px;">
+📷 Загрузить аватар
+<input type="file" id="profile-avatar-input" accept="image/*" style="display: none;" onchange="previewProfileAvatar(this)">
+</label>
+<button class="btn-icon" id="profile-remove-avatar-btn" onclick="removeProfileAvatar()" style="display: none; margin: 5px auto; color: #ef5350;" title="Удалить аватар">🗑️ Удалить аватар</button>
 </div>
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
 <input type="text" id="profile-username" placeholder="username" autocomplete="username">
 <div style="display: flex; gap: 8px;">
-    <div style="flex: 1;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
-        <input type="text" id="profile-firstname" autocomplete="given-name">
-    </div>
-    <div style="flex: 1;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
-        <input type="text" id="profile-lastname" autocomplete="family-name">
-    </div>
+<div style="flex: 1;">
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
+<input type="text" id="profile-firstname" autocomplete="given-name">
+</div>
+<div style="flex: 1;">
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
+<input type="text" id="profile-lastname" autocomplete="family-name">
+</div>
 </div>
 <div style="display: flex; gap: 8px;">
-    <div style="flex: 1;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Возраст</label>
-        <input type="number" id="profile-age" placeholder="Возраст" min="1" max="120">
-    </div>
+<div style="flex: 1;">
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">🎂 День рождения</label>
+<div style="display: flex; gap: 8px;">
+<select id="profile-birthday-month" style="flex: 1;">
+<option value="">Месяц</option>
+<option value="1">Январь</option>
+<option value="2">Февраль</option>
+<option value="3">Март</option>
+<option value="4">Апрель</option>
+<option value="5">Май</option>
+<option value="6">Июнь</option>
+<option value="7">Июль</option>
+<option value="8">Август</option>
+<option value="9">Сентябрь</option>
+<option value="10">Октябрь</option>
+<option value="11">Ноябрь</option>
+<option value="12">Декабрь</option>
+</select>
+<select id="profile-birthday-day" style="flex: 1;">
+<option value="">День</option>
+</select>
+</div>
+</div>
 </div>
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
 <input type="email" id="profile-email" autocomplete="email" disabled style="opacity: 0.7;">
 <div style="display: flex; gap: 8px;">
-    <div style="flex: 1;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
-        <select id="profile-gender">
-            <option value="">Не указан</option>
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
-        </select>
-    </div>
+<div style="flex: 1;">
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
+<select id="profile-gender">
+<option value="">Не указан</option>
+<option value="male">Мужской</option>
+<option value="female">Женский</option>
+</select>
+</div>
 </div>
 <hr style="margin: 15px 0; border: none; border-top: 1px solid #444;">
 <p style="color: #888; font-size: 12px; margin-bottom: 10px;">Оставьте пустым, чтобы не менять пароль:</p>
 <div style="position: relative; margin-bottom: 10px;">
-  <label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль</label>
-  <input type="password" id="profile-new-password" placeholder="Новый пароль" style="padding-right: 44px;">
-  <button type="button" class="pwd-toggle" onclick="togglePassword('profile-new-password', this)">👁️</button>
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль</label>
+<input type="password" id="profile-new-password" placeholder="Новый пароль" style="padding-right: 44px;">
+<button type="button" class="pwd-toggle" onclick="togglePassword('profile-new-password', this)">👁️</button>
 </div>
 <div style="position: relative; margin-bottom: 10px;">
-  <label style="font-weight: bold; display: block; margin-bottom: 5px;">Повторите пароль</label>
-  <input type="password" id="profile-confirm-password" placeholder="Повторите" style="padding-right: 44px;">
-  <button type="button" class="pwd-toggle" onclick="togglePassword('profile-confirm-password', this)">👁️</button>
+<label style="font-weight: bold; display: block; margin-bottom: 5px;">Повторите пароль</label>
+<input type="password" id="profile-confirm-password" placeholder="Повторите" style="padding-right: 44px;">
+<button type="button" class="pwd-toggle" onclick="togglePassword('profile-confirm-password', this)">👁️</button>
 </div>
 <div class="modal-actions" style="margin-top: 20px;">
 <button class="btn-danger" onclick="logout()" style="margin-right: auto;">🚪 Выйти</button>
 <button class="btn-secondary" onclick="closeModal('modal-profile')">Отмена</button>
 <button class="btn-main" style="width: auto; margin: 0;" onclick="saveProfile()">💾 Сохранить</button>
-        </div>
-    </div>
+</div>
+</div>
 </div>
 <!-- ⬇️ СЮДА ВСТАВЛЯЕТЕ КРОППЕР ⬇️ -->
 <div id="cropper-modal" class="cropper-modal">
@@ -2609,80 +2651,233 @@ btn.innerText = '👁️';
 }
 }
 
-// Вход через email/пароль или логин
+// Исправленная функция входа по логину
 async function loginWithEmail() {
-const tabEmail = document.getElementById('tab-email');
-const isEmailMode = tabEmail ? tabEmail.classList.contains('active') : true;
-const password = document.getElementById('auth-password').value;
-let email = '';
-
-if (isEmailMode) {
-email = document.getElementById('auth-email').value.trim();
-if (!email || !password) { alert('Введите email и пароль'); return; }
-} else {
-const username = document.getElementById('auth-username').value.trim();
-if (!username || !password) { alert('Введите логин и пароль'); return; }
-try {
-const snap = await db.collection('usernames').doc(username.toLowerCase()).get();
-if (!snap.exists) { alert('❌ Пользователь с таким логином не найден'); return; }
-email = snap.data().email;
-} catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
+	const tabEmail = document.getElementById('tab-email');
+	const tabLogin = document.getElementById('tab-login');
+	const isEmailMode = tabEmail && tabEmail.classList.contains('active');
+	const password = document.getElementById('auth-password').value;
+	let email = '';
+	if (isEmailMode) {
+		email = document.getElementById('auth-email').value.trim();
+		if (!email || !password) { alert('Введите email и пароль'); return; }
+	} else {
+		const username = document.getElementById('auth-username').value.trim().toLowerCase();
+		if (!username || !password) { alert('Введите логин и пароль'); return; }
+		try {
+			const snap = await db.collection('usernames').doc(username).get();
+			if (!snap.exists) {
+				alert(' Пользователь с таким логином не найден.\n\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
+				return;
+			}
+			email = snap.data().email;
+		} catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
+	}
+	try {
+		await auth.signInWithEmailAndPassword(email, password);
+	} catch (error) {
+		alert('Ошибка входа: ' + error.message);
+	}
 }
-
-auth.signInWithEmailAndPassword(email, password)
-.catch((error) => alert('Ошибка входа: ' + error.message));
-}
-
 async function registerWithEmail() {
-  const username = document.getElementById('auth-reg-username').value.trim();
-  const firstName = document.getElementById('auth-firstname').value.trim();
-  const lastName = document.getElementById('auth-lastname').value.trim();
-  const email = document.getElementById('auth-reg-email').value.trim();
-  const password = document.getElementById('auth-reg-password').value;
-  const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
-  const age = document.getElementById('auth-age').value;
-  const gender = document.getElementById('auth-gender').value;
+    const username = document.getElementById('auth-reg-username').value.trim().toLowerCase();
+    const firstName = document.getElementById('auth-firstname').value.trim();
+    const lastName = document.getElementById('auth-lastname').value.trim();
+    const email = document.getElementById('auth-reg-email').value.trim();
+    const password = document.getElementById('auth-reg-password').value;
+    const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
+    const birthdayMonth = document.getElementById('auth-birthday-month').value;
+    const birthdayDay = document.getElementById('auth-birthday-day').value;
+    const gender = document.getElementById('auth-gender').value;
 
-  if (!username || !firstName || !email || !password) {
-    alert('Заполните обязательные поля (отмечены *)'); return;
-  }
-  if (username.length < 3) { alert('Логин: минимум 3 символа'); return; }
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('Логин: только латиница, цифры и _'); return; }
-  if (password.length < 6) { alert('Пароль: минимум 6 символов'); return; }
-  if (password !== passwordConfirm) { alert('❌ Пароли не совпадают!'); return; }
+    if (!username || !firstName || !email || !password) {
+        alert('❌ Заполните все обязательные поля');
+        return;
+    }
+    if (username.length < 3) { alert('❌ Логин: минимум 3 символа'); return; }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('❌ Логин: только латиница, цифры и _'); return; }
+    if (password.length < 6) { alert('❌ Пароль: минимум 6 символов'); return; }
+    if (password !== passwordConfirm) { alert('❌ Пароли не совпадают'); return; }
 
-  try {
-    const existing = await db.collection('usernames').doc(username.toLowerCase()).get();
-    if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
-  } catch (e) { /* ок */ }
+    try {
+        const existing = await db.collection('usernames').doc(username).get();
+        if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
 
-  try {
-    const cred = await auth.createUserWithEmailAndPassword(email, password);
-    await cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
-    await db.collection('usernames').doc(username.toLowerCase()).set({
-      uid: cred.user.uid, email: email,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    await db.collection('users').doc(cred.user.uid).set({
-      email: email, displayName: `${firstName} ${lastName}`,
-      firstName: firstName, lastName: lastName,
-      username: username.toLowerCase(),
-      age: age ? parseInt(age) : null, gender: gender || null,
-      photoURL: null,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    await cred.user.sendEmailVerification();
-    alert('✅ Аккаунт создан!\n📧 На ' + email + ' отправлено письмо с подтверждением.\nПерейдите по ссылке в нём, затем войдите.');
-    await auth.signOut();
-    showLoginForm();
-  } catch (error) {
-    alert('Ошибка регистрации: ' + error.message);
-  }
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        await cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
+
+        await db.collection('usernames').doc(username).set({
+            uid: cred.user.uid,
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await db.collection('users').doc(cred.user.uid).set({
+            username: username,
+            firstName: firstName,
+            lastName: lastName,
+            displayName: `${firstName} ${lastName}`,
+            birthdayMonth: birthdayMonth || null,
+            birthdayDay: birthdayDay ? parseInt(birthdayDay) : null,
+            gender: gender || null,
+            photoURL: null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await cred.user.sendEmailVerification();
+        alert('✅ Регистрация успешна! Проверьте почту для подтверждения email.');
+        await auth.signOut();
+        showLoginForm();
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
+}
+async function registerWithEmail() {
+	const username = document.getElementById('auth-reg-username').value.trim().toLowerCase();
+	const firstName = document.getElementById('auth-firstname').value.trim();
+	const lastName = document.getElementById('auth-lastname').value.trim();
+	const email = document.getElementById('auth-reg-email').value.trim();
+	const password = document.getElementById('auth-reg-password').value;
+	const passwordConfirm = document.getElementById('auth-reg-password-confirm').value;
+	const birthdayMonth = document.getElementById('auth-birthday-month').value;
+	const birthdayDay = document.getElementById('auth-birthday-day').value;
+	const gender = document.getElementById('auth-gender').value;
+
+	if (!username || !firstName || !email || !password) {
+		alert('❌ Заполните все обязательные поля');
+		return;
+	}
+	if (username.length < 3) { alert('❌ Логин: минимум 3 символа'); return; }
+	if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert(' Логин: только латиница, цифры и _'); return; }
+	if (password.length < 6) { alert('❌ Пароль: минимум 6 символов'); return; }
+	if (password !== passwordConfirm) { alert('❌ Пароли не совпадают'); return; }
+
+	try {
+		const existing = await db.collection('usernames').doc(username).get();
+		if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
+
+		const cred = await auth.createUserWithEmailAndPassword(email, password);
+		await cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
+
+		await db.collection('usernames').doc(username).set({
+			uid: cred.user.uid,
+			email: email,
+			createdAt: firebase.firestore.FieldValue.serverTimestamp()
+		});
+
+		await db.collection('users').doc(cred.user.uid).set({
+			username: username,
+			firstName: firstName,
+			lastName: lastName,
+			displayName: `${firstName} ${lastName}`,
+			birthdayMonth: birthdayMonth || null,
+			birthdayDay: birthdayDay ? parseInt(birthdayDay) : null,
+			gender: gender || null,
+			photoURL: null,
+			createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+			lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+		});
+
+		await cred.user.sendEmailVerification();
+		alert('✅ Регистрация успешна! Проверьте почту для подтверждения email.');
+		await auth.signOut();
+		showLoginForm();
+	} catch (e) {
+		alert('Ошибка: ' + e.message);
+	}
+}
+// Исправленная функция сохранения профиля
+async function saveProfile() {
+if (!currentUser) return;
+const username = document.getElementById('profile-username').value.trim().toLowerCase();
+const firstName = document.getElementById('profile-firstname').value.trim();
+const lastName = document.getElementById('profile-lastname').value.trim();
+const birthdayMonth = document.getElementById('profile-birthday-month').value;
+const birthdayDay = document.getElementById('profile-birthday-day').value;
+const gender = document.getElementById('profile-gender').value;
+const newPassword = document.getElementById('profile-new-password').value;
+const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+if (!username) { alert('Логин не может быть пустым'); return; }
+if (username.length < 3) { alert('Логин: минимум 3 символа'); return; }
+if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('Логин: только латиница, цифры и _'); return; }
+if (!firstName) { alert('Имя обязательно'); return; }
+if (newPassword && newPassword.length < 6) { alert('Пароль: минимум 6 символов'); return; }
+if (newPassword && newPassword !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
+
+const oldUsername = (currentUser.profileData?.username || '').toLowerCase();
+const usernameChanged = username !== oldUsername;
+
+if (usernameChanged) {
+try {
+const existing = await db.collection('usernames').doc(username).get();
+if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
+} catch (e) { /* ок */ }
+}
+
+try {
+if (newPassword) await currentUser.updatePassword(newPassword);
+await currentUser.updateProfile({ displayName: `${firstName} ${lastName}` });
+
+if (usernameChanged) {
+if (oldUsername) await db.collection('usernames').doc(oldUsername).delete();
+await db.collection('usernames').doc(username).set({
+uid: currentUser.uid, email: currentUser.email,
+createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+}
+
+const updateData = {
+username: username, firstName: firstName, lastName: lastName,
+displayName: `${firstName} ${lastName}`,
+birthdayMonth: birthdayMonth || null,
+birthdayDay: birthdayDay ? parseInt(birthdayDay) : null,
+gender: gender || null,
+photoURL: profileAvatarData || null,
+lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+};
+
+await db.collection('users').doc(currentUser.uid).set(updateData, { merge: true });
+currentUser.profileData = { ...currentUser.profileData, ...updateData };
+alert('✅ Профиль сохранён!');
+closeModal('modal-profile');
+updateUserAvatar();
+} catch (e) {
+alert('Ошибка сохранения: ' + e.message);
+}
 }
 
 function loginWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch((error) => alert('Ошибка: ' + error.message));
+	const provider = new firebase.auth.GoogleAuthProvider();
+	auth.signInWithPopup(provider).then(async (result) => {
+		const user = result.user;
+		// Проверяем, есть ли пользователь в базе
+		const userDoc = await db.collection('users').doc(user.uid).get();
+		if (!userDoc.exists) {
+			// Создаём запись в usernames (логин из email)
+			const autoUsername = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
+			await db.collection('usernames').doc(autoUsername).set({
+				uid: user.uid,
+				email: user.email,
+				createdAt: firebase.firestore.FieldValue.serverTimestamp()
+			});
+			// Создаём профиль
+			await db.collection('users').doc(user.uid).set({
+				username: autoUsername,
+				firstName: user.displayName?.split(' ')[0] || '',
+				lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+				displayName: user.displayName || '',
+				email: user.email,
+				photoURL: user.photoURL || null,
+				birthdayMonth: null,
+				birthdayDay: null,
+				gender: null,
+				createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+				lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+			});
+		}
+	}).catch((error) => alert('Ошибка: ' + error.message));
 }
 
 function resendVerificationEmail() {
@@ -2752,34 +2947,61 @@ function updateUserAvatar() {
 }
 
 function openProfileModal() {
-  if (!currentUser) return;
-  const data = currentUser.profileData || {};
-  document.getElementById('profile-username').value = data.username || '';
-  document.getElementById('profile-firstname').value = data.firstName || '';
-  document.getElementById('profile-lastname').value = data.lastName || '';
-  document.getElementById('profile-email').value = currentUser.email || '';
-  document.getElementById('profile-gender').value = data.gender || '';
-  document.getElementById('profile-new-password').value = '';
-  document.getElementById('profile-confirm-password').value = '';
-  const avatarUrl = data.photoURL || currentUser.photoURL;
-  const preview = document.getElementById('profile-avatar-preview');
-  const removeBtn = document.getElementById('profile-remove-avatar-btn');
-  profileAvatarData = avatarUrl;
-  profileAvatarFile = null;
-  if (avatarUrl) {
-    preview.innerHTML = `<img src="${avatarUrl}" alt="">`;
-    removeBtn.style.display = 'block';
-  } else {
-    preview.innerHTML = '👤';
-    removeBtn.style.display = 'none';
-  }
-  document.getElementById('modal-profile').classList.add('show');
+if (!currentUser) return;
+const data = currentUser.profileData || {};
+document.getElementById('profile-username').value = data.username || '';
+document.getElementById('profile-firstname').value = data.firstName || '';
+document.getElementById('profile-lastname').value = data.lastName || '';
+document.getElementById('profile-email').value = currentUser.email || '';
+document.getElementById('profile-gender').value = data.gender || '';
+document.getElementById('profile-birthday-month').value = data.birthdayMonth || '';
+document.getElementById('profile-new-password').value = '';
+document.getElementById('profile-confirm-password').value = '';
+
+// Заполняем дни в зависимости от месяца
+updateBirthdayDays(data.birthdayMonth, data.birthdayDay);
+
+const avatarUrl = data.photoURL || currentUser.photoURL;
+const preview = document.getElementById('profile-avatar-preview');
+const removeBtn = document.getElementById('profile-remove-avatar-btn');
+profileAvatarData = avatarUrl;
+profileAvatarFile = null;
+if (avatarUrl) {
+preview.innerHTML = `<img src="${avatarUrl}" alt="">`;
+removeBtn.style.display = 'block';
+} else {
+preview.innerHTML = '👤';
+removeBtn.style.display = 'none';
+}
+document.getElementById('modal-profile').classList.add('show');
 }
 
-// === Кроппер аватарки ===
-let cropperImage = null;
-let cropperOffsetX = 0, cropperOffsetY = 0, cropperScale = 1;
-let cropperDragging = false, cropperLastX = 0, cropperLastY = 0;
+function updateBirthdayDays(month, selectedDay) {
+const daySelect = document.getElementById('profile-birthday-day');
+const currentDay = selectedDay || daySelect.value;
+daySelect.innerHTML = '<option value="">День</option>';
+
+if (!month) return;
+
+const daysInMonth = new Date(2024, month, 0).getDate(); // 2024 - високосный год
+for (let i = 1; i <= daysInMonth; i++) {
+const option = document.createElement('option');
+option.value = i;
+option.textContent = i;
+if (i == currentDay) option.selected = true;
+daySelect.appendChild(option);
+}
+}
+
+// Добавляем обработчик изменения месяца
+document.addEventListener('DOMContentLoaded', function() {
+const monthSelect = document.getElementById('profile-birthday-month');
+if (monthSelect) {
+monthSelect.addEventListener('change', function() {
+updateBirthdayDays(this.value, null);
+});
+}
+});
 
 function openCropper(file) {
   const reader = new FileReader();
@@ -2957,59 +3179,16 @@ function removeProfileAvatar() {
   document.getElementById('profile-remove-avatar-btn').style.display = 'none';
   document.getElementById('profile-avatar-input').value = '';
 }
-
-async function saveProfile() {
-  if (!currentUser) return;
-  const username = document.getElementById('profile-username').value.trim().toLowerCase();
-  const firstName = document.getElementById('profile-firstname').value.trim();
-  const lastName = document.getElementById('profile-lastname').value.trim();
-  const age = document.getElementById('profile-age').value;
-  const gender = document.getElementById('profile-gender').value;
-  const newPassword = document.getElementById('profile-new-password').value;
-  const confirmPassword = document.getElementById('profile-confirm-password').value;
-
-  if (!username) { alert('Логин не может быть пустым'); return; }
-  if (username.length < 3) { alert('Логин: минимум 3 символа'); return; }
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) { alert('Логин: только латиница, цифры и _'); return; }
-  if (!firstName) { alert('Имя обязательно'); return; }
-  if (newPassword && newPassword.length < 6) { alert('Пароль: минимум 6 символов'); return; }
-  if (newPassword && newPassword !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
-
-  const oldUsername = (currentUser.profileData?.username || '').toLowerCase();
-  if (username !== oldUsername) {
-    try {
-      const existing = await db.collection('usernames').doc(username).get();
-      if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
-    } catch (e) { /* ок */ }
-  }
-
-  try {
-    if (newPassword) await currentUser.updatePassword(newPassword);
-    await currentUser.updateProfile({ displayName: `${firstName} ${lastName}` });
-    if (username !== oldUsername) {
-      if (oldUsername) await db.collection('usernames').doc(oldUsername).delete();
-      await db.collection('usernames').doc(username).set({
-        uid: currentUser.uid, email: currentUser.email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    }
-    const updateData = {
-      username: username, firstName: firstName, lastName: lastName,
-      displayName: `${firstName} ${lastName}`,
-      age: age ? parseInt(age) : null, gender: gender || null,
-      photoURL: profileAvatarData || null,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await db.collection('users').doc(currentUser.uid).set(updateData, { merge: true });
-    currentUser.profileData = { ...currentUser.profileData, ...updateData };
-    alert('✅ Профиль сохранён!');
-    closeModal('modal-profile');
-    updateUserAvatar();
-  } catch (e) {
-    alert('Ошибка сохранения: ' + e.message);
-  }
+function previewProfileAvatar(input) {
+	const file = input.files[0];
+	if (!file) return;
+	if (!file.type.startsWith('image/')) {
+		alert('❌ Пожалуйста, выберите изображение');
+		return;
+	}
+	// Открываем кроппер
+	openCropper(file);
 }
-
 function handleAuthButton() {
   if (!isAuthenticated) {
     showAuthModal();
@@ -3050,6 +3229,40 @@ updateToggleButtonsUI();
 setupCropperEvents();
 document.getElementById('team-edit-avatar').addEventListener('change', function() {
 previewTeamAvatar(this);
+});
+// Обработчик для дней в форме регистрации
+const regMonthSelect = document.getElementById('auth-birthday-month');
+if (regMonthSelect) {
+regMonthSelect.addEventListener('change', function() {
+const daySelect = document.getElementById('auth-birthday-day');
+daySelect.innerHTML = '<option value="">День</option>';
+if (!this.value) return;
+const daysInMonth = new Date(2024, this.value, 0).getDate();
+for (let i = 1; i <= daysInMonth; i++) {
+const option = document.createElement('option');
+option.value = i;
+option.textContent = i;
+daySelect.appendChild(option);
+}
+});
+}
+// Обработчик для дней в форме регистрации
+document.addEventListener('DOMContentLoaded', function() {
+const regMonthSelect = document.getElementById('auth-birthday-month');
+if (regMonthSelect) {
+regMonthSelect.addEventListener('change', function() {
+const daySelect = document.getElementById('auth-birthday-day');
+daySelect.innerHTML = '<option value="">День</option>';
+if (!this.value) return;
+const daysInMonth = new Date(2024, this.value, 0).getDate();
+for (let i = 1; i <= daysInMonth; i++) {
+const option = document.createElement('option');
+option.value = i;
+option.textContent = i;
+daySelect.appendChild(option);
+}
+});
+}
 });
 window.addEventListener('resize', () => {
 updatePdfOrCopyButton();
