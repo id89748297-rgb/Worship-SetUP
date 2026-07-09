@@ -678,26 +678,32 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Логин</label>
 <input type="text" id="profile-username" placeholder="username" autocomplete="username">
 <div style="display: flex; gap: 8px;">
-<div style="flex: 1;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Возраст</label>
-    <input type="number" id="profile-age" placeholder="Возраст" min="1" max="120">
+    <div style="flex: 1;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Имя</label>
+        <input type="text" id="profile-firstname" autocomplete="given-name">
+    </div>
+    <div style="flex: 1;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фамилия</label>
+        <input type="text" id="profile-lastname" autocomplete="family-name">
+    </div>
 </div>
+<div style="display: flex; gap: 8px;">
+    <div style="flex: 1;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Возраст</label>
+        <input type="number" id="profile-age" placeholder="Возраст" min="1" max="120">
+    </div>
 </div>
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
 <input type="email" id="profile-email" autocomplete="email" disabled style="opacity: 0.7;">
 <div style="display: flex; gap: 8px;">
-  <div style="flex: 1;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Дата рождения</label>
-    <input type="date" id="profile-birthdate">
-  </div>
-  <div style="flex: 1;">
-    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
-    <select id="profile-gender">
-      <option value="">Не указан</option>
-      <option value="male">Мужской</option>
-      <option value="female">Женский</option>
-    </select>
-  </div>
+    <div style="flex: 1;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
+        <select id="profile-gender">
+            <option value="">Не указан</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+        </select>
+    </div>
 </div>
 <hr style="margin: 15px 0; border: none; border-top: 1px solid #444;">
 <p style="color: #888; font-size: 12px; margin-bottom: 10px;">Оставьте пустым, чтобы не менять пароль:</p>
@@ -715,13 +721,9 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <button class="btn-danger" onclick="logout()" style="margin-right: auto;">🚪 Выйти</button>
 <button class="btn-secondary" onclick="closeModal('modal-profile')">Отмена</button>
 <button class="btn-main" style="width: auto; margin: 0;" onclick="saveProfile()">💾 Сохранить</button>
+        </div>
+    </div>
 </div>
-</div>
-</div>
-<button class="btn-secondary" onclick="closeModal('modal-auth')" style="width: 100%; margin-top: 10px;">Отмена</button>
-</div>
-</div>
-
 <!-- ⬇️ СЮДА ВСТАВЛЯЕТЕ КРОППЕР ⬇️ -->
 <div id="cropper-modal" class="cropper-modal">
   <div class="cropper-header">
@@ -2558,70 +2560,77 @@ function showAuthModal() {
   document.getElementById('modal-auth').classList.add('show');
   showLoginForm();
 }
+function showAuthModal() {
+document.getElementById('modal-auth').classList.add('show');
+showLoginForm();
+}
+
+function switchAuthTab(mode) {
+const tabEmail = document.getElementById('tab-email');
+const tabLogin = document.getElementById('tab-login');
+const emailInput = document.getElementById('auth-email');
+const usernameInput = document.getElementById('auth-username');
+
+if (mode === 'email') {
+tabEmail.classList.add('active');
+tabLogin.classList.remove('active');
+emailInput.style.display = 'block';
+usernameInput.style.display = 'none';
+emailInput.value = '';
+} else {
+tabLogin.classList.add('active');
+tabEmail.classList.remove('active');
+usernameInput.style.display = 'block';
+emailInput.style.display = 'none';
+usernameInput.value = '';
+}
+}
 
 function showLoginForm() {
-  document.getElementById('auth-login-form').style.display = 'block';
-  document.getElementById('auth-register-form').style.display = 'none';
-  document.getElementById('auth-modal-title').innerText = 'Вход';
+document.getElementById('auth-login-form').style.display = 'block';
+document.getElementById('auth-register-form').style.display = 'none';
+document.getElementById('auth-modal-title').innerText = 'Вход';
 }
 
 function showRegisterForm() {
-  document.getElementById('auth-login-form').style.display = 'none';
-  document.getElementById('auth-register-form').style.display = 'block';
-  document.getElementById('auth-modal-title').innerText = 'Регистрация';
-}
-
-function switchAuthTab(tab) {
-  const emailInput = document.getElementById('auth-email');
-  const usernameInput = document.getElementById('auth-username');
-  const tabEmail = document.getElementById('tab-email');
-  const tabLogin = document.getElementById('tab-login');
-  if (tab === 'email') {
-    emailInput.style.display = 'block';
-    usernameInput.style.display = 'none';
-    tabEmail.classList.add('active');
-    tabLogin.classList.remove('active');
-  } else {
-    emailInput.style.display = 'none';
-    usernameInput.style.display = 'block';
-    tabEmail.classList.remove('active');
-    tabLogin.classList.add('active');
-  }
+document.getElementById('auth-login-form').style.display = 'none';
+document.getElementById('auth-register-form').style.display = 'block';
+document.getElementById('auth-modal-title').innerText = 'Регистрация';
 }
 
 function togglePassword(inputId, btn) {
-  const input = document.getElementById(inputId);
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.innerText = '🙈';
-  } else {
-    input.type = 'password';
-    btn.innerText = '👁️';
-  }
+const input = document.getElementById(inputId);
+if (input.type === 'password') {
+input.type = 'text';
+btn.innerText = '🙈';
+} else {
+input.type = 'password';
+btn.innerText = '👁️';
+}
 }
 
 // Вход через email/пароль или логин
 async function loginWithEmail() {
-  const tabEmail = document.getElementById('tab-email');
-  const isEmailMode = tabEmail ? tabEmail.classList.contains('active') : true;
-  const password = document.getElementById('auth-password').value;
-  let email = '';
+const tabEmail = document.getElementById('tab-email');
+const isEmailMode = tabEmail ? tabEmail.classList.contains('active') : true;
+const password = document.getElementById('auth-password').value;
+let email = '';
 
-  if (isEmailMode) {
-    email = document.getElementById('auth-email').value.trim();
-    if (!email || !password) { alert('Введите email и пароль'); return; }
-  } else {
-    const username = document.getElementById('auth-username').value.trim();
-    if (!username || !password) { alert('Введите логин и пароль'); return; }
-    try {
-      const snap = await db.collection('usernames').doc(username.toLowerCase()).get();
-      if (!snap.exists) { alert('❌ Пользователь с таким логином не найден'); return; }
-      email = snap.data().email;
-    } catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
-  }
+if (isEmailMode) {
+email = document.getElementById('auth-email').value.trim();
+if (!email || !password) { alert('Введите email и пароль'); return; }
+} else {
+const username = document.getElementById('auth-username').value.trim();
+if (!username || !password) { alert('Введите логин и пароль'); return; }
+try {
+const snap = await db.collection('usernames').doc(username.toLowerCase()).get();
+if (!snap.exists) { alert('❌ Пользователь с таким логином не найден'); return; }
+email = snap.data().email;
+} catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
+}
 
-  auth.signInWithEmailAndPassword(email, password)
-    .catch((error) => alert('Ошибка входа: ' + error.message));
+auth.signInWithEmailAndPassword(email, password)
+.catch((error) => alert('Ошибка входа: ' + error.message));
 }
 
 async function registerWithEmail() {
@@ -2749,7 +2758,6 @@ function openProfileModal() {
   document.getElementById('profile-firstname').value = data.firstName || '';
   document.getElementById('profile-lastname').value = data.lastName || '';
   document.getElementById('profile-email').value = currentUser.email || '';
-  document.getElementById('profile-birthdate').value = data.birthdate || '';
   document.getElementById('profile-gender').value = data.gender || '';
   document.getElementById('profile-new-password').value = '';
   document.getElementById('profile-confirm-password').value = '';
