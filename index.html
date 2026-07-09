@@ -759,6 +759,13 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <input type="password" id="profile-confirm-password" placeholder="Повторите" style="padding-right: 44px;">
 <button type="button" class="pwd-toggle" onclick="togglePassword('profile-confirm-password', this)">👁️</button>
 </div>
+<hr style="margin: 15px 0; border: none; border-top: 1px solid #444;">
+<div>
+<h3 style="color: #90caf9; font-size: 15px; margin-bottom: 10px;">📱 Мои устройства (макс. 2)</h3>
+<div id="profile-devices-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+<div style="color: #888; font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>
+</div>
+</div>
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn-main" onclick="saveProfile()" style="flex: 1; margin: 0; padding: 12px 8px;">💾 Сохранить</button>
 <button class="btn-secondary" onclick="closeModal('modal-profile')" style="flex: 1; margin: 0; padding: 12px 8px;">Отмена</button>
@@ -813,6 +820,191 @@ const db = firebase.firestore();
 let currentUser = null;
 let isAuthenticated = false;
 let authChecked = false;
+// === УПРАВЛЕНИЕ УСТРОЙСТВАМИ ===
+const MAX_DEVICES = 2;
+
+// Генерация уникального ID устройства (сохраняется в localStorage)
+function getDeviceId() {
+  let deviceId = localStorage.getItem('clc_device_id');
+  if (!deviceId) {
+    deviceId = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('clc_device_id', deviceId);
+  }
+  return deviceId;
+}
+
+// Получение понятного имени устройства по User-Agent
+function getDeviceName() {
+  const ua = navigator.userAgent;
+  let device = 'Неизвестное устройство';
+  if (/iPhone/i.test(ua)) device = 'iPhone';
+  else if (/iPad/i.test(ua)) device = 'iPad';
+  else if (/Android/i.test(ua)) {
+    const match = ua.match(/;\s*([^;)]+)\s*Build/);
+    device = match ? 'Android: ' + match[1].trim().substring(0, 20) : 'Android';
+  } else if (/Macintosh/i.test(ua)) device = 'Mac';
+  else if (/Windows/i.test(ua)) device = 'Windows PC';
+  else if (/Linux/i.test(ua)) device = 'Linux';
+  return device;
+}
+// === ФУНКЦИИ РАБОТЫ С УСТРОЙСТВАМИ В FIRESTORE ===
+
+// Регистрация текущего устройства в Firestore
+async function registerDeviceInFirestore(user) {
+  if (!db || !user) return [];
+  const deviceId = getDeviceId();
+  const deviceName = getDeviceName();
+  try {
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    const userData = userDoc.data() || {};
+    let devices = userData.devices || [];
+    
+    // Обновляем существующее устройство или добавляем новое
+    const existingIdx = devices.findIndex(d => d.id === deviceId);
+    if (existingIdx !== -1) {
+      devices[existingIdx].lastLogin = Date.now();
+      devices[existingIdx].name = deviceName;
+    } else {
+      devices.push({
+        id: deviceId,
+        name: deviceName,
+        lastLogin: Date.now()
+      });
+    }
+    
+    await db.collection('users').doc(user.uid).update({ devices });
+    return devices;
+  } catch (e) {
+    console.error('Ошибка регистрации устройства:', e);
+    return [];
+  }
+}
+
+// Удалить устройство из Firestore
+async function removeDeviceFromFirestore(userId, deviceId) {
+  if (!db) return [];
+  try {
+    const userDoc = await db.collection('users').doc(userId).get();
+    const userData = userDoc.data() || {};
+    let devices = userData.devices || [];
+    devices = devices.filter(d => d.id !== deviceId);
+    await db.collection('users').doc(userId).update({ devices });
+    return devices;
+  } catch (e) {
+    console.error('Ошибка удаления устройства:', e);
+    return [];
+  }
+}
+
+// Проверить лимит устройств и показать окно при необходимости
+async function checkDeviceLimit(user) {
+  if (!db) return true;
+  const deviceId = getDeviceId();
+  try {
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    const userData = userDoc.data() || {};
+    let devices = userData.devices || [];
+    
+    // Если это устройство уже зарегистрировано — всё ок
+    if (devices.find(d => d.id === deviceId)) return true;
+    
+    // Если мест нет — показываем окно выбора
+    if (devices.length >= MAX_DEVICES) {
+      const allowed = await showDeviceLimitModal(user, devices);
+      return allowed;
+    }
+    return true;
+  } catch (e) {
+    console.error('Ошибка проверки устройств:', e);
+    return true;
+  }
+}
+// === МОДАЛЬНОЕ ОКНО ЛИМИТА УСТРОЙСТВ ===
+
+// Показать модальное окно при превышении лимита устройств
+function showDeviceLimitModal(user, devices) {
+  return new Promise((resolve) => {
+    const currentDeviceId = getDeviceId();
+    const currentDeviceName = getDeviceName();
+    
+    // Удаляем старое окно, если есть
+    const oldContainer = document.getElementById('device-limit-container');
+    if (oldContainer) oldContainer.remove();
+    
+    const modalHtml = `
+      <div id="modal-device-limit" style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; padding:15px;">
+        <div class="modal-content" style="max-width: 440px;">
+          <h2 style="text-align:center; color:#ef5350; margin-bottom:15px;">⚠️ Лимит устройств</h2>
+          <p style="color:#ddd; margin-bottom:15px; line-height:1.5; font-size:14px;">
+            У вас уже используется <b>${MAX_DEVICES} устройства</b>.<br>
+            Чтобы войти с этого устройства, удалите одно из старых:
+          </p>
+          <div style="background: rgba(144, 202, 249, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+            <div style="font-size:12px; color:#888; margin-bottom:4px;">Текущее устройство:</div>
+            <div style="color:#90caf9; font-weight:bold;">📱 ${currentDeviceName}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;">
+            ${devices.map((d) => {
+              const lastDate = new Date(d.lastLogin).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+              return `
+                <button class="btn-danger" onclick="handleDeviceRemoval('${user.uid}', '${d.id}', this)" style="text-align:left; padding:12px; white-space:normal;">
+                  🗑️ <b>${d.name}</b><br>
+                  <span style="font-size:11px; opacity:0.8;">Последний вход: ${lastDate}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+          <button class="btn-secondary" onclick="cancelDeviceLimit()" style="width:100%;">Отмена входа</button>
+        </div>
+      </div>
+    `;
+    
+    // Сохраняем resolve для последующего вызова
+    window._deviceLimitResolve = resolve;
+    
+    const container = document.createElement('div');
+    container.id = 'device-limit-container';
+    container.innerHTML = modalHtml;
+    document.body.appendChild(container);
+  });
+}
+
+// Обработчик удаления устройства
+async function handleDeviceRemoval(userId, deviceId, btn) {
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Удаление...';
+  
+  const devices = await removeDeviceFromFirestore(userId, deviceId);
+  
+  // Если текущее устройство не в списке — регистрируем его
+  const currentDeviceId = getDeviceId();
+  if (!devices.find(d => d.id === currentDeviceId)) {
+    await registerDeviceInFirestore(firebase.auth().currentUser);
+  }
+  
+  // Закрываем окно лимита
+  const container = document.getElementById('device-limit-container');
+  if (container) container.remove();
+  
+  if (window._deviceLimitResolve) {
+    window._deviceLimitResolve(true);
+    window._deviceLimitResolve = null;
+  }
+}
+
+// Отмена входа
+function cancelDeviceLimit() {
+  const container = document.getElementById('device-limit-container');
+  if (container) container.remove();
+  
+  if (window._deviceLimitResolve) {
+    window._deviceLimitResolve(false);
+    window._deviceLimitResolve = null;
+  }
+  
+  // Выходим из аккаунта
+  auth.signOut();
+}
 function formatDate(dateString) { const date = new Date(dateString); const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']; return `${date.getDate()} ${months[date.getMonth()]}`; }
 function formatSetlistDate(dateString, timeString) { let result = formatDate(dateString); if (timeString) result += `, ${timeString}`; return result; }
 function getCurrentDate() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
@@ -2592,55 +2784,85 @@ function compressProfileImage(file, callback) {
   };
   reader.readAsDataURL(file);
 }
-
+let isHandlingAuth = false;  // Защита от повторных вызовов onAuthStateChanged
 auth.onAuthStateChanged(async (user) => {
-authChecked = true;
-if (user) {
-if (!user.emailVerified) {
-const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-if (!isGoogleUser) {
-alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-auth.signOut();
-return;
-}
-}
-currentUser = user;
-isAuthenticated = true;
-await loadUserProfileFromFirestore(user);
-closeModal('modal-auth');
-updateUserAvatar();
-
-// Перестраиваем карусель с командами
-buildCarouselItems();
-renderCarousel();
-
-// Восстанавливаем позицию карусели
-const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
-if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
-carouselActiveIndex = savedState.carouselIdx;
-} else {
-carouselActiveIndex = 0;
-}
-activateCarouselItem(carouselActiveIndex);
-
-} else {
-currentUser = null;
-isAuthenticated = false;
-updateUserAvatar();
-
-// Перестраиваем карусель БЕЗ команд
-buildCarouselItems();
-renderCarousel();
-
-// Возвращаемся на первую вкладку
-carouselActiveIndex = 0;
-activateCarouselItem(0);
-
-if (!localStorage.getItem('clc_auth_shown')) {
-showAuthModal();
-localStorage.setItem('clc_auth_shown', 'true');
-}
-}
+  // Защита от параллельных вызовов
+  if (isHandlingAuth) {
+    console.log('⏳ Обработка авторизации уже идёт, пропускаем');
+    return;
+  }
+  isHandlingAuth = true;
+  
+  try {
+    authChecked = true;
+    if (user) {
+      if (!user.emailVerified) {
+        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+        if (!isGoogleUser) {
+          alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+          await auth.signOut();
+          return;
+        }
+      }
+      
+      // ⬇️ НОВОЕ: Проверяем лимит устройств
+      const allowed = await checkDeviceLimit(user);
+      if (!allowed) {
+        // Пользователь отменил вход или ещё выбирает устройство
+        return;
+      }
+      
+      currentUser = user;
+      isAuthenticated = true;
+      
+      // ⬇️ НОВОЕ: Регистрируем текущее устройство
+      await registerDeviceInFirestore(user);
+      
+      // Параллельно загружаем профиль и команды (если есть syncTeamsFromCloud)
+      const loadTasks = [loadUserProfileFromFirestore(user)];
+      if (typeof syncTeamsFromCloud === 'function') {
+        loadTasks.push(syncTeamsFromCloud());
+      }
+      await Promise.all(loadTasks);
+      
+      closeModal('modal-auth');
+      updateUserAvatar();
+      
+      // Перестраиваем карусель с командами
+      buildCarouselItems();
+      renderCarousel();
+      
+      // Восстанавливаем позицию карусели
+      const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
+      if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
+        carouselActiveIndex = savedState.carouselIdx;
+      } else {
+        carouselActiveIndex = 0;
+      }
+      activateCarouselItem(carouselActiveIndex);
+    } else {
+      currentUser = null;
+      isAuthenticated = false;
+      updateUserAvatar();
+      
+      // Перестраиваем карусель БЕЗ команд
+      buildCarouselItems();
+      renderCarousel();
+      
+      // Возвращаемся на первую вкладку
+      carouselActiveIndex = 0;
+      activateCarouselItem(0);
+      
+      if (!localStorage.getItem('clc_auth_shown')) {
+        showAuthModal();
+        localStorage.setItem('clc_auth_shown', 'true');
+      }
+    }
+  } catch (e) {
+    console.error('Ошибка в onAuthStateChanged:', e);
+  } finally {
+    isHandlingAuth = false;
+  }
 });
 
 async function loadUserProfileFromFirestore(user) {
@@ -3150,6 +3372,9 @@ removeBtn.style.display = 'block';
 preview.innerHTML = '👤';
 removeBtn.style.display = 'none';
 }
+// ⬇️ НОВОЕ: Загружаем список устройств
+loadProfileDevices();
+
 document.getElementById('modal-profile').classList.add('show');
 }
 
@@ -3371,6 +3596,72 @@ function handleAuthButton() {
     showAuthModal();
   } else {
     openProfileModal();
+  }
+}
+// === УПРАВЛЕНИЕ УСТРОЙСТВАМИ В ПРОФИЛЕ ===
+
+// Загрузить список устройств пользователя
+async function loadProfileDevices() {
+  const listEl = document.getElementById('profile-devices-list');
+  if (!listEl || !currentUser || !db) {
+    if (listEl) listEl.innerHTML = '<div style="color: #888; font-size: 13px; text-align: center;">Нет данных</div>';
+    return;
+  }
+  
+  listEl.innerHTML = '<div style="color: #888; font-size: 13px; text-align: center;">Загрузка...</div>';
+  
+  try {
+    const userDoc = await db.collection('users').doc(currentUser.uid).get();
+    const userData = userDoc.data() || {};
+    const devices = userData.devices || [];
+    const currentDeviceId = getDeviceId();
+    
+    if (devices.length === 0) {
+      listEl.innerHTML = '<div style="color: #888; font-size: 13px; text-align: center; padding: 10px;">Нет зарегистрированных устройств</div>';
+      return;
+    }
+    
+    listEl.innerHTML = devices.map(d => {
+      const isCurrent = d.id === currentDeviceId;
+      const lastDate = d.lastLogin ? new Date(d.lastLogin).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+      const canDelete = devices.length > 1; // Нельзя удалить последнее устройство
+      
+      return `
+        <div style="display:flex; align-items:center; gap:10px; padding:10px; background:rgba(144,202,249,0.08); border-radius:8px; ${isCurrent ? 'border:1px solid rgba(144,202,249,0.4);' : 'border:1px solid transparent;'}">
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:bold; color:#eee; font-size:14px; word-break: break-word;">
+              ${isCurrent ? '📱' : '💻'} ${escapeHtml(d.name || 'Устройство')}
+              ${isCurrent ? '<span style="color:#4caf50; font-size:11px; margin-left:6px;">(текущее)</span>' : ''}
+            </div>
+            <div style="font-size:11px; color:#888; margin-top:2px;">Последний вход: ${lastDate}</div>
+          </div>
+          ${!isCurrent && canDelete ? `
+            <button class="btn-icon" onclick="removeDeviceFromProfile('${d.id}')" style="color:#ef5350; flex-shrink:0;" title="Удалить устройство">🗑️</button>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+  } catch (e) {
+    console.error('Ошибка загрузки устройств:', e);
+    listEl.innerHTML = '<div style="color: #ef5350; font-size: 13px; text-align: center;">Ошибка загрузки</div>';
+  }
+}
+
+// Удалить устройство из профиля
+async function removeDeviceFromProfile(deviceId) {
+  if (!confirm('Удалить это устройство?\nПосле удаления потребуется повторный вход на нём.')) return;
+  
+  const listEl = document.getElementById('profile-devices-list');
+  if (listEl) listEl.innerHTML = '<div style="color: #888; font-size: 13px; text-align: center;">Удаление...</div>';
+  
+  try {
+    await removeDeviceFromFirestore(currentUser.uid, deviceId);
+    await loadProfileDevices(); // Перезагружаем список
+    alert('✅ Устройство удалено');
+  } catch (e) {
+    console.error('Ошибка удаления устройства:', e);
+    alert('❌ Ошибка удаления: ' + e.message);
+    await loadProfileDevices();
   }
 }
 // Добавить кнопку "Пользователи" в команду
