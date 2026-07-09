@@ -367,7 +367,7 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 .cropper-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #1e1e1e; color: white; }
 .cropper-header h3 { margin: 0; font-size: 16px; color: #90caf9; }
 .cropper-canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #111; }
-.cropper-canvas-wrap canvas { max-width: 100%; max-height: 100%; touch-action: none; -webkit-user-select: none; user-select: none; }
+.cropper-canvas-wrap canvas { max-width: 100%; max-height: 100%; touch-action: none; }
 .cropper-circle-mask { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 260px; height: 260px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 9999px rgba(0,0,0,0.6); pointer-events: none; }
 .cropper-controls { padding: 16px; background: #1e1e1e; display: flex; flex-direction: column; gap: 12px; }
 .cropper-zoom-row { display: flex; align-items: center; gap: 12px; color: white; }
@@ -759,10 +759,10 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <input type="password" id="profile-confirm-password" placeholder="Повторите" style="padding-right: 44px;">
 <button type="button" class="pwd-toggle" onclick="togglePassword('profile-confirm-password', this)">👁️</button>
 </div>
-<div class="modal-actions" style="margin-top: 20px;">
-<button class="btn-danger" onclick="logout()" style="margin-right: auto;">🚪 Выйти</button>
-<button class="btn-secondary" onclick="closeModal('modal-profile')">Отмена</button>
-<button class="btn-main" style="width: auto; margin: 0;" onclick="saveProfile()">💾 Сохранить</button>
+<div style="display: flex; gap: 10px; margin-top: 20px;">
+<button class="btn-main" onclick="saveProfile()" style="flex: 1; margin: 0; padding: 12px 8px;">💾 Сохранить</button>
+<button class="btn-secondary" onclick="closeModal('modal-profile')" style="flex: 1; margin: 0; padding: 12px 8px;">Отмена</button>
+<button class="btn-danger" onclick="logout()" style="flex: 1; margin: 0; padding: 12px 8px;">🚪 Выйти</button>
 </div>
 </div>
 </div>
@@ -813,127 +813,6 @@ const db = firebase.firestore();
 let currentUser = null;
 let isAuthenticated = false;
 let authChecked = false;
-let currentSessionId = null;
-let sessionHeartbeatInterval = null;
-const MAX_SESSIONS = 3;
-function getDeviceId() {
-let id = localStorage.getItem('clc_device_id');
-if (!id) {
-id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 8);
-localStorage.setItem('clc_device_id', id);
-}
-return id;
-}
-async function registerSession(uid) {
-const deviceId = getDeviceId();
-const now = Date.now();
-const sessionsSnap = await db.collection('sessions').where('uid', '==', uid).get();
-// Удаляем устаревшие сессии (> 24 часов)
-const staleIds = [];
-sessionsSnap.forEach(doc => {
-const data = doc.data();
-const t = data.lastActive?.toMillis?.() || 0;
-if (t && (now - t) > 24 * 60 * 60 * 1000) {
-staleIds.push(doc.id);
-}
-});
-for (const sid of staleIds) {
-try { await db.collection('sessions').doc(sid).delete(); } catch(e) {}
-}
-// Пересчитываем
-const freshSnap = await db.collection('sessions').where('uid', '==', uid).get();
-if (freshSnap.size >= MAX_SESSIONS) {
-let oldestId = null, oldestTime = Infinity;
-freshSnap.forEach(doc => {
-const data = doc.data();
-const t = data.lastActive?.toMillis?.() || 0;
-if (data.deviceId !== deviceId && t < oldestTime) {
-oldestTime = t;
-oldestId = doc.id;
-}
-});
-if (oldestId) {
-try { await db.collection('sessions').doc(oldestId).delete(); } catch(e) {}
-} else {
-alert(`⚠️ Превышен лимит устройств (${MAX_SESSIONS}). Выйдите на одном из устройств.`);
-return false;
-}
-}
-// Создаём сессию
-const sessionRef = db.collection('sessions').doc(uid + '_' + deviceId);
-await sessionRef.set({
-uid: uid,
-deviceId: deviceId,
-lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-userAgent: navigator.userAgent.substring(0, 100),
-createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-currentSessionId = sessionRef.id;
-sessionRef.onDisconnect().delete();
-// Heartbeat каждые 5 минут
-if (sessionHeartbeatInterval) clearInterval(sessionHeartbeatInterval);
-sessionHeartbeatInterval = setInterval(() => {
-if (currentSessionId) {
-db.collection('sessions').doc(currentSessionId).update({
-lastActive: firebase.firestore.FieldValue.serverTimestamp()
-}).catch(() => {});
-}
-}, 5 * 60 * 1000);
-return true;
-}
-async function unregisterSession() {
-if (sessionHeartbeatInterval) {
-clearInterval(sessionHeartbeatInterval);
-sessionHeartbeatInterval = null;
-}
-if (currentSessionId && db) {
-try {
-const ref = db.collection('sessions').doc(currentSessionId);
-await ref.delete().catch(() => {});
-ref.onDisconnect().cancel().catch(() => {});
-} catch(e) {}
-currentSessionId = null;
-}
-}
-let teamsLoadedFromFirestore = false;
-async function loadTeamsFromFirestore() {
-if (!db || !currentUser) return;
-try {
-const snap = await db.collection('users').doc(currentUser.uid).collection('teams').get();
-const firestoreTeams = [];
-snap.forEach(doc => {
-firestoreTeams.push({ id: doc.id, ...doc.data() });
-});
-const localTeams = JSON.parse(localStorage.getItem('clc_teams') || '[]');
-const merged = new Map();
-localTeams.forEach(t => merged.set(t.id, t));
-firestoreTeams.forEach(t => merged.set(t.id, t));
-teams = Array.from(merged.values());
-localStorage.setItem('clc_teams', JSON.stringify(teams));
-teamsLoadedFromFirestore = true;
-} catch (e) {
-console.error('Ошибка загрузки команд:', e);
-}
-}
-async function saveTeamToFirestore(team) {
-if (!db || !currentUser || !team) return;
-try {
-await db.collection('users').doc(currentUser.uid).collection('teams').doc(team.id).set({
-name: team.name,
-password: team.password || '',
-avatar: team.avatar || null,
-createdAt: team.createdAt || Date.now(),
-joinedByLink: team.joinedByLink || false,
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-} catch (e) { console.error('Ошибка сохранения команды:', e); }
-}
-async function deleteTeamFromFirestore(teamId) {
-if (!db || !currentUser) return;
-try {
-await db.collection('users').doc(currentUser.uid).collection('teams').doc(teamId).delete();
-} catch (e) { console.error('Ошибка удаления команды:', e); }
-}
 function formatDate(dateString) { const date = new Date(dateString); const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']; return `${date.getDate()} ${months[date.getMonth()]}`; }
 function formatSetlistDate(dateString, timeString) { let result = formatDate(dateString); if (timeString) result += `, ${timeString}`; return result; }
 function getCurrentDate() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
@@ -1014,25 +893,24 @@ reader.readAsDataURL(file);
 }
 
 function buildCarouselItems() {
-carouselItems = [
-{ id: 'songs',    type: 'songs',    label: 'Песни',      icon: '🎵' },
-{ id: 'setlists', type: 'setlists', label: 'Сет-листы',  icon: '📋' }
-];
-
-// Команды видны ТОЛЬКО авторизованным пользователям
-if (isAuthenticated) {
-carouselItems.push({ id: 'teams', type: 'teams', label: 'Команды', icon: '👥' });
-teams.forEach(t => {
-carouselItems.push({
-id: 'team_' + t.id,
-type: 'team',
-teamId: t.id,
-label: t.name,
-icon: '🎸',
-avatar: t.avatar || null
-});
-});
-}
+  carouselItems = [
+    { id: 'songs',    type: 'songs',    label: 'Песни',      icon: '🎵' },
+    { id: 'setlists', type: 'setlists', label: 'Сет-листы',  icon: '📋' },
+    { id: 'teams', type: 'teams', label: 'Команды', icon: '👥' }
+  ];
+  // Отдельные команды добавляются ТОЛЬКО для авторизованных пользователей
+  if (isAuthenticated) {
+    teams.forEach(t => {
+      carouselItems.push({
+        id: 'team_' + t.id,
+        type: 'team',
+        teamId: t.id,
+        label: t.name,
+        icon: '🎸',
+        avatar: t.avatar || null
+      });
+    });
+  }
 }
 function escapeHtml(str) {
 return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1267,17 +1145,38 @@ activateCarouselItem(carouselActiveIndex);
 }
 }
 function showTeamsView() {
-const view = document.getElementById('home-view-teams');
-view.style.display = 'block';
-let html = `<div style="padding: 10px 0;">
-<div style="text-align: center; margin-bottom: 20px;">
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-<button class="btn-pastel" style="margin: 0;" onclick="createTeamPrompt()">➕ Создать команду</button>
-<button class="btn-pastel" style="margin: 0;" onclick="showJoinTeamByLinkModal()">🔗 Присоединиться к команде</button>
-</div>
-<p style="color: #888; font-size: 12px; margin-top: 10px;">Создано: ${teams.length} / ${MAX_TEAMS}</p>
-</div>`;
-if (teams.length === 0) {
+  const view = document.getElementById('home-view-teams');
+  view.style.display = 'block';
+  
+  // Если пользователь не авторизован - показываем сообщение
+  if (!isAuthenticated) {
+    view.innerHTML = `
+      <div style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 64px; margin-bottom: 20px;">🔐</div>
+        <h2 style="color: #90caf9; margin-bottom: 15px;">Вход в аккаунт</h2>
+        <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
+          Для работы с командами необходимо войти в аккаунт.<br>
+          Вы сможете создавать команды и делиться сет-листами.
+        </p>
+        <button class="btn-main" onclick="showAuthModal()" style="max-width: 300px; margin: 0 auto;">
+          🔑 Войти в аккаунт
+        </button>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = `<div style="padding: 10px 0;">
+  <div style="text-align: center; margin-bottom: 20px;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+  <button class="btn-pastel" style="margin: 0;" onclick="createTeamPrompt()">➕ Создать команду</button>
+  <button class="btn-pastel" style="margin: 0;" onclick="showJoinTeamByLinkModal()">🔗 Присоединиться к команде</button>
+  </div>
+  <p style="color: #888; font-size: 12px; margin-top: 10px;">Создано: ${teams.length} / ${MAX_TEAMS}</p>
+  </div>`;
+  
+  if (teams.length === 0) {
+    // ... остальной код остается без изменений
 html += `<div style="text-align: center; padding: 30px 20px; color: #888;">
 <div style="font-size: 48px; margin-bottom: 15px;">👥</div>
 <p>У вас пока нет команд</p>
@@ -1368,58 +1267,53 @@ container.innerHTML = '<div class="team-avatar-edit-placeholder">🎸</div><div 
 document.getElementById('modal-team-edit').classList.add('show');
 }
 function saveTeamEdit() {
-const newName = document.getElementById('team-edit-name').value.trim();
-const newPassword = document.getElementById('team-edit-password').value.trim();
-if (!newName) { alert('❌ Введите название команды!'); return; }
-
-function finalizeSave(avatarData) {
-if (editingTeamId) {
-const team = teams.find(t => t.id === editingTeamId);
-if (team) {
-team.name = newName;
-team.password = newPassword;
-if (avatarData !== undefined) team.avatar = avatarData;
-saveTeamToFirestore(team);
-}
-} else {
-const id = 'team_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-const newTeam = {
-id,
-name: newName,
-password: newPassword,
-avatar: avatarData || null,
-createdAt: Date.now()
-};
-teams.push(newTeam);
-saveTeamToFirestore(newTeam);
-}
-saveToStorage();
-closeModal('modal-team-edit');
-renderCarousel();
-showTeamsView();
-}
-
-const avatarInput = document.getElementById('team-edit-avatar');
-if (avatarInput.files && avatarInput.files[0]) {
-compressTeamImage(avatarInput.files[0], finalizeSave);
-} else {
-finalizeSave(undefined);
-}
-}
-function deleteTeam(teamId) {
-const team = teams.find(t => t.id === teamId);
-if (!team) return;
-if (!confirm(`Удалить команду "${team.name}"?\nСет-листы команды останутся в вашем личном архиве.`)) return;
-teams = teams.filter(t => t.id !== teamId);
-setlists.forEach(sl => { if (sl.teamId === teamId) delete sl.teamId; });
-deleteTeamFromFirestore(teamId);
-saveToStorage();
-if (currentHomeView === 'team_' + teamId) {
-setCarouselIndex(2, true);
-} else {
-renderCarousel();
-showTeamsView();
-}
+  const newName = document.getElementById('team-edit-name').value.trim();
+  const newPassword = document.getElementById('team-edit-password').value.trim();
+  if (!newName) { alert('❌ Введите название команды!'); return; }
+  
+  async function finalizeSave(avatarData) {
+    if (editingTeamId) {
+      const team = teams.find(t => t.id === editingTeamId);
+      if (team) {
+        team.name = newName;
+        team.password = newPassword;
+        if (avatarData !== undefined) team.avatar = avatarData;
+        // Сохраняем в Firestore если авторизован
+        if (isAuthenticated && typeof saveTeamToFirestore === 'function') {
+          try { await saveTeamToFirestore(team); }
+          catch (e) { console.error('Ошибка сохранения команды:', e); }
+        }
+      }
+    } else {
+      const id = 'team_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+      const newTeam = {
+        id,
+        name: newName,
+        password: newPassword,
+        avatar: avatarData || null,
+        ownerId: currentUser ? currentUser.uid : null,
+        members: currentUser ? [currentUser.uid] : [],
+        createdAt: Date.now()
+      };
+      teams.push(newTeam);
+      // Сохраняем в Firestore если авторизован
+      if (isAuthenticated && typeof saveTeamToFirestore === 'function') {
+        try { await saveTeamToFirestore(newTeam); }
+        catch (e) { console.error('Ошибка сохранения команды:', e); }
+      }
+    }
+    saveToStorage();
+    closeModal('modal-team-edit');
+    renderCarousel();
+    showTeamsView();
+  }
+  
+  const avatarInput = document.getElementById('team-edit-avatar');
+  if (avatarInput.files && avatarInput.files[0]) {
+    compressTeamImage(avatarInput.files[0], finalizeSave);
+  } else {
+    finalizeSave(undefined);
+  }
 }
 function showTeamInvite(teamId) {
 const team = teams.find(t => t.id === teamId);
@@ -1526,16 +1420,14 @@ return;
 }
 const name = prompt('Название команды (уточните у отправителя):');
 if (!name || !name.trim()) return;
-const newTeam = {
+teams.push({
 id: teamId,
 name: name.trim(),
 password: password,
 avatar: null,
 createdAt: Date.now(),
 joinedByLink: true
-};
-teams.push(newTeam);
-saveTeamToFirestore(newTeam);
+});
 saveToStorage();
 closeModal('modal-join-team-link');
 renderCarousel();
@@ -2712,15 +2604,9 @@ auth.signOut();
 return;
 }
 }
-const sessionOk = await registerSession(user.uid);
-if (!sessionOk) {
-await auth.signOut();
-return;
-}
 currentUser = user;
 isAuthenticated = true;
 await loadUserProfileFromFirestore(user);
-await loadTeamsFromFirestore();
 closeModal('modal-auth');
 updateUserAvatar();
 
@@ -2758,53 +2644,15 @@ localStorage.setItem('clc_auth_shown', 'true');
 });
 
 async function loadUserProfileFromFirestore(user) {
-if (!db) return;
-try {
-const doc = await db.collection('users').doc(user.uid).get();
-if (doc.exists) {
-currentUser.profileData = doc.data();
-fillProfileForm(currentUser.profileData);
-} else {
-currentUser.profileData = {
-username: user.email ? user.email.split('@')[0] : '',
-firstName: user.displayName?.split(' ')[0] || '',
-lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-email: user.email,
-photoURL: user.photoURL || null
-};
-}
-} catch (e) { console.error('Ошибка загрузки профиля:', e); }
-}
-function fillProfileForm(data) {
-if (!data) return;
-const u = document.getElementById('profile-username');
-const fn = document.getElementById('profile-firstname');
-const ln = document.getElementById('profile-lastname');
-const g = document.getElementById('profile-gender');
-const bm = document.getElementById('profile-birthday-month');
-if (u) u.value = data.username || '';
-if (fn) fn.value = data.firstName || '';
-if (ln) ln.value = data.lastName || '';
-if (g) g.value = data.gender || '';
-if (bm) {
-bm.value = data.birthdayMonth || '';
-updateBirthdayDays(data.birthdayMonth, data.birthdayDay);
-const bd = document.getElementById('profile-birthday-day');
-if (bd && data.birthdayDay) bd.value = data.birthdayDay;
-}
-const avatarUrl = data.photoURL || currentUser?.photoURL;
-const preview = document.getElementById('profile-avatar-preview');
-const removeBtn = document.getElementById('profile-remove-avatar-btn');
-profileAvatarData = avatarUrl;
-if (preview) {
-if (avatarUrl) {
-preview.innerHTML = `<img src="${avatarUrl}" alt="">`;
-if (removeBtn) removeBtn.style.display = 'block';
-} else {
-preview.innerHTML = '👤';
-if (removeBtn) removeBtn.style.display = 'none';
-}
-}
+  if (!db) return;
+  try {
+    const doc = await db.collection('users').doc(user.uid).get();
+    if (doc.exists) {
+      currentUser.profileData = doc.data();
+    } else {
+      await saveUserProfile(user);
+    }
+  } catch (e) { console.error('Ошибка загрузки профиля:', e); }
 }
 
 function showAuthModal() {
@@ -3081,14 +2929,13 @@ function resendVerificationEmail() {
     .catch((err) => alert('Ошибка: ' + err.message));
 }
 
-async function logout() {
-if (confirm('Выйти из аккаунта?')) {
-await unregisterSession();
-auth.signOut();
-localStorage.removeItem('clc_auth_shown');
-closeModal('modal-profile');
-location.reload();
-}
+function logout() {
+  if (confirm('Выйти из аккаунта?')) {
+    auth.signOut();
+    localStorage.removeItem('clc_auth_shown');
+    closeModal('modal-profile');
+    location.reload();
+  }
 }
 
 async function saveUserProfile(user) {
@@ -3102,6 +2949,161 @@ async function saveUserProfile(user) {
   } catch (e) { console.error(e); }
 }
 
+// === СИНХРОНИЗАЦИЯ КОМАНД ЧЕРЕZ FIRESTORE ===
+
+// Сохранить команду в Firestore
+async function saveTeamToFirestore(team) {
+  if (!db || !currentUser) return;
+  try {
+    await db.collection('teams').doc(team.id).set({
+      id: team.id,
+      name: team.name,
+      password: team.password || '',
+      avatar: team.avatar || null,
+      ownerId: currentUser.uid,
+      members: team.members || [currentUser.uid],
+      createdAt: team.createdAt || Date.now()
+    }, { merge: true });
+  } catch (e) { console.error('Ошибка сохранения команды:', e); }
+}
+
+// Удалить команду из Firestore
+async function deleteTeamFromFirestore(teamId) {
+  if (!db || !currentUser) return;
+  try {
+    // Удаляем все сет-листы команды
+    const setlistsSnap = await db.collection('teams').doc(teamId).collection('setlists').get();
+    const batch = db.batch();
+    setlistsSnap.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+    // Удаляем саму команду
+    await db.collection('teams').doc(teamId).delete();
+  } catch (e) { console.error('Ошибка удаления команды:', e); }
+}
+
+// Загрузить все команды пользователя из Firestore
+async function loadTeamsFromFirestore() {
+  if (!db || !currentUser) return;
+  try {
+    // Команды, где пользователь владелец ИЛИ участник
+    const ownedSnap = await db.collection('teams')
+      .where('ownerId', '==', currentUser.uid)
+      .get();
+    const memberSnap = await db.collection('teams')
+      .where('members', 'array-contains', currentUser.uid)
+      .get();
+    
+    const teamsMap = new Map();
+    ownedSnap.forEach(doc => teamsMap.set(doc.id, doc.data()));
+    memberSnap.forEach(doc => teamsMap.set(doc.id, doc.data()));
+    
+    // Загружаем сет-листы для каждой команды
+    const loadedTeams = [];
+    for (const [teamId, teamData] of teamsMap) {
+      const slSnap = await db.collection('teams').doc(teamId).collection('setlists').get();
+      const teamSetlists = [];
+      slSnap.forEach(doc => {
+        const data = doc.data();
+        teamSetlists.push({
+          id: data.id,
+          date: data.date,
+          time: data.time || '',
+          name: data.name,
+          isArchived: data.isArchived || false,
+          teamId: teamId,
+          songs: data.songs || [],
+          sharedAt: data.sharedAt || null,
+          hasChanges: data.hasChanges || false
+        });
+      });
+      loadedTeams.push({
+        id: teamData.id,
+        name: teamData.name,
+        password: teamData.password || '',
+        avatar: teamData.avatar || null,
+        ownerId: teamData.ownerId,
+        members: teamData.members || [],
+        createdAt: teamData.createdAt,
+        setlists: teamSetlists
+      });
+    }
+    return loadedTeams;
+  } catch (e) {
+    console.error('Ошибка загрузки команд:', e);
+    return [];
+  }
+}
+
+// Сохранить сет-лист команды в Firestore
+async function saveTeamSetlistToFirestore(teamId, setlist) {
+  if (!db || !currentUser) return;
+  try {
+    await db.collection('teams').doc(teamId).collection('setlists').doc(String(setlist.id)).set({
+      id: setlist.id,
+      date: setlist.date,
+      time: setlist.time || '',
+      name: setlist.name,
+      isArchived: setlist.isArchived || false,
+      songs: setlist.songs || [],
+      sharedAt: setlist.sharedAt || null,
+      hasChanges: setlist.hasChanges || false
+    }, { merge: true });
+  } catch (e) { console.error('Ошибка сохранения сет-листа команды:', e); }
+}
+
+// Удалить сет-лист команды из Firestore
+async function deleteTeamSetlistFromFirestore(teamId, setlistId) {
+  if (!db || !currentUser) return;
+  try {
+    await db.collection('teams').doc(teamId).collection('setlists').doc(String(setlistId)).delete();
+  } catch (e) { console.error('Ошибка удаления сет-листа команды:', e); }
+}
+
+// Полная синхронизация: загрузить команды и их сет-листы
+async function syncTeamsFromCloud() {
+  const cloudTeams = await loadTeamsFromFirestore();
+  // Объединяем с локальными (чтобы не потерять несохранённые)
+  cloudTeams.forEach(ct => {
+    const localIdx = teams.findIndex(t => t.id === ct.id);
+    if (localIdx === -1) {
+      // Новая команда из облака — добавляем
+      teams.push({
+        id: ct.id,
+        name: ct.name,
+        password: ct.password,
+        avatar: ct.avatar,
+        ownerId: ct.ownerId,
+        members: ct.members,
+        createdAt: ct.createdAt
+      });
+      // Добавляем сет-листы команды
+      ct.setlists.forEach(sl => {
+        if (!setlists.find(s => s.id === sl.id)) {
+          setlists.push(sl);
+        }
+      });
+    } else {
+      // Команда уже есть локально — обновляем данные
+      teams[localIdx].name = ct.name;
+      teams[localIdx].avatar = ct.avatar;
+      teams[localIdx].password = ct.password;
+      teams[localIdx].members = ct.members;
+      // Синхронизируем сет-листы
+      ct.setlists.forEach(csl => {
+        const localSl = setlists.find(s => s.id === csl.id);
+        if (!localSl) {
+          setlists.push(csl);
+        } else {
+          // Обновляем существующий
+          Object.assign(localSl, csl);
+        }
+      });
+    }
+  });
+  saveToStorage();
+  renderCarousel();
+  activateCarouselItem(carouselActiveIndex);
+}
 function updateUserAvatar() {
   const btn = document.getElementById('user-avatar-btn');
   if (!btn) return;
@@ -3123,11 +3125,31 @@ function updateUserAvatar() {
 
 function openProfileModal() {
 if (!currentUser) return;
-fillProfileForm(currentUser.profileData || {});
+const data = currentUser.profileData || {};
+document.getElementById('profile-username').value = data.username || '';
+document.getElementById('profile-firstname').value = data.firstName || '';
+document.getElementById('profile-lastname').value = data.lastName || '';
 document.getElementById('profile-email').value = currentUser.email || '';
+document.getElementById('profile-gender').value = data.gender || '';
+document.getElementById('profile-birthday-month').value = data.birthdayMonth || '';
 document.getElementById('profile-new-password').value = '';
 document.getElementById('profile-confirm-password').value = '';
+
+// Заполняем дни в зависимости от месяца
+updateBirthdayDays(data.birthdayMonth, data.birthdayDay);
+
+const avatarUrl = data.photoURL || currentUser.photoURL;
+const preview = document.getElementById('profile-avatar-preview');
+const removeBtn = document.getElementById('profile-remove-avatar-btn');
+profileAvatarData = avatarUrl;
 profileAvatarFile = null;
+if (avatarUrl) {
+preview.innerHTML = `<img src="${avatarUrl}" alt="">`;
+removeBtn.style.display = 'block';
+} else {
+preview.innerHTML = '👤';
+removeBtn.style.display = 'none';
+}
 document.getElementById('modal-profile').classList.add('show');
 }
 
@@ -3202,74 +3224,76 @@ function drawCropper() {
 }
 
 function setupCropperEvents() {
-const canvas = document.getElementById('cropper-canvas');
-const zoomSlider = document.getElementById('cropper-zoom');
-zoomSlider.addEventListener('input', function() {
-cropperScale = parseFloat(this.value);
-drawCropper();
-});
-// Touch
-canvas.addEventListener('touchstart', function(e) {
-e.preventDefault();
-if (e.touches.length === 1) {
-cropperDragging = true;
-cropperLastX = e.touches[0].clientX;
-cropperLastY = e.touches[0].clientY;
-} else if (e.touches.length === 2) {
-cropperDragging = false;
-cropperLastPinchDist = getTouchDist(e.touches);
-}
-}, { passive: false });
-canvas.addEventListener('touchmove', function(e) {
-e.preventDefault();
-if (e.touches.length === 1 && cropperDragging) {
-const dx = e.touches[0].clientX - cropperLastX;
-const dy = e.touches[0].clientY - cropperLastY;
-cropperOffsetX += dx;
-cropperOffsetY += dy;
-cropperLastX = e.touches[0].clientX;
-cropperLastY = e.touches[0].clientY;
-drawCropper();
-} else if (e.touches.length === 2) {
-const dist = getTouchDist(e.touches);
-const delta = dist / cropperLastPinchDist;
-cropperScale = Math.max(0.3, Math.min(3, cropperScale * delta));
-cropperLastPinchDist = dist;
-zoomSlider.value = cropperScale;
-drawCropper();
-}
-}, { passive: false });
-canvas.addEventListener('touchend', function(e) {
-e.preventDefault();
-cropperDragging = false;
-}, { passive: false });
-canvas.addEventListener('touchcancel', function() { cropperDragging = false; });
-// Mouse
-canvas.addEventListener('mousedown', function(e) {
-e.preventDefault();
-cropperDragging = true;
-cropperLastX = e.clientX;
-cropperLastY = e.clientY;
-});
-canvas.addEventListener('mousemove', function(e) {
-if (!cropperDragging) return;
-const dx = e.clientX - cropperLastX;
-const dy = e.clientY - cropperLastY;
-cropperOffsetX += dx;
-cropperOffsetY += dy;
-cropperLastX = e.clientX;
-cropperLastY = e.clientY;
-drawCropper();
-});
-canvas.addEventListener('mouseup', function() { cropperDragging = false; });
-canvas.addEventListener('mouseleave', function() { cropperDragging = false; });
-canvas.addEventListener('wheel', function(e) {
-e.preventDefault();
-const delta = e.deltaY > 0 ? 0.9 : 1.1;
-cropperScale = Math.max(0.3, Math.min(3, cropperScale * delta));
-zoomSlider.value = cropperScale;
-drawCropper();
-}, { passive: false });
+  const canvas = document.getElementById('cropper-canvas');
+  const zoomSlider = document.getElementById('cropper-zoom');
+
+  // Зум слайдером
+  zoomSlider.addEventListener('input', function() {
+    cropperScale = parseFloat(this.value);
+    drawCropper();
+  });
+
+  // Touch события
+  canvas.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 1) {
+      cropperDragging = true;
+      cropperLastX = e.touches[0].clientX;
+      cropperLastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      cropperDragging = false;
+      cropperLastPinchDist = getTouchDist(e.touches);
+    }
+  }, { passive: true });
+
+  canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (e.touches.length === 1 && cropperDragging) {
+      const dx = e.touches[0].clientX - cropperLastX;
+      const dy = e.touches[0].clientY - cropperLastY;
+      cropperOffsetX += dx;
+      cropperOffsetY += dy;
+      cropperLastX = e.touches[0].clientX;
+      cropperLastY = e.touches[0].clientY;
+      drawCropper();
+    } else if (e.touches.length === 2) {
+      const dist = getTouchDist(e.touches);
+      const delta = dist / cropperLastPinchDist;
+      cropperScale = Math.max(0.3, Math.min(3, cropperScale * delta));
+      cropperLastPinchDist = dist;
+      zoomSlider.value = cropperScale;
+      drawCropper();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', function() { cropperDragging = false; });
+
+  // Mouse события (для ПК)
+  canvas.addEventListener('mousedown', function(e) {
+    cropperDragging = true;
+    cropperLastX = e.clientX;
+    cropperLastY = e.clientY;
+  });
+  canvas.addEventListener('mousemove', function(e) {
+    if (!cropperDragging) return;
+    const dx = e.clientX - cropperLastX;
+    const dy = e.clientY - cropperLastY;
+    cropperOffsetX += dx;
+    cropperOffsetY += dy;
+    cropperLastX = e.clientX;
+    cropperLastY = e.clientY;
+    drawCropper();
+  });
+  canvas.addEventListener('mouseup', function() { cropperDragging = false; });
+  canvas.addEventListener('mouseleave', function() { cropperDragging = false; });
+
+  // Колесо мыши для зума
+  canvas.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    cropperScale = Math.max(0.3, Math.min(3, cropperScale * delta));
+    zoomSlider.value = cropperScale;
+    drawCropper();
+  }, { passive: false });
 }
 
 function getTouchDist(touches) {
