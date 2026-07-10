@@ -1122,33 +1122,7 @@ let isTransitioning = false;
 let carouselTouchStartX = 0, carouselTouchStartY = 0, carouselTracking = false, carouselMoved = false;
 let editingTeamId = null;
 let teamAvatarFile = null;
-let profileAvatarData = null;
 
-// === УНИКАЛЬНЫЙ ID ДЛЯ СЕТ-ЛИСТОВ КОМАНД ===
-function generateSetlistId() {
-    return 'sl_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9);
-}
-
-// === УНИВЕРСАЛЬНЫЕ ТРИГГЕРЫ СИНХРОНИЗАЦИИ ===
-function syncTeamSetlist(sl) {
-    if (!sl || !sl.teamId) return;
-    if (!isAuthenticated || !db) return;
-    sl.updatedAt = Date.now();
-    saveToStorage();
-    saveTeamSetlistToFirestore(sl.teamId, sl).catch(e => {
-        console.error('⚠️ Ошибка синхронизации сет-листа в облако:', e);
-    });
-}
-
-function deleteTeamSetlistCloud(sl) {
-    if (!sl || !sl.teamId) return;
-    if (!isAuthenticated || !db) return;
-    deleteTeamSetlistFromFirestore(sl.teamId, sl.id).catch(e => {
-        console.error('⚠️ Ошибка удаления сет-листа из облака:', e);
-    });
-}
-
-function compressTeamImage(file, callback) {
 function compressTeamImage(file, callback) {
 const reader = new FileReader();
 reader.onload = function(e) {
@@ -2394,26 +2368,22 @@ closeModal('modal-share-setlist');
 renderSetlists();
 renderCarousel();
 alert(`✅ Сет-лист «${sl.name}» обновлён в команде «${team.name}»!`);
-    } else {
-        const newSlId = generateSetlistId();
-        const newSl = {
-            id: newSlId,
-            date: sl.date,
-            time: sl.time || '',
-            name: sl.name,
-            isArchived: false,
-            teamId: teamId,
-            originalId: sl.id,
-            sharedAt: Date.now(),
-            songs: sl.songs.map(item => ({...item}))
-        };
-        setlists.push(newSl);
-        sl.sharedToTeams = sl.sharedToTeams || [];
-        if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
-        saveToStorage();
-        syncTeamSetlist(newSl);
-        syncTeamSetlist(sl);
-        closeModal('modal-share-setlist');
+} else {
+const newSlId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+setlists.push({
+id: newSlId,
+date: sl.date,
+time: sl.time || '',
+name: sl.name,
+isArchived: false,
+teamId: teamId,
+originalId: sl.id,
+sharedAt: Date.now(),
+songs: sl.songs.map(item => ({...item}))
+});
+sl.sharedToTeams = sl.sharedToTeams || [];
+if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
+saveToStorage();
 closeModal('modal-share-setlist');
 renderSetlists();
 renderCarousel();
@@ -2688,19 +2658,15 @@ updateCarouselBadges();
 }
 function openSetlistModal() { document.getElementById('sl-date').value = getCurrentDate(); document.getElementById('sl-time').value = getCurrentTime(); document.getElementById('sl-name').value = ''; document.getElementById('modal-setlist').classList.add('show'); }
 function saveSetlist() {
-    const date = document.getElementById('sl-date').value;
-    const time = document.getElementById('sl-time').value;
-    const name = document.getElementById('sl-name').value;
-    if (!name || !date) return;
-    
-    const teamId = document.getElementById('modal-setlist').dataset.teamId || null;
-    const newId = teamId ? generateSetlistId() : (setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1);
-    
-    const newSl = {id: newId, date, time: time || '', name, isArchived: false, teamId: teamId, songs: []};
-    setlists.push(newSl);
-    saveToStorage();
-    syncTeamSetlist(newSl);
-    closeModal('modal-setlist');
+const date = document.getElementById('sl-date').value;
+const time = document.getElementById('sl-time').value;
+const name = document.getElementById('sl-name').value;
+if (!name || !date) return;
+const newId = setlists.length > 0 ? setlists.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+const teamId = document.getElementById('modal-setlist').dataset.teamId || null;
+setlists.push({id: newId, date, time: time || '', name, isArchived: false, teamId: teamId, songs: []});
+saveToStorage();
+closeModal('modal-setlist');
 delete document.getElementById('modal-setlist').dataset.teamId;
 if (teamId) {
 showTeamDetailView(teamId);
@@ -2709,16 +2675,14 @@ renderSetlists();
 }
 }
 function openEditSetlistModal(id) { const sl = setlists.find(x => x.id === id); document.getElementById('edit-sl-date').value = sl.date; document.getElementById('edit-sl-time').value = sl.time || ''; document.getElementById('edit-sl-name').value = sl.name; currentSlId = id; document.getElementById('modal-edit-setlist').classList.add('show'); }
-
-function saveEditSetlist() { const date = document.getElementById('edit-sl-date').value; const time = document.getElementById('edit-sl-time').value; const name = document.getElementById('edit-sl-name').value; if (!name || !date) return; const sl = setlists.find(x => x.id === currentSlId); if (sl) { sl.date = date; sl.time = time || ''; sl.name = name; } saveToStorage(); syncTeamSetlist(sl); closeModal('modal-edit-setlist'); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; renderSlSongs(); } }
+function saveEditSetlist() { const date = document.getElementById('edit-sl-date').value; const time = document.getElementById('edit-sl-time').value; const name = document.getElementById('edit-sl-name').value; if (!name || !date) return; const sl = setlists.find(x => x.id === currentSlId); if (sl) { sl.date = date; sl.time = time || ''; sl.name = name; } saveToStorage(); closeModal('modal-edit-setlist'); renderSetlists(); if (document.getElementById('page-setlist-detail').classList.contains('active')) { document.getElementById('sl-detail-title').innerHTML = `<span style="font-size: 14px; font-weight: bold;">${sl.name}</span> <span style="font-size: 14px; color: #888; font-weight: normal; margin-left: 8px;">(${formatSetlistDate(sl.date, sl.time)})</span>`; renderSlSongs(); } }
 function showSetlistDeleteChoice(id, name, isVl) { pendingSetlistAction = { id, name, isVl }; document.getElementById('delete-setlist-name').innerText = `"${name}"`; document.getElementById('modal-delete-setlist-choice').classList.add('show'); }
-function archiveSetlistChoice() {
-    if (!pendingSetlistAction) return;
-    const sl = setlists.find(x => x.id === pendingSetlistAction.id);
+function archiveSetlistChoice() { 
+    if (!pendingSetlistAction) return; 
+    const sl = setlists.find(x => x.id === pendingSetlistAction.id); 
     if (sl) {
-        sl.isArchived = true;
-        saveToStorage();
-        syncTeamSetlist(sl);
+        sl.isArchived = true; 
+        saveToStorage(); 
         if (!document.getElementById('page-setlist-detail').classList.contains('active')) {
             renderSetlists();
             if (sl.teamId) showTeamDetailView(sl.teamId);
@@ -2727,14 +2691,14 @@ function archiveSetlistChoice() {
     closeModal('modal-delete-setlist-choice'); 
     pendingSetlistAction = null; 
 }
-function deleteSetlistChoice() {
-    if (!pendingSetlistAction) return;
+function deleteSetlistChoice() { 
+    if (!pendingSetlistAction) return; 
     const sl = setlists.find(x => x.id === pendingSetlistAction.id);
     const teamId = sl ? sl.teamId : null;
-    if (sl && sl.teamId) deleteTeamSetlistCloud(sl);
     const wasOnDetailPage = document.getElementById('page-setlist-detail').classList.contains('active');
-    setlists = setlists.filter(x => x.id !== pendingSetlistAction.id);
-    saveToStorage();
+    
+    setlists = setlists.filter(x => x.id !== pendingSetlistAction.id); 
+    saveToStorage(); 
     
     if (wasOnDetailPage) { 
         if (teamId) {
@@ -2758,13 +2722,12 @@ function deleteSetlistChoice() {
     pendingSetlistAction = null; 
 }
 function restoreSetlist(slId) { pendingSetlistAction = { id: slId }; document.getElementById('archive-setlist-name').innerText = `"${setlists.find(x => x.id === slId).name}"`; document.getElementById('modal-archive-setlist').classList.add('show'); }
-function restoreSetlistChoice() {
-    if (!pendingSetlistAction) return;
-    const sl = setlists.find(x => x.id === pendingSetlistAction.id);
+function restoreSetlistChoice() { 
+    if (!pendingSetlistAction) return; 
+    const sl = setlists.find(x => x.id === pendingSetlistAction.id); 
     if (sl) {
-        sl.isArchived = false;
-        saveToStorage();
-        syncTeamSetlist(sl);
+        sl.isArchived = false; 
+        saveToStorage(); 
         renderSetlists(); 
         if (sl.teamId) showTeamDetailView(sl.teamId);
     }
@@ -2790,7 +2753,7 @@ function goBackFromTeamDetail() {
 showPage('page-home');
 setCarouselIndex(2, true);
 }
-function updateSongOrder(songId, newOrderStr) { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; const newOrder = parseInt(newOrderStr); if (isNaN(newOrder) || newOrder < 1) { renderSlSongs(); return; } const ci = sl.songs.findIndex(x => x.id === songId); if (ci === -1) return; const ti = Math.min(Math.max(0, newOrder - 1), sl.songs.length - 1); if (ci !== ti) { const [moved] = sl.songs.splice(ci, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); syncTeamSetlist(sl); renderSlSongs(); } }
+function updateSongOrder(songId, newOrderStr) { const sl = setlists.find(x => x.id === currentSlId); if (!sl) return; const newOrder = parseInt(newOrderStr); if (isNaN(newOrder) || newOrder < 1) { renderSlSongs(); return; } const ci = sl.songs.findIndex(x => x.id === songId); if (ci === -1) return; const ti = Math.min(Math.max(0, newOrder - 1), sl.songs.length - 1); if (ci !== ti) { const [moved] = sl.songs.splice(ci, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); renderSlSongs(); } }
 function handleOrderInputFocus(input, originalValue) { input.dataset.originalValue = originalValue; input.value = ''; }
 function handleOrderInputBlur(input, songId) {
 const newValue = input.value.trim();
@@ -2810,13 +2773,13 @@ div.innerHTML = `<div class="item-left"><input type="number" class="order-input"
 div.addEventListener('dragstart', (e) => { if (e.target.closest('button, select, input')) { e.preventDefault(); return; } div.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', idx); });
 div.addEventListener('dragover', (e) => { e.preventDefault(); const t = e.target.closest('.list-item'); if (t && t !== div) t.classList.add('drag-over'); });
 div.addEventListener('dragleave', () => { div.classList.remove('drag-over'); });
-div.addEventListener('drop', (e) => { e.preventDefault(); const t = e.target.closest('.list-item'); if (!t || t === div) return; t.classList.remove('drag-over'); const fi = parseInt(e.dataTransfer.getData('text/plain')); const ti = parseInt(t.dataset.index); if (!isNaN(fi) && !isNaN    if (!isNaN(fi) && !isNaN(ti) && fi !== ti) { const [moved] = sl.songs.splice(fi, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); syncTeamSetlist(sl); renderSlSongs(); } });
+div.addEventListener('drop', (e) => { e.preventDefault(); const t = e.target.closest('.list-item'); if (!t || t === div) return; t.classList.remove('drag-over'); const fi = parseInt(e.dataTransfer.getData('text/plain')); const ti = parseInt(t.dataset.index); if (!isNaN(fi) && !isNaN(ti) && fi !== ti) { const [moved] = sl.songs.splice(fi, 1); sl.songs.splice(ti, 0, moved); saveToStorage(); renderSlSongs(); } });
 div.addEventListener('dragend', () => { div.classList.remove('dragging'); document.querySelectorAll('.list-item').forEach(i => i.classList.remove('drag-over')); });
 div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT' && e.target.tagName !== 'INPUT' && !e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input')) { homeSongIndex = idx; openSongView(item.id, currentSlId); } };
 list.appendChild(div); });
 }
-function confirmRemoveFromSl(songId, songName) { showDeleteConfirm('remove', songId, `Песню "${songName}" из сет-листа`, () => { const sl = setlists.find(x => x.id === currentSlId); sl.songs = sl.songs.filter(x => x.id !== songId); saveToStorage(); syncTeamSetlist(sl); renderSlSongs(); }); }
-function changeSongKeyInSetlist(songId, newKey) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === songId); if (item) { item.key = newKey; saveToStorage(); syncTeamSetlist(sl); } }
+function confirmRemoveFromSl(songId, songName) { showDeleteConfirm('remove', songId, `Песню "${songName}" из сет-листа`, () => { const sl = setlists.find(x => x.id === currentSlId); sl.songs = sl.songs.filter(x => x.id !== songId); saveToStorage(); renderSlSongs(); }); }
+function changeSongKeyInSetlist(songId, newKey) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === songId); if (item) { item.key = newKey; saveToStorage(); } }
 function openAddSongToSlModal() { document.getElementById('add-song-search').value = ''; renderAddSongList(); document.getElementById('modal-add-song').classList.add('show'); }
 function renderAddSongList() {
 const q = document.getElementById('add-song-search').value.toLowerCase(); const sl = setlists.find(x => x.id === currentSlId); const list = document.getElementById('add-song-list'); list.innerHTML = '';
@@ -2824,10 +2787,9 @@ const filtered = songs.filter(s => !sl.songs.find(x => x.id === s.id) && (s.titl
 if (filtered.length === 0) { list.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">Нет доступных песен</p>'; return; }
 filtered.forEach(s => { const div = document.createElement('div'); div.className = 'add-song-item'; div.innerHTML = `<span>${s.title}${s.key ? ` [${s.key}]` : ''}</span><span style="color: #90caf9; font-size: 20px;">+</span>`;
 div.onclick = () => {
-            sl.songs.push({id: s.id, capo: 0, key: null, chordpro: null, columns: currentColumns, fontSize});
-            saveToStorage();
-            syncTeamSetlist(sl);
-            document.getElementById('add-song-search').value = '';
+sl.songs.push({id: s.id, capo: 0, key: null, chordpro: null, columns: currentColumns, fontSize});
+saveToStorage();
+document.getElementById('add-song-search').value = '';
 renderAddSongList();
 renderSlSongs();
 };
@@ -3183,7 +3145,7 @@ function fallbackCopyText(text) { const ta = document.createElement('textarea');
 function toggleInlineEdit() { if (isInlineEditing) { cancelInlineEdit(); return; } const s = songs.find(x => x.id === currentSongId); if (!s) return; let text = s.chordpro; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item && item.chordpro) text = item.chordpro; } const ta = document.getElementById('inline-edit-textarea'); ta.value = text; ta.style.fontSize = fontSize + 'px'; ta.style.lineHeight = '1.4'; document.getElementById('inline-edit-container').style.display = 'block'; document.getElementById('song-view-content').style.display = 'none'; isInlineEditing = true; }
 function cancelInlineEdit() { document.getElementById('inline-edit-container').style.display = 'none'; document.getElementById('song-view-content').style.display = 'block'; isInlineEditing = false; }
 function resizeInlineEdit(delta) { fontSize = Math.max(8, Math.min(32, fontSize + delta)); document.getElementById('inline-edit-textarea').style.fontSize = fontSize + 'px'; }
-function saveInlineEdit() { const newChordpro = document.getElementById('inline-edit-textarea').value; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newChordpro; saveToStorage(); syncTeamSetlist(sl); alert('✅ Сохранено локально!'); } } else { const song = songs.find(x => x.id === currentSongId); if (song) { song.chordpro = newChordpro; saveToStorage(); alert('✅ Песня сохранена!'); } } cancelInlineEdit(); openSongView(currentSongId, currentSlId); }
+function saveInlineEdit() { const newChordpro = document.getElementById('inline-edit-textarea').value; if (currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) { item.chordpro = newChordpro; saveToStorage(); alert('✅ Сохранено локально!'); } } else { const song = songs.find(x => x.id === currentSongId); if (song) { song.chordpro = newChordpro; saveToStorage(); alert('✅ Песня сохранена!'); } } cancelInlineEdit(); openSongView(currentSongId, currentSlId); }
 function saveAllSettings() {
 if (!currentSongId) { alert("❌ Ошибка"); return; }
 if (currentSlId) {
@@ -3197,11 +3159,10 @@ item.columns = currentColumns;
 item.fontSize = fontSize;
 item.accidental = currentAccidental;
 item.hideChords = currentHideChords;
-            item.hideLyrics = currentHideLyrics;
-            saveToStorage();
-            syncTeamSetlist(sl);
-            saveDefaultSettings();
-            alert(`✅ Сохранено ЛОКАЛЬНО (в этом сет-листе):\nТональность: ${currentKey}\nCapo: ${currentCapo}\nКолонки: ${currentColumns}\nРазмер: ${fontSize}\nТекст: ${currentHideLyrics ? 'скрыт' : 'виден'}`);
+item.hideLyrics = currentHideLyrics;
+saveToStorage();
+saveDefaultSettings();
+alert(`✅ Сохранено ЛОКАЛЬНО (в этом сет-листе):\nТональность: ${currentKey}\nCapo: ${currentCapo}\nКолонки: ${currentColumns}\nРазмер: ${fontSize}\nТекст: ${currentHideLyrics ? 'скрыт' : 'виден'}`);
 return;
 }
 }
@@ -3500,23 +3461,16 @@ auth.onAuthStateChanged(async (user) => {
     try {
         authChecked = true;
         
-if (user) {
-    // 🔧 ИСПРАВЛЕНО: проверка email ТОЛЬКО при первом входе в сессии
-    const cached = getCachedAuthState();
-    const isFirstLogin = !cached || (Date.now() - cached.timestamp > 60000); // 1 минута
-    
-    if (isFirstLogin && !user.emailVerified && isOnline()) {
-        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-        if (!isGoogleUser) {
-            const warningShown = sessionStorage.getItem('email_warning_shown');
-            if (!warningShown) {
-                alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-                sessionStorage.setItem('email_warning_shown', 'true');
-                await auth.signOut();
-                return;
+        if (user) {
+            // 🔧 НОВОЕ: проверка email — только при онлайне
+            if (!user.emailVerified && isOnline()) {
+                const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+                if (!isGoogleUser) {
+                    alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+                    await auth.signOut();
+                    return;
+                }
             }
-        }
-    }
             
             // 🔧 НОВОЕ: проверка лимита устройств — НЕБЛОКИРУЮЩАЯ
             // Если офлайн — функция сама вернёт true
@@ -3699,52 +3653,31 @@ btn.innerText = '👁️';
 
 // Исправленная функция входа по логину
 async function loginWithEmail() {
-    const tabEmail = document.getElementById('tab-email');
-    const tabLogin = document.getElementById('tab-login');
-    const isEmailMode = tabEmail && tabEmail.classList.contains('active');
-    const password = document.getElementById('auth-password').value;
-    let email = '';
-    
-    if (isEmailMode) {
-        email = document.getElementById('auth-email').value.trim();
-        if (!email || !password) { 
-            alert('❌ Введите email и пароль'); 
-            return; 
-        }
-    } else {
-        const username = document.getElementById('auth-username').value.trim().toLowerCase();
-        if (!username || !password) { 
-            alert('❌ Введите логин и пароль'); 
-            return; 
-        }
-        try {
-            const snap = await db.collection('usernames').doc(username).get();
-            if (!snap.exists) {
-                alert('❌ Пользователь с таким логином не найден.\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
-                return;
-            }
-            email = snap.data().email;
-        } catch (e) { 
-            alert('❌ Ошибка поиска логина: ' + e.message); 
-            return; 
-        }
-    }
-    
-    try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        // Очищаем флаг предупреждения о email
-        sessionStorage.removeItem('email_warning_shown');
-    } catch (error) {
-        let errorMsg = error.message;
-        if (error.code === 'auth/user-not-found') {
-            errorMsg = 'Пользователь не найден';
-        } else if (error.code === 'auth/wrong-password') {
-            errorMsg = 'Неверный пароль';
-        } else if (error.code === 'auth/invalid-email') {
-            errorMsg = 'Неверный email';
-        }
-        alert('❌ Ошибка входа: ' + errorMsg);
-    }
+	const tabEmail = document.getElementById('tab-email');
+	const tabLogin = document.getElementById('tab-login');
+	const isEmailMode = tabEmail && tabEmail.classList.contains('active');
+	const password = document.getElementById('auth-password').value;
+	let email = '';
+	if (isEmailMode) {
+		email = document.getElementById('auth-email').value.trim();
+		if (!email || !password) { alert('Введите email и пароль'); return; }
+	} else {
+		const username = document.getElementById('auth-username').value.trim().toLowerCase();
+		if (!username || !password) { alert('Введите логин и пароль'); return; }
+		try {
+			const snap = await db.collection('usernames').doc(username).get();
+			if (!snap.exists) {
+				alert(' Пользователь с таким логином не найден.\n\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
+				return;
+			}
+			email = snap.data().email;
+		} catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
+	}
+	try {
+		await auth.signInWithEmailAndPassword(email, password);
+	} catch (error) {
+		alert('Ошибка входа: ' + error.message);
+	}
 }
 async function registerWithEmail() {
 	const username = document.getElementById('auth-reg-username').value.trim().toLowerCase();
@@ -3793,7 +3726,6 @@ async function registerWithEmail() {
 		});
 
 		await cred.user.sendEmailVerification();
-sessionStorage.removeItem('email_warning_shown'); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
 		alert('✅ Регистрация успешна! Проверьте почту для подтверждения email.');
 		await auth.signOut();
 		showLoginForm();
