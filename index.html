@@ -3660,33 +3660,52 @@ btn.innerText = '👁️';
 
 // Исправленная функция входа по логину
 async function loginWithEmail() {
-	const tabEmail = document.getElementById('tab-email');
-	const tabLogin = document.getElementById('tab-login');
-	const isEmailMode = tabEmail && tabEmail.classList.contains('active');
-	const password = document.getElementById('auth-password').value;
-	let email = '';
-	if (isEmailMode) {
-		email = document.getElementById('auth-email').value.trim();
-		if (!email || !password) { alert('Введите email и пароль'); return; }
-	} else {
-		const username = document.getElementById('auth-username').value.trim().toLowerCase();
-		if (!username || !password) { alert('Введите логин и пароль'); return; }
-		try {
-			const snap = await db.collection('usernames').doc(username).get();
-			if (!snap.exists) {
-				alert(' Пользователь с таким логином не найден.\n\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
-				return;
-			}
-			email = snap.data().email;
-		} catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
-	}
-	try {
-		await cred.user.sendEmailVerification();
-sessionStorage.removeItem('email_warning_shown'); // ← Добавить эту строку
-alert('✅ Регистрация успешна! Проверьте почту...');
-	} catch (error) {
-		alert('Ошибка входа: ' + error.message);
-	}
+    const tabEmail = document.getElementById('tab-email');
+    const tabLogin = document.getElementById('tab-login');
+    const isEmailMode = tabEmail && tabEmail.classList.contains('active');
+    const password = document.getElementById('auth-password').value;
+    let email = '';
+    
+    if (isEmailMode) {
+        email = document.getElementById('auth-email').value.trim();
+        if (!email || !password) { 
+            alert('❌ Введите email и пароль'); 
+            return; 
+        }
+    } else {
+        const username = document.getElementById('auth-username').value.trim().toLowerCase();
+        if (!username || !password) { 
+            alert('❌ Введите логин и пароль'); 
+            return; 
+        }
+        try {
+            const snap = await db.collection('usernames').doc(username).get();
+            if (!snap.exists) {
+                alert('❌ Пользователь с таким логином не найден.\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
+                return;
+            }
+            email = snap.data().email;
+        } catch (e) { 
+            alert('❌ Ошибка поиска логина: ' + e.message); 
+            return; 
+        }
+    }
+    
+    try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        // Очищаем флаг предупреждения о email
+        sessionStorage.removeItem('email_warning_shown');
+    } catch (error) {
+        let errorMsg = error.message;
+        if (error.code === 'auth/user-not-found') {
+            errorMsg = 'Пользователь не найден';
+        } else if (error.code === 'auth/wrong-password') {
+            errorMsg = 'Неверный пароль';
+        } else if (error.code === 'auth/invalid-email') {
+            errorMsg = 'Неверный email';
+        }
+        alert('❌ Ошибка входа: ' + errorMsg);
+    }
 }
 async function registerWithEmail() {
 	const username = document.getElementById('auth-reg-username').value.trim().toLowerCase();
