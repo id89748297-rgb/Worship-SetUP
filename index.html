@@ -604,6 +604,30 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <button class="btn-pastel" style="width: 100%;" onclick="copyTeamInviteId()">📋 Скопировать ID</button>
 <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('modal-team-invite')">Закрыть</button>
 </div></div>
+<!-- Модалка списка участников команды -->
+<div id="modal-team-members" class="modal">
+<div class="modal-content" style="max-width: 560px; position: relative;">
+<!-- Шапка с кнопкой Назад -->
+<div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+<button class="btn-back" onclick="closeModal('modal-team-members')" style="padding:8px 12px; min-width:40px; min-height:40px; font-size:18px;">←</button>
+<h2 id="team-members-title" style="color:#90caf9; margin:0; flex:1; font-size:18px; text-align:center;">
+👥 Участники команды
+</h2>
+<div style="width:40px;"></div>
+</div>
+<!-- Переключатель сортировки -->
+<div id="team-members-sort" style="display:none; margin-bottom:15px;">
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+<button id="sort-alpha-btn" class="btn-pastel" style="margin:0; padding:8px; font-size:13px;" onclick="changeMembersSort('alpha')">🔤 По алфавиту</button>
+<button id="sort-date-btn" class="btn-pastel" style="margin:0; padding:8px; font-size:13px;" onclick="changeMembersSort('date')">📅 По дате добавления</button>
+</div>
+</div>
+<div id="team-members-loading" style="text-align:center; padding:20px; color:#888;">
+Загрузка...
+</div>
+<div id="team-members-list" style="display:none;"></div>
+</div>
+</div>
 <div id="modal-join-team-link" class="modal"><div class="modal-content"><h2> Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-join-team-link')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
 <!-- Модальное окно авторизации -->
 <div id="modal-auth" class="modal">
@@ -816,6 +840,20 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// === ПРОВЕРКА ОНЛАЙН-СТАТУСА ===
+function isOnline() {
+    return navigator.onLine !== false;
+}
+
+// Явно указываем, что сессия должна сохраняться локально
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log('✅ Firebase persistence установлен в LOCAL');
+    })
+    .catch((error) => {
+        console.error('❌ Ошибка установки persistence:', error);
+    });
+
 // Глобальные переменные для авторизации
 let currentUser = null;
 let isAuthenticated = false;
@@ -851,33 +889,41 @@ function getDeviceName() {
 
 // Регистрация текущего устройства в Firestore
 async function registerDeviceInFirestore(user) {
-  if (!db || !user) return [];
-  const deviceId = getDeviceId();
-  const deviceName = getDeviceName();
-  try {
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    const userData = userDoc.data() || {};
-    let devices = userData.devices || [];
+    if (!db || !user) return [];
     
-    // Обновляем существующее устройство или добавляем новое
-    const existingIdx = devices.findIndex(d => d.id === deviceId);
-    if (existingIdx !== -1) {
-      devices[existingIdx].lastLogin = Date.now();
-      devices[existingIdx].name = deviceName;
-    } else {
-      devices.push({
-        id: deviceId,
-        name: deviceName,
-        lastLogin: Date.now()
-      });
+    // 🔧 НОВОЕ: при офлайне — не делаем запрос, просто возвращаем локальный список
+    if (!isOnline()) {
+        console.log('📴 Офлайн — регистрация устройства отложена');
+        return [];
     }
     
-    await db.collection('users').doc(user.uid).update({ devices });
-    return devices;
-  } catch (e) {
-    console.error('Ошибка регистрации устройства:', e);
-    return [];
-  }
+    const deviceId = getDeviceId();
+    const deviceName = getDeviceName();
+    try {
+        const userDoc = await Promise.race([
+            db.collection('users').doc(user.uid).get(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+        ]);
+        const userData = userDoc.data() || {};
+        let devices = userData.devices || [];
+        
+        const existingIdx = devices.findIndex(d => d.id === deviceId);
+        if (existingIdx !== -1) {
+            devices[existingIdx].lastLogin = Date.now();
+            devices[existingIdx].name = deviceName;
+        } else {
+            devices.push({
+                id: deviceId,
+                name: deviceName,
+                lastLogin: Date.now()
+            });
+        }
+        await db.collection('users').doc(user.uid).update({ devices });
+        return devices;
+    } catch (e) {
+        console.error('⚠️ Ошибка регистрации устройства:', e.message);
+        return [];
+    }
 }
 
 // Удалить устройство из Firestore
@@ -898,26 +944,39 @@ async function removeDeviceFromFirestore(userId, deviceId) {
 
 // Проверить лимит устройств и показать окно при необходимости
 async function checkDeviceLimit(user) {
-  if (!db) return true;
-  const deviceId = getDeviceId();
-  try {
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    const userData = userDoc.data() || {};
-    let devices = userData.devices || [];
+    if (!db) return true;
     
-    // Если это устройство уже зарегистрировано — всё ок
-    if (devices.find(d => d.id === deviceId)) return true;
-    
-    // Если мест нет — показываем окно выбора
-    if (devices.length >= MAX_DEVICES) {
-      const allowed = await showDeviceLimitModal(user, devices);
-      return allowed;
+    // 🔧 НОВОЕ: при отсутствии интернета — сразу разрешаем вход
+    // Проверка устройств произойдёт при следующем онлайне
+    if (!isOnline()) {
+        console.log('📴 Офлайн — пропускаем проверку лимита устройств');
+        return true;
     }
-    return true;
-  } catch (e) {
-    console.error('Ошибка проверки устройств:', e);
-    return true;
-  }
+    
+    const deviceId = getDeviceId();
+    try {
+        // Добавляем таймаут на запрос (5 секунд), чтобы не виснуть
+        const userDoc = await Promise.race([
+            db.collection('users').doc(user.uid).get(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+        ]);
+        const userData = userDoc.data() || {};
+        let devices = userData.devices || [];
+        
+        // Если это устройство уже зарегистрировано — всё ок
+        if (devices.find(d => d.id === deviceId)) return true;
+        
+        // Если мест нет — показываем окно выбора
+        if (devices.length >= MAX_DEVICES) {
+            const allowed = await showDeviceLimitModal(user, devices);
+            return allowed;
+        }
+        return true;
+    } catch (e) {
+        console.error('⚠️ Ошибка проверки устройств (офлайн/таймаут):', e.message);
+        // 🔧 НОВОЕ: при ошибке — НЕ блокируем вход, а разрешаем
+        return true;
+    }
 }
 // === МОДАЛЬНОЕ ОКНО ЛИМИТА УСТРОЙСТВ ===
 
@@ -1083,6 +1142,171 @@ img.src = e.target.result;
 };
 reader.readAsDataURL(file);
 }
+
+// === МИГРАЦИЯ СТАРЫХ ДАННЫХ КОМАНД ===
+// Конвертирует старый формат members: ['uid1', 'uid2']
+// в новый формат members: [{uid, role, joinedAt}, ...]
+function migrateTeamMembers(team) {
+  if (!team || !team.members) return team;
+  
+  // Если первый элемент - строка (старый формат), конвертируем
+  if (team.members.length > 0 && typeof team.members[0] === 'string') {
+    const oldMembers = [...team.members];
+    team.members = oldMembers.map(uid => ({
+      uid: uid,
+      role: (uid === team.ownerId) ? 'owner' : 'member',
+      joinedAt: team.createdAt || Date.now()
+    }));
+    
+    // Если владельца нет в списке (крайний случай) - добавляем
+    if (team.ownerId && !team.members.find(m => m.uid === team.ownerId)) {
+      team.members.unshift({
+        uid: team.ownerId,
+        role: 'owner',
+        joinedAt: team.createdAt || Date.now()
+      });
+    }
+    console.log('🔄 Миграция команды:', team.name, '- новый формат members');
+  }
+  
+  return team;
+}
+
+// === ФУНКЦИИ РОЛЕЙ В КОМАНДЕ ===
+
+// Получить роль пользователя в команде
+function getUserRoleInTeam(teamId, uid) {
+  const team = teams.find(t => t.id === teamId);
+  if (!team || !uid) return null;
+  
+  const member = team.members.find(m => m.uid === uid);
+  if (!member) return null;
+  
+  return member.role; // 'owner' | 'admin' | 'member'
+}
+
+// Текущий пользователь - владелец команды?
+function isTeamOwner(teamId) {
+  if (!currentUser) return false;
+  return getUserRoleInTeam(teamId, currentUser.uid) === 'owner';
+}
+
+// Текущий пользователь - админ команды?
+function isTeamAdmin(teamId) {
+  if (!currentUser) return false;
+  return getUserRoleInTeam(teamId, currentUser.uid) === 'admin';
+}
+
+// Может ли пользователь редактировать команду (название, аватар, пароль)?
+// Владелец И админ могут
+function canEditTeam(teamId) {
+  if (!currentUser) return false;
+  const role = getUserRoleInTeam(teamId, currentUser.uid);
+  return role === 'owner' || role === 'admin';
+}
+
+// Может ли пользователь удалять сет-листы в команде?
+// Владелец И админ могут
+function canDeleteSetlistInTeam(teamId) {
+  return canEditTeam(teamId);
+}
+
+// Может ли пользователь менять роли других участников?
+// ТОЛЬКО владелец
+function canChangeRoles(teamId) {
+  return isTeamOwner(teamId);
+}
+
+// Может ли пользователь удалять участников из команды?
+// ТОЛЬКО владелец
+function canRemoveMembers(teamId) {
+  return isTeamOwner(teamId);
+}
+
+// Получить данные профиля пользователя из Firestore
+async function getUserProfileData(uid) {
+  if (!db) return null;
+  try {
+    const doc = await db.collection('users').doc(uid).get();
+    return doc.exists ? doc.data() : null;
+  } catch (e) {
+    console.error('Ошибка загрузки профиля:', e);
+    return null;
+  }
+}
+
+// Сменить роль участника (только владелец)
+async function changeMemberRole(teamId, memberUid, newRole) {
+  if (!canChangeRoles(teamId)) {
+    alert('❌ Только владелец может менять роли');
+    return;
+  }
+  
+  if (newRole === 'owner') {
+    alert('❌ Нельзя передать роль владельца. Создайте новую команду.');
+    return;
+  }
+  
+  const team = teams.find(t => t.id === teamId);
+  if (!team) return;
+  
+  const member = team.members.find(m => m.uid === memberUid);
+  if (!member) return;
+  
+  member.role = newRole;
+  saveToStorage();
+  
+  // Синхронизация с Firestore
+  if (isAuthenticated && typeof saveTeamToFirestore === 'function') {
+    try {
+      await saveTeamToFirestore(team);
+    } catch (e) {
+      console.error('Ошибка сохранения роли:', e);
+    }
+  }
+  
+  alert(`✅ Роль изменена на "${newRole === 'admin' ? 'Админ' : 'Участник'}"`);
+  showTeamMembersModal(teamId); // Перерисовываем модалку
+}
+
+// Удалить участника из команды (только владелец)
+async function removeMemberFromTeam(teamId, memberUid) {
+  if (!canRemoveMembers(teamId)) {
+    alert('❌ Только владелец может удалять участников');
+    return;
+  }
+  
+  const team = teams.find(t => t.id === teamId);
+  if (!team) return;
+  
+  const member = team.members.find(m => m.uid === memberUid);
+  if (!member) return;
+  
+  if (member.role === 'owner') {
+    alert('❌ Нельзя удалить владельца команды');
+    return;
+  }
+  
+  if (!confirm(`Удалить участника из команды?\nПосле удаления он потеряет доступ к сет-листам команды.`)) {
+    return;
+  }
+  
+  team.members = team.members.filter(m => m.uid !== memberUid);
+  saveToStorage();
+  
+  // Синхронизация с Firestore
+  if (isAuthenticated && typeof saveTeamToFirestore === 'function') {
+    try {
+      await saveTeamToFirestore(team);
+    } catch (e) {
+      console.error('Ошибка удаления участника:', e);
+    }
+  }
+  
+  alert('✅ Участник удалён');
+  showTeamMembersModal(teamId); // Перерисовываем модалку
+}
+
 
 function buildCarouselItems() {
   carouselItems = [
@@ -1388,12 +1612,13 @@ html += `<div class="list-item" style="cursor: pointer;" onclick="openTeamFromLi
 ${avatarHtml}
 <div style="min-width: 0; flex: 1;">
 <div class="item-title">${escapeHtml(t.name)}</div>
-<div class="item-sub">Сет-листов: ${teamSetlists.length}${t.password ? ' · 🔐' : ''}</div>
+<div class="item-sub">Участники: ${t.members ? t.members.length : 0}${t.password ? ' · 🔐' : ''}</div>
 </div>
 </div>
 <div class="item-actions" style="display: flex; gap: 4px;">
-<button class="btn-icon" onclick="event.stopPropagation(); editTeam('${t.id}')" title="Изменить">✏️</button>
+<button class="btn-icon" onclick="event.stopPropagation(); showTeamMembersModal('${t.id}')" title="Участники" style="color: #4caf50;">👥</button>
 <button class="btn-icon" onclick="event.stopPropagation(); showTeamInvite('${t.id}')" title="Пригласить">🔗</button>
+<button class="btn-icon" onclick="event.stopPropagation(); editTeam('${t.id}')" title="Изменить">✏️</button>
 <button class="btn-icon" onclick="event.stopPropagation(); deleteTeam('${t.id}')" title="Удалить" style="color: #ef5350;">🗑️</button>
 </div>
 </div>`;
@@ -1447,6 +1672,12 @@ reader.readAsDataURL(file);
 function editTeam(teamId) {
 const team = teams.find(t => t.id === teamId);
 if (!team) return;
+
+// Проверка прав: только владелец и админ могут редактировать
+if (!canEditTeam(teamId)) {
+  alert('❌ У вас нет прав на редактирование команды.\nТолько владелец и админы могут менять настройки.');
+  return;
+}
 editingTeamId = teamId;
 teamAvatarFile = null;
 document.getElementById('team-modal-title').innerText = '✏️ Редактировать команду';
@@ -1487,7 +1718,11 @@ function saveTeamEdit() {
         password: newPassword,
         avatar: avatarData || null,
         ownerId: currentUser ? currentUser.uid : null,
-        members: currentUser ? [currentUser.uid] : [],
+        members: currentUser ? [{
+  uid: currentUser.uid,
+  role: 'owner',
+  joinedAt: Date.now()
+}] : [],
         createdAt: Date.now()
       };
       teams.push(newTeam);
@@ -1520,6 +1755,169 @@ document.getElementById('team-invite-id').innerText = team.id;
 document.getElementById('modal-team-invite').dataset.teamId = teamId;
 document.getElementById('modal-team-invite').classList.add('show');
 }
+
+// === МОДАЛКА УЧАСТНИКОВ КОМАНДЫ ===
+let membersSortMode = 'alpha'; // 'alpha' или 'date'
+let currentMembersData = [];
+let currentMembersTeamId = null;
+
+async function showTeamMembersModal(teamId) {
+const team = teams.find(t => t.id === teamId);
+if (!team) return;
+
+currentMembersTeamId = teamId;
+const loadingEl = document.getElementById('team-members-loading');
+const listEl = document.getElementById('team-members-list');
+const sortEl = document.getElementById('team-members-sort');
+const modalTitle = document.getElementById('team-members-title');
+
+loadingEl.style.display = 'block';
+listEl.style.display = 'none';
+sortEl.style.display = 'none';
+listEl.innerHTML = '';
+
+if (modalTitle) modalTitle.innerHTML = `👥 <span style="color:#b39ddb;">${escapeHtml(team.name)}</span>`;
+document.getElementById('modal-team-members').classList.add('show');
+
+const canManage = canChangeRoles(teamId);
+const canRemove = canRemoveMembers(teamId);
+
+// Загружаем профили всех участников
+const membersData = [];
+for (const member of (team.members || [])) {
+const profile = await getUserProfileData(member.uid);
+membersData.push({
+uid: member.uid,
+role: member.role,
+joinedAt: member.joinedAt,
+firstName: profile?.firstName || '',
+lastName: profile?.lastName || '',
+displayName: profile?.displayName || '',
+photoURL: profile?.photoURL || null
+});
+}
+
+currentMembersData = membersData;
+loadingEl.style.display = 'none';
+sortEl.style.display = 'block';
+listEl.style.display = 'block';
+
+renderMembersList(canManage, canRemove);
+updateSortButtonsUI();
+}
+
+// Смена сортировки
+function changeMembersSort(mode) {
+membersSortMode = mode;
+updateSortButtonsUI();
+const canManage = canChangeRoles(currentMembersTeamId);
+const canRemove = canRemoveMembers(currentMembersTeamId);
+renderMembersList(canManage, canRemove);
+}
+
+// Обновление UI кнопок сортировки
+function updateSortButtonsUI() {
+const alphaBtn = document.getElementById('sort-alpha-btn');
+const dateBtn = document.getElementById('sort-date-btn');
+if (!alphaBtn || !dateBtn) return;
+
+if (membersSortMode === 'alpha') {
+alphaBtn.style.background = 'rgba(179,157,219,0.35)';
+alphaBtn.style.fontWeight = 'bold';
+dateBtn.style.background = '';
+dateBtn.style.fontWeight = '';
+} else {
+dateBtn.style.background = 'rgba(179,157,219,0.35)';
+dateBtn.style.fontWeight = 'bold';
+alphaBtn.style.background = '';
+alphaBtn.style.fontWeight = '';
+}
+}
+
+// Рендер списка участников с учётом сортировки
+function renderMembersList(canManage, canRemove) {
+const listEl = document.getElementById('team-members-list');
+if (!listEl) return;
+
+// Копируем массив для сортировки
+let sorted = [...currentMembersData];
+
+if (membersSortMode === 'alpha') {
+// Сортировка по алфавиту (владелец всегда первый)
+sorted.sort((a, b) => {
+if (a.role === 'owner') return -1;
+if (b.role === 'owner') return 1;
+const nameA = (a.firstName + ' ' + a.lastName).trim() || a.displayName || '';
+const nameB = (b.firstName + ' ' + b.lastName).trim() || b.displayName || '';
+return nameA.localeCompare(nameB, 'ru');
+});
+} else {
+// Сортировка по дате добавления (сначала новые)
+sorted.sort((a, b) => {
+if (a.role === 'owner') return -1;
+if (b.role === 'owner') return 1;
+return (b.joinedAt || 0) - (a.joinedAt || 0);
+});
+}
+
+const roleLabels = {
+'owner': { text: '👑 Владелец', color: '#ffd700', bg: 'rgba(255,215,0,0.15)' },
+'admin': { text: '🛡️ Админ', color: '#90caf9', bg: 'rgba(144,202,249,0.15)' },
+'member': { text: '👤 Участник', color: '#b39ddb', bg: 'rgba(179,157,219,0.15)' }
+};
+
+listEl.innerHTML = sorted.map(m => {
+const roleInfo = roleLabels[m.role] || roleLabels['member'];
+const isMe = currentUser && m.uid === currentUser.uid;
+const isOwner = m.role === 'owner';
+
+// Аватар
+const avatarHtml = m.photoURL
+? `<img src="${m.photoURL}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+: `<div style="width:48px;height:48px;border-radius:50%;background:#9575cd;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:white;">
+${escapeHtml((m.firstName || m.displayName || '?')[0].toUpperCase())}
+</div>`;
+
+// Имя
+const fullName = [m.firstName, m.lastName].filter(Boolean).join(' ') || m.displayName || 'Без имени';
+
+// Дата добавления
+const joinedDate = m.joinedAt ? new Date(m.joinedAt).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+
+// Кнопки действий (только для владельца, и не для себя, и не для другого владельца)
+let actionsHtml = '';
+if (canManage && !isMe && !isOwner) {
+if (m.role === 'member') {
+actionsHtml += `<button class="btn-icon" onclick="changeMemberRole('${currentMembersTeamId}', '${m.uid}', 'admin')" title="Назначить админом" style="color:#90caf9;">🛡️</button>`;
+} else if (m.role === 'admin') {
+actionsHtml += `<button class="btn-icon" onclick="changeMemberRole('${currentMembersTeamId}', '${m.uid}', 'member')" title="Сделать участником" style="color:#b39ddb;">👤</button>`;
+}
+if (canRemove) {
+actionsHtml += `<button class="btn-icon" onclick="removeMemberFromTeam('${currentMembersTeamId}', '${m.uid}')" title="Удалить из команды" style="color:#ef5350;">🗑️</button>`;
+}
+}
+
+return `
+<div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(30,30,30,0.5); border-radius:10px; margin-bottom:8px; ${isMe ? 'border:1px solid rgba(144,202,249,0.4);' : 'border:1px solid transparent;'}">
+${avatarHtml}
+<div style="flex:1; min-width:0;">
+<div style="font-weight:bold; font-size:15px; margin-bottom:2px; display:flex; align-items:center; gap:6px;">
+${escapeHtml(fullName)}
+${isMe ? '<span style="font-size:11px; color:#4caf50;">(вы)</span>' : ''}
+</div>
+<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+<span style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; background:${roleInfo.bg}; color:${roleInfo.color};">
+${roleInfo.text}
+</span>
+${joinedDate && m.role !== 'owner' ? `<span style="font-size:11px; color:#888;">с ${joinedDate}</span>` : ''}
+</div>
+</div>
+${actionsHtml ? `<div style="display:flex; gap:4px; flex-shrink:0;">${actionsHtml}</div>` : ''}
+</div>
+`;
+}).join('');
+}
+
 function copyTeamInviteLink() {
 const link = document.getElementById('team-invite-link').innerText;
 navigator.clipboard.writeText(link).then(() => alert('✅ Ссылка скопирована!')).catch(() => {
@@ -1537,6 +1935,11 @@ function deleteTeam(teamId) {
     const team = teams.find(t => t.id === teamId);
     if (!team) return;
 
+// Проверка прав: только владелец может удалить команду
+if (!isTeamOwner(teamId)) {
+  alert('❌ Только владелец может удалить команду.');
+  return;
+}
     const activeSetlists = setlists.filter(sl => sl.teamId === teamId && !sl.isArchived);
     let warning = `Команду «${team.name}»`;
     if (activeSetlists.length > 0) {
@@ -1662,7 +2065,11 @@ function confirmJoinTeam(teamId, password) {
         password: password,
         avatar: null,
         ownerId: null,
-        members: currentUser ? [currentUser.uid] : [],
+        members: currentUser ? [{
+  uid: currentUser.uid,
+  role: 'member',
+  joinedAt: Date.now()
+}] : [],
         createdAt: Date.now(),
         joinedByLink: true
     };
@@ -1693,11 +2100,32 @@ async function addSelfToTeamMembers(teamId) {
             const doc = await transaction.get(teamRef);
             if (!doc.exists) return;
             const data = doc.data();
-            const members = data.members || [];
-            if (!members.includes(currentUser.uid)) {
-                members.push(currentUser.uid);
-                transaction.update(teamRef, { members: members });
-            }
+const members = data.members || [];
+
+// Проверяем, есть ли уже этот пользователь в members (новый формат)
+const existingMember = members.find(m => 
+  (typeof m === 'string' && m === currentUser.uid) || 
+  (typeof m === 'object' && m.uid === currentUser.uid)
+);
+
+if (!existingMember) {
+  // Мигрируем старые данные если нужно
+  const newMembers = members.map(m => {
+    if (typeof m === 'string') {
+      return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
+    }
+    return m;
+  });
+  
+  // Добавляем нового участника
+  newMembers.push({
+    uid: currentUser.uid,
+    role: 'member',
+    joinedAt: Date.now()
+  });
+  
+  transaction.update(teamRef, { members: newMembers });
+}
         });
     } catch (e) {
         console.error('Ошибка добавления в members:', e);
@@ -1766,18 +2194,24 @@ function showTeamDetailView(teamId) {
   
   const isLight = document.body.classList.contains('light');
   const dateColorBase = isLight ? '#7e57c2' : '#9575cd';
-  let html = `<div style="padding: 10px 0;">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">
-  <button class="btn-pastel" style="margin:0;" onclick="openSetlistModalForTeam('${team.id}')">➕ Создать сет-лист</button>
-  <button class="btn-pastel" style="margin:0;" onclick="showTeamInvite('${team.id}')">🔗 Пригласить</button>
-  </div>`;
-
- // ⬇️ НОВОЕ: Блок с участниками команды
-const membersCount = team.members ? team.members.length : 0;
-html += `<div style="background: rgba(144, 202, 249, 0.08); border: 1px solid rgba(144, 202, 249, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 15px;">
-<div style="font-size: 13px; color: #90caf9; font-weight: bold; margin-bottom: 6px;">👥 Участники: ${membersCount}</div>
-<div style="font-size: 12px; color: #888;">Все участники видят эти сет-листы в реальном времени</div>
+let html = `<div style="padding: 10px 0;">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:15px;">
+<button class="btn-pastel" style="margin:0;" onclick="openSetlistModalForTeam('${team.id}')">➕ Сет-лист</button>
+<button class="btn-pastel" style="margin:0;" onclick="showTeamMembersModal('${team.id}')">👥 Участники</button>
+<button class="btn-pastel" style="margin:0;" onclick="showTeamInvite('${team.id}')">🔗 Пригласить</button>
 </div>`;
+// Показываем роль текущего пользователя
+if (isAuthenticated && currentUser) {
+  const myRole = getUserRoleInTeam(team.id, currentUser.uid);
+  const roleLabels = {
+    'owner': '👑 Владелец',
+    'admin': '🛡️ Админ',
+    'member': '👤 Участник'
+  };
+  html += `<div style="text-align:center; margin-bottom:15px; padding:8px; background:rgba(144,202,249,0.1); border-radius:8px; font-size:13px; color:#90caf9;">
+    Ваша роль: <b>${roleLabels[myRole] || 'Неизвестно'}</b>
+  </div>`;
+}
  
   // Кнопки переключения Актуальные/Архив
   html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">`;
@@ -1798,12 +2232,29 @@ html += `<div style="background: rgba(144, 202, 249, 0.08); border: 1px solid rg
       const expiredClass = isExpired ? 'setlist-expired' : '';
       const changesBadge = sl.hasChanges ? ' <span style="background: #ef5350; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">ИЗМЕНЕНО</span>' : '';
       
-      // Кнопка "К себе" для копирования в личные сет-листы
-      const copyBtn = `<button class="btn-icon" onclick="event.stopPropagation(); copySetlistToPersonal(${sl.id})" title="Добавить к себе в сет-листы" style="color: #4caf50;">📥</button>`;
-      
-      let actions = sl.isArchived
-        ? `${copyBtn}<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`
-        : `${copyBtn}<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button><button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
+// Кнопка "К себе" для копирования в личные сет-листы (доступна всем ролям)
+const copyBtn = `<button class="btn-icon" onclick="event.stopPropagation(); copySetlistToPersonal(${sl.id})" title="Добавить к себе в сет-листы" style="color: #4caf50;">📥</button>`;
+
+// Проверка прав: только владелец и админ могут редактировать и удалять сет-листы
+const canDeleteSl = canDeleteSetlistInTeam(teamId);
+const canEditSl = canEditTeam(teamId);
+
+let actions = '';
+if (sl.isArchived) {
+  actions = `${copyBtn}`;
+  if (canDeleteSl) {
+    actions += `<button class="btn-icon" onclick="event.stopPropagation(); restoreSetlist(${sl.id})">🔄</button>`;
+    actions += `<button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
+  }
+} else {
+  actions = `${copyBtn}`;
+  if (canEditSl) {
+    actions += `<button class="btn-icon" onclick="event.stopPropagation(); openEditSetlistModal(${sl.id})">✏️</button>`;
+  }
+  if (canDeleteSl) {
+    actions += `<button class="btn-icon" onclick="event.stopPropagation(); showSetlistDeleteChoice(${sl.id}, '${sl.name.replace(/'/g, "\\'")}', false)">🗑️</button>`;
+  }
+}
       
       html += `<div class="list-item ${expiredClass}" style="cursor: pointer;" onclick="clearSetlistSearchAndOpen(${sl.id})">
       <div class="item-left" style="min-width: 0; flex: 1;">
@@ -2053,7 +2504,7 @@ if (chordMatches && chordMatches.length > 2) return false;
 return true;
 }
 function loadFromStorage() {
-try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]'); sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}'); inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}'); teams = JSON.parse(localStorage.getItem('clc_teams') || '[]'); } catch { songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = []; }
+try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]'); sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}'); inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}'); teams = JSON.parse(localStorage.getItem('clc_teams') || '[]').map(migrateTeamMembers); } catch { songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = []; }
 const savedTheme = localStorage.getItem('clc_theme');
 if (savedTheme === 'light') {
     document.body.classList.remove('dark');
@@ -2961,97 +3412,201 @@ function compressProfileImage(file, callback) {
   };
   reader.readAsDataURL(file);
 }
+// === КЭШИРОВАНИЕ СОСТОЯНИЯ АВТОРИЗАЦИИ ===
+function cacheAuthState(user) {
+    if (user) {
+        localStorage.setItem('clc_cached_auth', JSON.stringify({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            timestamp: Date.now()
+        }));
+    } else {
+        localStorage.removeItem('clc_cached_auth');
+    }
+}
+
+function getCachedAuthState() {
+    try {
+        const cached = localStorage.getItem('clc_cached_auth');
+        if (!cached) return null;
+        const data = JSON.parse(cached);
+        // Кэш действителен 7 дней
+        const cacheAge = Date.now() - data.timestamp;
+        if (cacheAge > 7 * 24 * 60 * 60 * 1000) {
+            localStorage.removeItem('clc_cached_auth');
+            return null;
+        }
+        return data;
+    } catch {
+        return null;
+    }
+}
+
+// Флаг завершения инициализации авторизации
+let authInitializationComplete = false;
+let authCheckTimeout = null;
 let isHandlingAuth = false;  // Защита от повторных вызовов onAuthStateChanged
 auth.onAuthStateChanged(async (user) => {
-  // Защита от параллельных вызовов
-  if (isHandlingAuth) {
-    console.log('⏳ Обработка авторизации уже идёт, пропускаем');
-    return;
-  }
-  isHandlingAuth = true;
-  
-  try {
-    authChecked = true;
-    if (user) {
-      if (!user.emailVerified) {
+    // Защита от параллельных вызовов
+    if (isHandlingAuth) {
+        console.log('⏳ Обработка авторизации уже идёт, пропускаем');
+        return;
+    }
+    isHandlingAuth = true;
+    
+    // Кэшируем состояние авторизации
+    cacheAuthState(user);
+    
+    try {
+        authChecked = true;
+        
+if (user) {
+    // 🔧 ИСПРАВЛЕНО: проверка email ТОЛЬКО при первом входе в сессии
+    const cached = getCachedAuthState();
+    const isFirstLogin = !cached || (Date.now() - cached.timestamp > 60000); // 1 минута
+    
+    if (isFirstLogin && !user.emailVerified && isOnline()) {
         const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
         if (!isGoogleUser) {
-          alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-          await auth.signOut();
-          return;
+            const warningShown = sessionStorage.getItem('email_warning_shown');
+            if (!warningShown) {
+                alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+                sessionStorage.setItem('email_warning_shown', 'true');
+                await auth.signOut();
+                return;
+            }
         }
-      }
-      
-      // ⬇️ НОВОЕ: Проверяем лимит устройств
-      const allowed = await checkDeviceLimit(user);
-      if (!allowed) {
-        // Пользователь отменил вход или ещё выбирает устройство
-        return;
-      }
-      
-      currentUser = user;
-      isAuthenticated = true;
-      
-      // ⬇️ НОВОЕ: Регистрируем текущее устройство
-      await registerDeviceInFirestore(user);
-      
-      // Параллельно загружаем профиль и команды (если есть syncTeamsFromCloud)
-      const loadTasks = [loadUserProfileFromFirestore(user)];
-      if (typeof syncTeamsFromCloud === 'function') {
-        loadTasks.push(syncTeamsFromCloud());
-      }
-      await Promise.all(loadTasks);
-      
-      closeModal('modal-auth');
-      updateUserAvatar();
-      
-      // Перестраиваем карусель с командами
-      buildCarouselItems();
-      renderCarousel();
-      
-      // Восстанавливаем позицию карусели
-      const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
-      if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
-        carouselActiveIndex = savedState.carouselIdx;
-      } else {
-        carouselActiveIndex = 0;
-      }
-      activateCarouselItem(carouselActiveIndex);
-    } else {
-      currentUser = null;
-      isAuthenticated = false;
-      updateUserAvatar();
-      
-      // Перестраиваем карусель БЕЗ команд
-      buildCarouselItems();
-      renderCarousel();
-      
-      // Возвращаемся на первую вкладку
-      carouselActiveIndex = 0;
-      activateCarouselItem(0);
-      
-      if (!localStorage.getItem('clc_auth_shown')) {
-        showAuthModal();
-        localStorage.setItem('clc_auth_shown', 'true');
-      }
     }
-  } catch (e) {
-    console.error('Ошибка в onAuthStateChanged:', e);
-  } finally {
-    isHandlingAuth = false;
-  }
+            
+            // 🔧 НОВОЕ: проверка лимита устройств — НЕБЛОКИРУЮЩАЯ
+            // Если офлайн — функция сама вернёт true
+            let allowed = true;
+            try {
+                allowed = await checkDeviceLimit(user);
+            } catch (e) {
+                console.error('⚠️ checkDeviceLimit упал:', e);
+                allowed = true; // 🔧 НОВОЕ: при любой ошибке — разрешаем вход
+            }
+            
+            if (!allowed) {
+                // Пользователь отменил вход или ещё выбирает устройство
+                return;
+            }
+            
+            currentUser = user;
+            isAuthenticated = true;
+            
+            // 🔧 НОВОЕ: регистрация устройства — В ФОНЕ, не блокируем UI
+            registerDeviceInFirestore(user).catch(e => {
+                console.error('⚠️ registerDevice в фоне:', e.message);
+            });
+            
+            // 🔧 НОВОЕ: загрузка профиля — НО с кэшем внутри (мгновенно)
+            loadUserProfileFromFirestore(user).catch(e => {
+                console.error('⚠️ loadProfile в фоне:', e.message);
+            });
+            
+            // 🔧 НОВОЕ: синхронизация команд — только при онлайне
+            if (isOnline() && typeof syncTeamsFromCloud === 'function') {
+                syncTeamsFromCloud().catch(e => {
+                    console.error('⚠️ syncTeams в фоне:', e);
+                });
+            }
+            
+            closeModal('modal-auth');
+            updateUserAvatar();
+            
+            // Перестраиваем карусель с командами
+            buildCarouselItems();
+            renderCarousel();
+            
+            // Восстанавливаем позицию карусели
+            const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
+            if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
+                carouselActiveIndex = savedState.carouselIdx;
+            } else {
+                carouselActiveIndex = 0;
+            }
+            activateCarouselItem(carouselActiveIndex);
+            
+        } else {
+            currentUser = null;
+            isAuthenticated = false;
+            updateUserAvatar();
+            
+            buildCarouselItems();
+            renderCarousel();
+            
+            carouselActiveIndex = 0;
+            activateCarouselItem(0);
+            
+            // Проверяем кэшированное состояние
+            const cached = getCachedAuthState();
+            const hasCachedAuth = cached !== null;
+            
+            // 🔧 НОВОЕ: показываем модалку ТОЛЬКО если:
+            // 1. Нет кэша
+            // 2. Есть интернет (иначе — работаем офлайн с кэшем)
+            // 3. Модалка ещё не показывалась в этой сессии
+            if (!hasCachedAuth && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
+                authCheckTimeout = setTimeout(() => {
+                    if (!isAuthenticated && !authInitializationComplete) {
+                        showAuthModal();
+                        sessionStorage.setItem('clc_auth_modal_shown', 'true');
+                    }
+                }, 3000);
+            } else if (hasCachedAuth && !isOnline()) {
+                // 🔧 НОВОЕ: при офлайне с кэшем — НЕ показываем модалку, работаем с кэшем
+                console.log('📴 Офлайн + есть кэш — молча работаем');
+            }
+        }
+    } catch (e) {
+        console.error('Ошибка в onAuthStateChanged:', e);
+    } finally {
+        isHandlingAuth = false;
+        authInitializationComplete = true;
+        if (authCheckTimeout) {
+            clearTimeout(authCheckTimeout);
+            authCheckTimeout = null;
+        }
+    }
 });
 
 async function loadUserProfileFromFirestore(user) {
-  if (!db) return;
-  try {
-    const doc = await db.collection('users').doc(user.uid).get();
-    if (doc.exists) {
-      currentUser.profileData = doc.data();
-    } else {
-      await saveUserProfile(user);
+    if (!db) return;
+    
+    // 🔧 НОВОЕ: сначала пытаемся взять из кэша (для мгновенного UI)
+    const cachedProfile = localStorage.getItem('clc_profile_' + user.uid);
+    if (cachedProfile) {
+        try {
+            currentUser.profileData = JSON.parse(cachedProfile);
+            console.log('✅ Профиль загружен из кэша');
+        } catch (e) {}
     }
-  } catch (e) { console.error('Ошибка загрузки профиля:', e); }
+    
+    // 🔧 НОВОЕ: при офлайне — не делаем запрос
+    if (!isOnline()) {
+        console.log('📴 Офлайн — используем кэшированный профиль');
+        return;
+    }
+    
+    try {
+        const doc = await Promise.race([
+            db.collection('users').doc(user.uid).get(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+        ]);
+        if (doc.exists) {
+            currentUser.profileData = doc.data();
+            // 🔧 НОВОЕ: сохраняем в кэш
+            localStorage.setItem('clc_profile_' + user.uid, JSON.stringify(doc.data()));
+        } else {
+            await saveUserProfile(user);
+        }
+    } catch (e) {
+        console.error('⚠️ Ошибка загрузки профиля:', e.message);
+        // 🔧 НОВОЕ: при ошибке оставляем кэшированный профиль
+    }
 }
 
 function showAuthModal() {
@@ -3126,7 +3681,9 @@ async function loginWithEmail() {
 		} catch (e) { alert('Ошибка поиска логина: ' + e.message); return; }
 	}
 	try {
-		await auth.signInWithEmailAndPassword(email, password);
+		await cred.user.sendEmailVerification();
+sessionStorage.removeItem('email_warning_shown'); // ← Добавить эту строку
+alert('✅ Регистрация успешна! Проверьте почту...');
 	} catch (error) {
 		alert('Ошибка входа: ' + error.message);
 	}
@@ -3178,6 +3735,7 @@ async function registerWithEmail() {
 		});
 
 		await cred.user.sendEmailVerification();
+sessionStorage.removeItem('email_warning_shown'); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
 		alert('✅ Регистрация успешна! Проверьте почту для подтверждения email.');
 		await auth.signOut();
 		showLoginForm();
@@ -3238,6 +3796,8 @@ lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
 
 await db.collection('users').doc(currentUser.uid).set(updateData, { merge: true });
 currentUser.profileData = { ...currentUser.profileData, ...updateData };
+// 🔧 НОВОЕ: сохраняем профиль в кэш
+localStorage.setItem('clc_profile_' + currentUser.uid, JSON.stringify(currentUser.profileData));
 alert('✅ Профиль сохранён!');
 closeModal('modal-profile');
 updateUserAvatar();
@@ -3329,17 +3889,18 @@ function resendVerificationEmail() {
 }
 
 function logout() {
-if (confirm('Выйти из аккаунта?')) {
-    // ⬇️ НОВОЕ: Останавливаем realtime-подписки на команды
-    if (typeof stopTeamsRealtimeSync === 'function') {
-        stopTeamsRealtimeSync();
+    if (confirm('Выйти из аккаунта?')) {
+        // ⬇️ НОВОЕ: Останавливаем realtime-подписки на команды
+        if (typeof stopTeamsRealtimeSync === 'function') {
+            stopTeamsRealtimeSync();
+        }
+        auth.signOut();
+        // Очищаем кэш авторизации при выходе
+        localStorage.removeItem('clc_cached_auth');
+        sessionStorage.removeItem('clc_auth_modal_shown');
+        closeModal('modal-profile');
+        location.reload();
     }
-    
-    auth.signOut();
-    localStorage.removeItem('clc_auth_shown');
-    closeModal('modal-profile');
-    location.reload();
-}
 }
 
 async function saveUserProfile(user) {
@@ -3357,18 +3918,40 @@ async function saveUserProfile(user) {
 
 // Сохранить команду в Firestore
 async function saveTeamToFirestore(team) {
-  if (!db || !currentUser) return;
-  try {
-    await db.collection('teams').doc(team.id).set({
-      id: team.id,
-      name: team.name,
-      password: team.password || '',
-      avatar: team.avatar || null,
-      ownerId: currentUser.uid,
-      members: team.members || [currentUser.uid],
-      createdAt: team.createdAt || Date.now()
-    }, { merge: true });
-  } catch (e) { console.error('Ошибка сохранения команды:', e); }
+if (!db || !currentUser) return;
+try {
+// Гарантируем, что members в новом формате (с ролями)
+const membersData = (team.members || []).map(m => {
+  if (typeof m === 'string') {
+    // Старый формат - конвертируем
+    return { 
+      uid: m, 
+      role: (m === team.ownerId) ? 'owner' : 'member', 
+      joinedAt: Date.now() 
+    };
+  }
+  return m;
+});
+
+// Если владелец отсутствует в списке - добавляем
+if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
+  membersData.unshift({
+    uid: team.ownerId,
+    role: 'owner',
+    joinedAt: team.createdAt || Date.now()
+  });
+}
+
+await db.collection('teams').doc(team.id).set({
+  id: team.id,
+  name: team.name,
+  password: team.password || '',
+  avatar: team.avatar || null,
+  ownerId: team.ownerId || currentUser.uid,
+  members: membersData,
+  createdAt: team.createdAt || Date.now()
+}, { merge: true });
+} catch (e) { console.error('Ошибка сохранения команды:', e); }
 }
 
 // Удалить команду из Firestore
@@ -3538,23 +4121,26 @@ function stopTeamsRealtimeSync() {
 
 // Обработка добавления/обновления команды из облака
 function handleTeamUpsert(teamData) {
-    const localIdx = teams.findIndex(t => t.id === teamData.id);
-    const teamObj = {
-        id: teamData.id,
-        name: teamData.name,
-        password: teamData.password || '',
-        avatar: teamData.avatar || null,
-        ownerId: teamData.ownerId,
-        members: teamData.members || [],
-        createdAt: teamData.createdAt
-    };
-    
-    if (localIdx === -1) {
-        teams.push(teamObj);
-    } else {
-        teams[localIdx] = { ...teams[localIdx], ...teamObj };
-    }
-    saveToStorage();
+const localIdx = teams.findIndex(t => t.id === teamData.id);
+const teamObj = {
+id: teamData.id,
+name: teamData.name,
+password: teamData.password || '',
+avatar: teamData.avatar || null,
+ownerId: teamData.ownerId,
+members: teamData.members || [],
+createdAt: teamData.createdAt
+};
+
+// Миграция старых данных из облака (members: ['uid'] -> [{uid, role, joinedAt}])
+migrateTeamMembers(teamObj);
+
+if (localIdx === -1) {
+teams.push(teamObj);
+} else {
+teams[localIdx] = { ...teams[localIdx], ...teamObj };
+}
+saveToStorage();
 }
 
 // Обработка удаления команды из облака
@@ -3961,12 +4547,133 @@ async function removeDeviceFromProfile(deviceId) {
     await loadProfileDevices();
   }
 }
-// Добавить кнопку "Пользователи" в команду
-function showTeamMembers(teamId) {
-const team = teams.find(t => t.id === teamId);
-if (!team) return;
-const members = []; // Здесь будет логика получения пользователей команды
-alert(`Команда: ${team.name}\n\nФункция в разработке...\nЗдесь будет список участников команды.`);
+// === ОБРАБОТКА OFFLINE/ONLINE РЕЖИМА ===
+function showOfflineNotification() {
+    // Удаляем старое уведомление, если есть
+    const oldNotification = document.getElementById('offline-notification');
+    if (oldNotification) oldNotification.remove();
+    
+    const notification = document.createElement('div');
+    notification.id = 'offline-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ef5350;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        z-index: 10000;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideDown 0.3s ease;
+    `;
+    notification.innerHTML = '📴 Нет подключения к интернету. Работаем в офлайн режиме.';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 4000);
+}
+
+function showOnlineNotification() {
+    const notification = document.createElement('div');
+    notification.id = 'online-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4caf50;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        z-index: 10000;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideDown 0.3s ease;
+    `;
+    notification.innerHTML = '🌐 Подключение восстановлено! Синхронизация...';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 3000);
+}
+
+// Добавляем CSS анимации
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from { transform: translate(-50%, -100%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { transform: translate(-50%, 0); opacity: 1; }
+        to { transform: translate(-50%, -100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
+window.addEventListener('online', () => {
+    console.log('🌐 Интернет восстановлен');
+    showOnlineNotification();
+    
+    // 🔧 НОВОЕ: полная пересинхронизация при появлении интернета
+    setTimeout(async () => {
+        // 1. Если есть кэш авторизации, но Firebase считает что мы не залогинены —
+        //    пробуем переподключиться (Firebase сам восстановит сессию)
+        const cached = getCachedAuthState();
+        if (cached && !isAuthenticated) {
+            console.log('🔄 Переподключение по кэшу...');
+            // Firebase сам подхватит через onAuthStateChanged
+        }
+        
+        // 2. Если авторизованы — синхронизируем всё
+        if (isAuthenticated && currentUser) {
+            try {
+                // Регистрация/обновление устройства
+                await registerDeviceInFirestore(currentUser);
+                
+                // Обновление профиля из облака
+                await loadUserProfileFromFirestore(currentUser);
+                updateUserAvatar();
+                
+                // Синхронизация команд
+                if (typeof syncTeamsFromCloud === 'function') {
+                    await syncTeamsFromCloud();
+                }
+                
+                console.log('✅ Синхронизация после онлайна завершена');
+            } catch (e) {
+                console.error('⚠️ Ошибка синхронизации:', e);
+            }
+        }
+    }, 1000);
+});
+
+window.addEventListener('offline', () => {
+    console.log('📴 Интернет отключен');
+    showOfflineNotification();
+});
+
+// Проверяем состояние при загрузке
+if (!navigator.onLine) {
+    console.log('📴 Приложение запущено без интернета');
+    // Не показываем модалку авторизации, если есть кэш
+    const cached = getCachedAuthState();
+    if (cached) {
+        console.log('✅ Используем кэшированную авторизацию');
+    }
 }
 loadFromStorage();
 buildCarouselItems();
