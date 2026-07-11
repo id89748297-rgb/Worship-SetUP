@@ -848,6 +848,11 @@ firebase.firestore().enablePersistence().catch((err) => {
     }
 });
 
+// === ГЕНЕРАЦИЯ УНИКАЛЬНОГО ID ДЛЯ ПЕСЕН ===
+function generateCloudId() {
+    return 'song_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9);
+}
+
 // === ПРОВЕРКА ОНЛАЙН-СТАТУСА ===
 function isOnline() {
     return navigator.onLine !== false;
@@ -2622,7 +2627,17 @@ function getNextId(arr) { return arr.length === 0 ? 1 : arr.reduce((max, item) =
 const existingSong = songs.find(s => s.title.toLowerCase() === title.toLowerCase() && s.id !== currentSongId);
 if (existingSong) { alert(`⚠️ Песня "${title}" уже существует!`); return; }
 if (isLocalEdit && currentSlId) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === currentSongId); if (item) item.chordpro = chordpro; saveToStorage(); alert('✅ Сохранено локально!'); }
-else { let song = songs.find(x => x.id === currentSongId); if (song) { song.title = title; song.chordpro = chordpro; song.key = key; song.author = author; song.bpm = bpm; song.category = category; } else { songs.push({id: getNextId(songs), title, chordpro, key, author, bpm, category, createdAt: Date.now(), columns: currentColumns, fontSize}); } saveToStorage(); alert('✅ Песня сохранена!'); }
+else { let song = songs.find(x => x.id === currentSongId);if (song) {
+    song.title = title;
+    song.chordpro = chordpro;
+    song.key = key;
+    song.author = author;
+    song.bpm = bpm;
+    song.category = category;
+    song.updatedAt = Date.now();
+    const teamSetlists = setlists.filter(sl => sl.teamId && sl.songs.some(it => it.id === song.id));
+    teamSetlists.forEach(sl => syncTeamSongToCloud(sl.teamId, song));
+} else { songs.push({id: getNextId(songs), title, chordpro, key, author, bpm, category, cloudId: generateCloudId(), createdAt: Date.now(), columns: currentColumns, fontSize}); } saveToStorage(); alert('✅ Песня сохранена!'); }
 closeModal('modal-song-edit'); currentSongId = null; const searchBox = document.getElementById('songs-search'); if (searchBox) searchBox.value = ''; renderSongs();
 }
 function switchTab(tab, el) { currentTab = tab; document.querySelectorAll('#home-view-setlists .tab-style').forEach(t => t.classList.remove('active')); el.classList.add('active'); renderSetlists(); saveAppState(); }
@@ -3051,7 +3066,7 @@ btn.style.boxShadow = 'none';
 }
 });
 }
-function finalizeExpressAdd(title, chordpro, key, bpm, author = '', category = '') { function getNextId(arr) { return arr.length === 0 ? 1 : arr.reduce((max, item) => Math.max(max, item.id), 0) + 1; } songs.push({ id: getNextId(songs), title, chordpro, key, author: author || '', bpm, category, createdAt: Date.now(), columns: currentColumns, fontSize }); saveToStorage(); closeModal('modal-express-add'); renderSongs(); alert(`✅ Песня "${title}" добавлена!\nАвтор: ${author || '—'}\nТональность: ${key}\nBPM: ${bpm || '—'}\nКатегория: ${category ? CATEGORY_LABELS[category] : '—'}`); }
+function finalizeExpressAdd(title, chordpro, key, bpm, author = '', category = '') { function getNextId(arr) { return arr.length === 0 ? 1 : arr.reduce((max, item) => Math.max(max, item.id), 0) + 1; } songs.push({ id: getNextId(songs), title, chordpro, key, author: author || '', bpm, category, cloudId: generateCloudId(), createdAt: Date.now(), columns: currentColumns, fontSize }); saveToStorage(); closeModal('modal-express-add'); renderSongs(); alert(`✅ Песня "${title}" добавлена!\nАвтор: ${author || '—'}\nТональность: ${key}\nBPM: ${bpm || '—'}\nКатегория: ${category ? CATEGORY_LABELS[category] : '—'}`); }
 function syncColumnsSelects(value) { const sel2 = document.getElementById('columns-select-mobile'); if (sel2) sel2.value = value; const selD = document.getElementById('columns-select-desktop'); if (selD) selD.value = value; }
 function updateToggleButtonsUI() {
 const chordsIcon = currentHideChords ? '🚫' : '👁️';
@@ -3376,7 +3391,7 @@ if (sd.sectionNotes && Object.keys(sd.sectionNotes).length > 0) { if (!sectionNo
 if (sd.inlineComments && Object.keys(sd.inlineComments).length > 0) { if (!inlineComments[existing.id]) inlineComments[existing.id] = {}; Object.assign(inlineComments[existing.id], sd.inlineComments); }
 } else {
 const nid = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
-songs.push({ id: nid, title: sd.title, author: sd.author || '', key: songOriginalKey, bpm: sd.bpm || '', category: sd.category || '', chordpro: sd.chordpro, createdAt: Date.now(), columns: currentColumns, fontSize });
+songs.push({ id: nid, title: sd.title, author: sd.author || '', key: songOriginalKey, bpm: sd.bpm || '', category: sd.category || '', chordpro: sd.chordpro, cloudId: generateCloudId(), createdAt: Date.now(), columns: currentColumns, fontSize });
 newSongs.push({ id: nid, capo: sd.capo || 0, key: sd.key, chordpro: null, columns: currentColumns, fontSize });
 if (sd.sectionNotes && Object.keys(sd.sectionNotes).length > 0) sectionNotes[nid] = { ...sd.sectionNotes };
 if (sd.inlineComments && Object.keys(sd.inlineComments).length > 0) inlineComments[nid] = { ...sd.inlineComments };
@@ -4132,30 +4147,174 @@ async function saveTeamSetlistToFirestore(teamId, setlist) {
 
 // ⬇️ Вставьте эту функцию
 let syncTimeouts = {};
-function syncTeamSetlistToCloud(sl) {
-if (!sl || !sl.teamId || !isAuthenticated || !db) return;
-sl.updatedAt = Date.now();
-if (syncTimeouts[sl.id]) clearTimeout(syncTimeouts[sl.id]);
-syncTimeouts[sl.id] = setTimeout(async () => {
-try {
-await db.collection('teams').doc(sl.teamId)
-.collection('setlists').doc(String(sl.id)).set({
-id: sl.id,
-date: sl.date,
-time: sl.time || '',
-name: sl.name,
-isArchived: sl.isArchived || false,
-songs: sl.songs || [],
-sharedAt: sl.sharedAt || null,
-hasChanges: sl.hasChanges || false,
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-}, { merge: true });
-console.log('✅ Сет-лист синхронизирован:', sl.id);
-} catch (e) {
-console.error('⚠️ Ошибка синхронизации сет-листа в облако:', e);
+// === СИНХРОНИЗАЦИЯ ПЕСЕН КОМАНДЫ ===
+let songSyncTimeouts = {};
+
+function syncTeamSongToCloud(teamId, song) {
+    if (!teamId || !song || !isAuthenticated || !db) return;
+    if (!song.cloudId) {
+        song.cloudId = generateCloudId();
+        saveToStorage();
+    }
+    if (songSyncTimeouts[song.cloudId]) clearTimeout(songSyncTimeouts[song.cloudId]);
+    songSyncTimeouts[song.cloudId] = setTimeout(async () => {
+        try {
+            await db.collection('teams').doc(teamId)
+                .collection('songs').doc(song.cloudId).set({
+                    cloudId: song.cloudId,
+                    title: song.title || '',
+                    author: song.author || '',
+                    key: song.key || 'C',
+                    originalKey: song.originalKey || song.key || 'C',
+                    bpm: song.bpm || '',
+                    category: song.category || '',
+                    chordpro: song.chordpro || '',
+                    sectionNotes: sectionNotes[song.id] || {},
+                    inlineComments: inlineComments[song.id] || {},
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            console.log('✅ Песня синхронизирована:', song.title);
+        } catch (e) {
+            console.error('⚠️ Ошибка синхронизации песни:', e);
+        }
+        delete songSyncTimeouts[song.cloudId];
+    }, 1500);
 }
-delete syncTimeouts[sl.id];
-}, 1500);
+
+function syncTeamSongsFromSetlist(sl) {
+    if (!sl || !sl.teamId) return;
+    sl.songs.forEach(item => {
+        const song = songs.find(s => s.id === item.id);
+        if (!song) return;
+        const songToSync = {
+            ...song,
+            chordpro: item.chordpro || song.chordpro,
+            key: item.key || song.key
+        };
+        syncTeamSongToCloud(sl.teamId, songToSync);
+    });
+}
+
+// === ПОДПИСКА НА ПЕСНИ КОМАНДЫ ===
+let teamSongsUnsubscribers = [];
+let subscribedSongsTeamIds = new Set();
+
+function subscribeToTeamSongs(teamId) {
+    if (subscribedSongsTeamIds.has(teamId)) return;
+    subscribedSongsTeamIds.add(teamId);
+    const unsub = db.collection('teams').doc(teamId)
+        .collection('songs')
+        .onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                const songData = change.doc.data();
+                if (change.type === 'added' || change.type === 'modified') {
+    handleTeamUpsert(teamData);
+    subscribeToTeamSetlists(teamData.id);
+    subscribeToTeamSongs(teamData.id);
+    migrateTeamSongs(teamData.id);
+}
+            });
+        }, (error) => {
+            console.error('Ошибка подписки на песни команды:', error);
+        });
+    teamSongsUnsubscribers.push(unsub);
+}
+
+function handleTeamSongUpsert(songData, teamId) {
+    if (!songData || !songData.cloudId) return;
+    let localSong = songs.find(s => s.cloudId === songData.cloudId);
+    if (localSong) {
+        const localUpdated = localSong.updatedAt || 0;
+        const cloudUpdated = songData.updatedAt?.toMillis?.() || songData.updatedAt || 0;
+        if (cloudUpdated > localUpdated) {
+            localSong.title = songData.title;
+            localSong.author = songData.author || '';
+            localSong.key = songData.key || localSong.key;
+            localSong.bpm = songData.bpm || '';
+            localSong.category = songData.category || '';
+            if (songData.chordpro) localSong.chordpro = songData.chordpro;
+            localSong.updatedAt = cloudUpdated;
+            if (songData.sectionNotes) sectionNotes[localSong.id] = { ...songData.sectionNotes };
+            if (songData.inlineComments) inlineComments[localSong.id] = { ...songData.inlineComments };
+            saveToStorage();
+            console.log('🔄 Песня обновлена из облака:', localSong.title);
+        }
+    } else {
+        const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+        const newSong = {
+            id: newId,
+            cloudId: songData.cloudId,
+            title: songData.title || 'Без названия',
+            author: songData.author || '',
+            key: songData.key || 'C',
+            bpm: songData.bpm || '',
+            category: songData.category || '',
+            chordpro: songData.chordpro || '',
+            createdAt: Date.now(),
+            updatedAt: songData.updatedAt?.toMillis?.() || songData.updatedAt || Date.now(),
+            columns: currentColumns,
+            fontSize: fontSize
+        };
+        songs.push(newSong);
+        if (songData.sectionNotes) sectionNotes[newId] = { ...songData.sectionNotes };
+        if (songData.inlineComments) inlineComments[newId] = { ...songData.inlineComments };
+        saveToStorage();
+        console.log('✅ Песня загружена из облака:', newSong.title);
+    }
+    if (currentHomeView === 'songs') renderSongs();
+    else if (currentHomeView === 'setlists') renderSetlists();
+    else if (currentHomeView?.startsWith('team_')) {
+        showTeamDetailView(currentHomeView.replace('team_', ''));
+    }
+    if (document.getElementById('page-setlist-detail')?.classList.contains('active')) {
+        renderSlSongs();
+    }
+}
+
+function stopTeamsSongsRealtimeSync() {
+    teamSongsUnsubscribers.forEach(unsub => unsub());
+    teamSongsUnsubscribers = [];
+    subscribedSongsTeamIds.clear();
+}
+
+function syncTeamSetlistToCloud(sl) {
+    if (!sl || !sl.teamId || !isAuthenticated || !db) return;
+    sl.updatedAt = Date.now();
+    if (syncTimeouts[sl.id]) clearTimeout(syncTimeouts[sl.id]);
+    syncTimeouts[sl.id] = setTimeout(async () => {
+        try {
+            const songsData = sl.songs.map(item => {
+                const s = songs.find(x => x.id === item.id);
+                if (!s) return item;
+                return {
+                    ...item,
+                    cloudId: s.cloudId || null,
+                    title: s.title,
+                    author: s.author || '',
+                    originalKey: s.key,
+                    bpm: s.bpm || '',
+                    category: s.category || ''
+                };
+            });
+            await db.collection('teams').doc(sl.teamId)
+                .collection('setlists').doc(String(sl.id)).set({
+                    id: sl.id,
+                    date: sl.date,
+                    time: sl.time || '',
+                    name: sl.name,
+                    isArchived: sl.isArchived || false,
+                    songs: songsData,
+                    sharedAt: sl.sharedAt || null,
+                    hasChanges: sl.hasChanges || false,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            console.log('✅ Сет-лист синхронизирован:', sl.id);
+            syncTeamSongsFromSetlist(sl);
+        } catch (e) {
+            console.error('⚠️ Ошибка синхронизации сет-листа в облако:', e);
+        }
+        delete syncTimeouts[sl.id];
+    }, 1500);
 }
 
 // Удалить сет-лист команды из Firestore
@@ -4210,6 +4369,7 @@ function stopTeamsRealtimeSync() {
     teamSetlistsUnsubscribers.forEach(unsub => unsub());
     teamSetlistsUnsubscribers = [];
     subscribedTeamIds.clear();
+    stopTeamsSongsRealtimeSync();
 }
 
 // Обработка добавления/обновления команды из облака
@@ -4247,6 +4407,7 @@ function handleTeamDelete(teamId) {
 function subscribeToTeamSetlists(teamId) {
     if (subscribedTeamIds.has(teamId)) return;
     subscribedTeamIds.add(teamId);
+    subscribeToTeamSongs(teamId);
     
     const unsub = db.collection('teams').doc(teamId)
         .collection('setlists')
@@ -4287,23 +4448,55 @@ function subscribeToTeamSetlists(teamId) {
 
 // Обновление/добавление сет-листа из облака
 function handleSetlistUpsert(slObj) {
-const localIdx = setlists.findIndex(s => s.id === slObj.id && s.teamId === slObj.teamId);
-if (localIdx !== -1) {
-const local = setlists[localIdx];
-const localUpdated = local.updatedAt || 0;
-const cloudUpdated = slObj.updatedAt || 0;
-if (localUpdated > cloudUpdated + 5000) {
-console.log('⏭️ Пропускаем обновление: локальная версия новее');
-return;
+    const localIdx = setlists.findIndex(s => s.id === slObj.id && s.teamId === slObj.teamId);
+    
+    if (slObj.songs && Array.isArray(slObj.songs)) {
+        slObj.songs.forEach(item => {
+            if (!item.title) return;
+            let localSong = null;
+            if (item.cloudId) {
+                localSong = songs.find(s => s.cloudId === item.cloudId);
+            }
+            if (!localSong) {
+                localSong = songs.find(s => s.title.toLowerCase() === item.title.toLowerCase());
+            }
+            if (!localSong) {
+                const newId = songs.length > 0 ? songs.reduce((max, s) => Math.max(max, s.id), 0) + 1 : 1;
+                localSong = {
+                    id: newId,
+                    cloudId: item.cloudId || generateCloudId(),
+                    title: item.title,
+                    author: item.author || '',
+                    key: item.originalKey || item.key || 'C',
+                    bpm: item.bpm || '',
+                    category: item.category || '',
+                    chordpro: item.chordpro || '',
+                    createdAt: Date.now(),
+                    columns: currentColumns,
+                    fontSize: fontSize
+                };
+                songs.push(localSong);
+                console.log('✅ Создана песня из сет-листа:', localSong.title);
+            }
+            item.id = localSong.id;
+        });
+        saveToStorage();
+    }
+    
+    if (localIdx !== -1) {
+        const local = setlists[localIdx];
+        const localUpdated = local.updatedAt || 0;
+        const cloudUpdated = slObj.updatedAt || 0;
+        if (localUpdated > cloudUpdated + 5000) {
+            console.log('⏭️ Пропускаем обновление: локальная версия новее');
+            return;
+        }
+        setlists[localIdx] = { ...local, ...slObj };
+    } else {
+        setlists.push(slObj);
+    }
+    saveToStorage();
 }
-setlists[localIdx] = { ...local, ...slObj };
-} else {
-setlists.push(slObj);
-}
-saveToStorage();
-}
-
-// Удаление сет-листа из облака
 function handleSetlistDelete(slId) {
     setlists = setlists.filter(s => s.id !== slId);
     saveToStorage();
@@ -4861,6 +5054,19 @@ track.style.transform = `translateX(${translateX}px)`;
 }
 });
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => console.log('SW:', r.scope)).catch(console.error));
+function migrateTeamSongs(teamId) {
+    const teamSetlists = setlists.filter(sl => sl.teamId === teamId);
+    teamSetlists.forEach(sl => {
+        sl.songs.forEach(item => {
+            const song = songs.find(s => s.id === item.id);
+            if (song && !song.cloudId) {
+                song.cloudId = generateCloudId();
+                syncTeamSongToCloud(teamId, song);
+            }
+        });
+    });
+    saveToStorage();
+}
 </script>
 </body>
 </html>
