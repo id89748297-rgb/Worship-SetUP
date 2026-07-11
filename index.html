@@ -2091,12 +2091,18 @@ function confirmJoinTeam(teamId, password) {
     teams.push(newTeam);
     saveToStorage();
     
-    // ⬇️ НОВОЕ: Добавляем себя в members команды в Firestore
-    if (isAuthenticated && currentUser && db) {
-        addSelfToTeamMembers(teamId).catch(e => {
-            console.error('Ошибка добавления в members:', e);
-        });
-    }
+// ⬇️ ИСПРАВЛЕНО: Добавляем себя с проверкой пароля
+if (isAuthenticated && currentUser && db) {
+  addSelfToTeamMembers(teamId, password).catch(e => {
+    console.error('Ошибка добавления в members:', e);
+    alert('❌ Не удалось присоединиться: ' + e.message);
+    // Убираем локальную команду, если не получилось
+    teams = teams.filter(t => t.id !== teamId);
+    saveToStorage();
+    renderCarousel();
+    showTeamsView();
+  });
+}
     
     closeModal('modal-join-team-link');
     renderCarousel();
@@ -2105,43 +2111,54 @@ function confirmJoinTeam(teamId, password) {
 }
 
 // Новая функция: добавить себя в members команды в Firestore
-async function addSelfToTeamMembers(teamId) {
-if (!db || !currentUser) return;
-try {
-const teamRef = db.collection('teams').doc(teamId);
-await db.runTransaction(async (transaction) => {
-const doc = await transaction.get(teamRef);
-if (!doc.exists) return;
-const data = doc.data();
-const members = data.members || [];
-const memberUids = data.memberUids || [];
-const existingMember = members.find(m =>
-(typeof m === 'string' && m === currentUser.uid) ||
-(typeof m === 'object' && m.uid === currentUser.uid)
-);
-if (!existingMember) {
-const newMembers = members.map(m => {
-if (typeof m === 'string') {
-return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
-}
-return m;
-});
-newMembers.push({
-uid: currentUser.uid,
-role: 'member',
-joinedAt: Date.now()
-});
-const newMemberUids = [...memberUids, currentUser.uid];
-transaction.update(teamRef, {
-members: newMembers,
-memberUids: newMemberUids,
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-}
-});
-} catch (e) {
-console.error('Ошибка добавления в members:', e);
-}
+async function addSelfToTeamMembers(teamId, password = '') {
+  if (!db || !currentUser) return;
+  try {
+    const teamRef = db.collection('teams').doc(teamId);
+    await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(teamRef);
+      if (!doc.exists) {
+        throw new Error('Команда не найдена');
+      }
+      const data = doc.data();
+      
+      // 🔒 ПРОВЕРКА ПАРОЛЯ
+      if (data.password && data.password !== password) {
+        throw new Error('Неверный пароль команды');
+      }
+      
+      const members = data.members || [];
+      const memberUids = data.memberUids || [];
+      const existingMember = members.find(m =>
+        (typeof m === 'string' && m === currentUser.uid) ||
+        (typeof m === 'object' && m.uid === currentUser.uid)
+      );
+      
+      // Уже в команде — выходим
+      if (existingMember) return;
+      
+      const newMembers = members.map(m => {
+        if (typeof m === 'string') {
+          return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
+        }
+        return m;
+      });
+      newMembers.push({
+        uid: currentUser.uid,
+        role: 'member',
+        joinedAt: Date.now()
+      });
+      const newMemberUids = [...memberUids, currentUser.uid];
+      transaction.update(teamRef, {
+        members: newMembers,
+        memberUids: newMemberUids,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+  } catch (e) {
+    console.error('Ошибка добавления в members:', e);
+    throw e;
+  }
 }
 function openSetlistModalForTeam(teamId) {
 document.getElementById('sl-date').value = getCurrentDate();
@@ -4008,38 +4025,51 @@ async function saveUserProfile(user) {
 // === СИНХРОНИЗАЦИЯ КОМАНД ЧЕРЕZ FIRESTORE ===
 
 async function saveTeamToFirestore(team) {
-if (!db || !currentUser) return;
-try {
-const membersData = (team.members || []).map(m => {
-if (typeof m === 'string') {
-return {
-uid: m,
-role: (m === team.ownerId) ? 'owner' : 'member',
-joinedAt: Date.now()
-};
-}
-return m;
-});
-if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
-membersData.unshift({
-uid: team.ownerId,
-role: 'owner',
-joinedAt: team.createdAt || Date.now()
-});
-}
-const memberUids = membersData.map(m => m.uid);
-await db.collection('teams').doc(team.id).set({
-id: team.id,
-name: team.name,
-password: team.password || '',
-avatar: team.avatar || null,
-ownerId: team.ownerId || currentUser.uid,
-members: membersData,
-memberUids: memberUids,
-createdAt: team.createdAt || Date.now(),
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-}, { merge: true });
-} catch (e) { console.error('Ошибка сохранения команды:', e); }
+  if (!db || !currentUser) return;
+  try {
+    // 🔒 Проверяем роль: только владелец/админ могут менять участников
+    const isOwner = team.ownerId === currentUser.uid;
+    const isAdmin = (team.members || []).some(m => 
+      (typeof m === 'object' && m.uid === currentUser.uid && m.role === 'admin')
+    );
+    const canManageMembers = isOwner || isAdmin;
+    
+    const updateData = {
+      id: team.id,
+      name: team.name,
+      password: team.password || '',
+      avatar: team.avatar || null,
+      ownerId: team.ownerId || currentUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    // 🔒 Обновляем members/memberUids ТОЛЬКО если есть права
+    if (canManageMembers) {
+      const membersData = (team.members || []).map(m => {
+        if (typeof m === 'string') {
+          return {
+            uid: m,
+            role: (m === team.ownerId) ? 'owner' : 'member',
+            joinedAt: Date.now()
+          };
+        }
+        return m;
+      });
+      if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
+        membersData.unshift({
+          uid: team.ownerId,
+          role: 'owner',
+          joinedAt: team.createdAt || Date.now()
+        });
+      }
+      updateData.members = membersData;
+      updateData.memberUids = membersData.map(m => m.uid);
+    }
+    
+    await db.collection('teams').doc(team.id).set(updateData, { merge: true });
+  } catch (e) { 
+    console.error('Ошибка сохранения команды:', e); 
+  }
 }
 
 // Удалить команду из Firestore
