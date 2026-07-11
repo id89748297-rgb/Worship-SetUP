@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
-<!-- saved from url=(0059)https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/ -->
-<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#9575cd">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,18 +9,18 @@
 <meta name="apple-mobile-web-app-title" content="Worship SetUP">
 <meta name="application-name" content="Worship SetUP">
 <meta name="description" content="Worship SetUP - приложение для богослужебных песен">
-<link rel="manifest" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/icon-512.png">
-<link rel="apple-touch-icon" sizes="180x180" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/icon-180.png">
-<link rel="apple-touch-icon" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/icon-192.png">
-<link rel="apple-touch-icon" sizes="152x152" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/icon-180.png">
-<link rel="apple-touch-icon" sizes="167x167" href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/icon-180.png">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icon-180.png">
 <title>Worship SetUP</title>
 <!-- Firebase SDK -->
-<script src="./Worship SetUP_files/firebase-app-compat.js.загрузка"></script>
-<script src="./Worship SetUP_files/firebase-auth-compat.js.загрузка"></script>
-<script src="./Worship SetUP_files/firebase-firestore-compat.js.загрузка"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { touch-action: manipulation; }
@@ -378,16 +377,7 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 .cropper-cancel-btn { background: #78909c; color: white; }
 .cropper-save-btn { background: #9575cd; color: white; }
 </style>
-<style>
-    @keyframes slideDown {
-        from { transform: translate(-50%, -100%); opacity: 0; }
-        to { transform: translate(-50%, 0); opacity: 1; }
-    }
-    @keyframes slideUp {
-        from { transform: translate(-50%, 0); opacity: 1; }
-        to { transform: translate(-50%, -100%); opacity: 0; }
-    }
-</style></head>
+</head>
 <body class="dark">
 <div id="page-home" class="page active">
 <div class="header">
@@ -401,40 +391,10 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </div>
 </div>
 <div class="carousel-container" id="carousel-container">
-<div class="carousel-track" id="carousel-track" style="transition: none; transform: translateX(0px);"><div class="carousel-item neighbor" data-real-idx="-1" data-item-id="teams" onclick="handleCarouselClick(-1)">
-<div class="carousel-item-inner">
-<div class="carousel-item-icon">👥</div>
-<div class="carousel-item-label">Команды</div>
-
+<div class="carousel-track" id="carousel-track"></div>
 </div>
-</div><div class="carousel-item active" data-real-idx="0" data-item-id="songs" onclick="handleCarouselClick(0)">
-<div class="carousel-item-inner">
-<div class="carousel-item-icon">🎵</div>
-<div class="carousel-item-label">Песни</div>
-
-</div>
-</div><div class="carousel-item neighbor" data-real-idx="1" data-item-id="setlists" onclick="handleCarouselClick(1)">
-<div class="carousel-item-inner">
-<div class="carousel-item-icon">📋</div>
-<div class="carousel-item-label">Сет-листы</div>
-
-</div>
-</div><div class="carousel-item neighbor" data-real-idx="2" data-item-id="teams" onclick="handleCarouselClick(2)">
-<div class="carousel-item-inner">
-<div class="carousel-item-icon">👥</div>
-<div class="carousel-item-label">Команды</div>
-
-</div>
-</div><div class="carousel-item" data-real-idx="3" data-item-id="songs" onclick="handleCarouselClick(3)">
-<div class="carousel-item-inner">
-<div class="carousel-item-icon">🎵</div>
-<div class="carousel-item-label">Песни</div>
-
-</div>
-</div></div>
-</div>
-<div class="carousel-indicator" id="carousel-indicator"><div class="carousel-dot active"></div><div class="carousel-dot "></div><div class="carousel-dot "></div></div>
-<div id="home-view-songs" style="display: block;">
+<div class="carousel-indicator" id="carousel-indicator"></div>
+<div id="home-view-songs">
 <input type="text" id="songs-search" class="search-box" placeholder=" Поиск песен..." oninput="renderSongs()">
 <select id="songs-sort" class="sort-select" onchange="renderSongs()">
 <option value="az">А → Я (по алфавиту)</option>
@@ -448,12 +408,12 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </select>
 <div class="home-actions-row row-top">
 <button class="btn-pastel" onclick="openExpressAdd()">⚡ Добавить песню (экспресс)</button>
-<button class="btn-pastel" onclick="document.getElementById(&#39;import-song-input&#39;).click()">📥 Загрузить</button>
+<button class="btn-pastel" onclick="document.getElementById('import-song-input').click()">📥 Загрузить</button>
 <button class="btn-pastel" onclick="openMainSongEditor()">➕Добавить</button>
 </div>
 <div class="home-actions-row row-bottom">
 <button class="btn-pastel" onclick="exportDatabase()"> Экспорт базы</button>
-<button class="btn-pastel" onclick="document.getElementById(&#39;import-database-input&#39;).click()">📥 Импорт базы</button>
+<button class="btn-pastel" onclick="document.getElementById('import-database-input').click()">📥 Импорт базы</button>
 </div>
 <input type="file" id="import-database-input" accept=".clcdb" style="display: none;" onchange="handleImportDatabase(event)">
 <input type="file" id="import-song-input" accept=".clcsong" style="display: none;" onchange="handleImportSong(event)">
@@ -472,11 +432,11 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <div id="home-view-setlists" style="display: none;">
 <div class="setlist-grid">
 <button class="btn-pastel grid-btn" onclick="openSetlistModal()">➕ Создать сет-лист</button>
-<button class="btn-pastel grid-btn" onclick="document.getElementById(&#39;import-setlist-input&#39;).click()">📥 Загрузить сет-лист(ы)</button>
-<div class="grid-btn tab-style active" onclick="switchTab(&#39;current&#39;, this)">Актуальные<span class="btn-subtext">сет-листы</span></div>
-<div class="grid-btn tab-style" onclick="switchTab(&#39;archive&#39;, this)">Архив<span class="btn-subtext">сет-листов</span></div>
+<button class="btn-pastel grid-btn" onclick="document.getElementById('import-setlist-input').click()">📥 Загрузить сет-лист(ы)</button>
+<div class="grid-btn tab-style active" onclick="switchTab('current', this)">Актуальные<span class="btn-subtext">сет-листы</span></div>
+<div class="grid-btn tab-style" onclick="switchTab('archive', this)">Архив<span class="btn-subtext">сет-листов</span></div>
 </div>
-<input type="file" id="import-setlist-input" accept=".clcsetlist" multiple="" style="display: none;" onchange="handleImportSetlist(event)">
+<input type="file" id="import-setlist-input" accept=".clcsetlist" multiple style="display: none;" onchange="handleImportSetlist(event)">
 <div class="home-actions-row" style="margin-top: 10px;">
 <button class="btn-pastel" onclick="exportAllActiveSetlists()">📤 Отправить все актуальные сет-листы</button>
 </div>
@@ -542,7 +502,7 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <h1 id="song-view-title" class="song-title-main">Песня</h1>
 <div id="song-view-links" class="song-view-links"></div>
 </div>
-<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()">🌙</button></div>
+<div class="header-right"><button class="theme-toggle" onclick="toggleTheme()"></button></div>
 </div>
 <div class="song-toolbar">
 <div class="toolbar-row">
@@ -562,10 +522,10 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <button class="toolbar-btn-item desktop-only" onclick="downloadPdf()" title="PDF"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📄</span><span style="font-size: 8px; margin-top: 2px;">PDF</span></div></button>
 </div>
 <div class="toolbar-row" id="toolbar-row-3" style="margin-top: 8px; display: none;">
-<button class="toolbar-btn-item" id="btn-toggle-chords" onclick="toggleChordsVisibility()" title="Скрыть/показать аккорды"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="chords-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">аккорды</span></div></button>
+<button class="toolbar-btn-item" id="btn-toggle-chords" onclick="toggleChordsVisibility()" title="Скрыть/показать аккорды"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="chords-icon" style="font-size: 20px;">️</span><span style="font-size: 8px; margin-top: 2px;">аккорды</span></div></button>
 <button class="toolbar-btn-item" id="btn-toggle-lyrics" onclick="toggleLyricsVisibility()" title="Скрыть/показать текст"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="lyrics-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">текст</span></div></button>
 <button class="toolbar-btn-item" id="btn-toggle-arrows" onclick="toggleArrowsVisibility()" title="Скрыть/показать стрелки"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="arrows-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">стрелки</span></div></button>
-<button class="toolbar-btn-item" id="btn-toggle-comments" onclick="toggleCommentsVisibility()" title="Скрыть/показать комментарии"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="comments-icon" style="font-size: 20px;">👁️</span><span style="font-size: 8px; margin-top: 2px;">комм.</span></div></button>
+<button class="toolbar-btn-item" id="btn-toggle-comments" onclick="toggleCommentsVisibility()" title="Скрыть/показать комментарии"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span id="comments-icon" style="font-size: 20px;">️</span><span style="font-size: 8px; margin-top: 2px;">комм.</span></div></button>
 <button class="toolbar-btn-item desktop-only" onclick="exportSong()" title="Поделиться"><div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;"><span style="font-size: 20px;">📤</span><span style="font-size: 8px; margin-top: 2px;">поделиться</span></div></button>
 </div>
 <div class="toolbar-row mobile-only" id="toolbar-row-4" style="margin-top: 8px; display: none;">
@@ -593,19 +553,11 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <button id="side-prev" class="side-nav-btn side-nav-left" onclick="prevSong()">‹</button>
 <button id="side-next" class="side-nav-btn side-nav-right" onclick="nextSong()">›</button>
 </div>
-<div id="modal-song-edit" class="modal"><div class="modal-content"><h2 id="modal-song-edit-title">Редактор песни</h2><div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Метки в скобках: <b>E (бросить) H (ALL IN)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Комментарий строки: <b>G C D Текст **</b><br>• <b>Ссылки:</b> <code>https://...</code> (на отдельной строке)<br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ:</b> и т.д.<br>• Картинка: <b>Картинка:</b> (отдельной строкой)<br>• Такты: <b>| F#m / A | E/G# |</b></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label><input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label><div style="position: relative;"><input type="text" id="edit-author" placeholder="Автор" oninput="showAuthorSuggestions()" onblur="setTimeout(() =&gt; hideAuthorSuggestions(), 200)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="author-suggestions" class="author-suggestions" style="display: none;"></div></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Тональность <span class="required-star">*</span></label><select id="edit-key"><option value="">-- Выберите тональность --</option><option value="C">C (До)</option><option value="C#">C# / Db</option><option value="D">D (Ре)</option><option value="D#">D# / Eb</option><option value="E">E (Ми)</option><option value="F">F (Фа)</option><option value="F#">F# / Gb</option><option value="G">G (Соль)</option><option value="G#">G# / Ab</option><option value="A">A (Ля)</option><option value="A#">A# / Bb</option><option value="H">H (Си)</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label><input type="number" id="edit-bpm" placeholder="Например: 120" min="42" max="500" autocomplete="off"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Категория (необязательно)</label><select id="edit-category"><option value="">Не указана</option><option value="fast">🔥 Быстрая</option><option value="medium">🎵 Средняя</option><option value="slow">🧎 Медленная</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label><textarea id="edit-text" placeholder="G C D
-Текст песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal(&#39;modal-song-edit&#39;)">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button></div></div></div>
+<div id="modal-song-edit" class="modal"><div class="modal-content"><h2 id="modal-song-edit-title">Редактор песни</h2><div class="help-box"><b>Формат:</b><br>• Аккорды: <b>G C D Hm</b> (H вместо B!)<br>• Аккорды с басом: <b>C#/F G/B</b><br>• Аккорды + текст: <b>G C D Текст песни</b><br>• Метки в скобках: <b>E (бросить) H (ALL IN)</b><br>• Заметка справа: <b>G C D *повторить</b><br>• Комментарий строки: <b>G C D Текст **</b><br>• <b>Ссылки:</b> <code>https://...</code> (на отдельной строке)<br>• Заголовки: <b>ПРИПЕВ:</b> <b>1 КУПЛЕТ:</b> <b>БРИДЖ:</b> и т.д.<br>• Картинка: <b>Картинка:</b> (отдельной строкой)<br>• Такты: <b>| F#m / A | E/G# |</b></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название <span class="required-star">*</span></label><input type="text" id="edit-title" placeholder="Название песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Автор (необязательно)</label><div style="position: relative;"><input type="text" id="edit-author" placeholder="Автор" oninput="showAuthorSuggestions()" onblur="setTimeout(() => hideAuthorSuggestions(), 200)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="author-suggestions" class="author-suggestions" style="display: none;"></div></div><label style="font-weight: bold; margin-bottom: 5px; display: block;">Тональность <span class="required-star">*</span></label><select id="edit-key"><option value="">-- Выберите тональность --</option><option value="C">C (До)</option><option value="C#">C# / Db</option><option value="D">D (Ре)</option><option value="D#">D# / Eb</option><option value="E">E (Ми)</option><option value="F">F (Фа)</option><option value="F#">F# / Gb</option><option value="G">G (Соль)</option><option value="G#">G# / Ab</option><option value="A">A (Ля)</option><option value="A#">A# / Bb</option><option value="H">H (Си)</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">BPM (необязательно)</label><input type="number" id="edit-bpm" placeholder="Например: 120" min="42" max="500" autocomplete="off"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Категория (необязательно)</label><select id="edit-category"><option value="">Не указана</option><option value="fast">🔥 Быстрая</option><option value="medium">🎵 Средняя</option><option value="slow">🧎 Медленная</option></select><label style="font-weight: bold; margin-bottom: 5px; display: block;">Текст песни <span class="required-star">*</span></label><textarea id="edit-text" placeholder="G C D&#10;Текст песни" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-song-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSong()">Сохранить</button></div></div></div>
 <div id="modal-express-add" class="modal"><div class="modal-content">
 <h2>⚡ Экспресс-добавление песни</h2>
 <div class="help-box"><b>Формат:</b><br>• <b>1-я строка</b> — название песни (можно с BPM в конце: <code>Название 120</code>)<br>• <b>Метаданные</b> (следующими строками, в любом порядке):<br>&nbsp;&nbsp;<code>Автор: VL worship</code><br>&nbsp;&nbsp;<code>Тональность: C</code><br>&nbsp;&nbsp;<code>BPM: 120</code> или <code>BPM 120</code> или <code>Темп: 120</code><br>&nbsp;&nbsp;<code>Категория: быстрая</code> (или <code>средняя</code>, <code>медленная</code>)<br>• <b>Остальные строки</b> — аккорды и текст<br>• Если тональность не указана — определится автоматически<br>• Диапазон BPM: 42–500</div>
-<textarea id="express-text" style="min-height: 300px; width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; line-height: 1.4; resize: vertical;" placeholder="Название песни 120
-Автор: VL worship
-Тональность: C
-Категория: быстрая
-
-ПРИПЕВ:
-C G Am F
-Текст припева"></textarea>
+<textarea id="express-text" style="min-height: 300px; width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: #eee; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; line-height: 1.4; resize: vertical;" placeholder="Название песни 120&#10;Автор: VL worship&#10;Тональность: C&#10;Категория: быстрая&#10;&#10;ПРИПЕВ:&#10;C G Am F&#10;Текст припева"></textarea>
 <div id="express-key-row" style="display:none; margin-top:10px;">
 <label style="font-weight:bold; display:block; margin-bottom:5px; color:#ef5350;">⚠️ Тональность не определена однозначно. Выберите:</label>
 <div id="express-key-suggestions" style="margin-bottom: 10px;"></div>
@@ -616,18 +568,18 @@ C G Am F
 </div>
 <div id="express-info" style="display:none; margin-top:10px; padding:10px; background:rgba(76,175,80,0.15); border:1px solid rgba(76,175,80,0.5); border-radius:8px; color:#4caf50; font-size:14px;"></div>
 <div class="modal-actions">
-<button class="btn-secondary" onclick="closeModal(&#39;modal-express-add&#39;)">Отмена</button>
+<button class="btn-secondary" onclick="closeModal('modal-express-add')">Отмена</button>
 <button class="btn-main" style="width:auto; margin:0;" id="express-save-btn" onclick="saveExpressAdd()">⚡ Добавить</button>
 </div>
 </div></div>
-<div id="modal-section-edit" class="modal"><div class="modal-content"><h2>Редактировать блок</h2><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название секции</label><input type="text" id="section-edit-label" placeholder="Например: КУПЛЕТ 1"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Содержимое блока</label><textarea id="section-edit-content" style="min-height: 200px;"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal(&#39;modal-section-edit&#39;)">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSectionEdit()">Сохранить</button></div></div></div>
-<div id="modal-setlist" class="modal"><div class="modal-content"><h2>Новый сет-лист</h2><label>Дата:</label><input type="date" id="sl-date"><label>Время:</label><input type="time" id="sl-time"><label>Название мероприятия:</label><input type="text" id="sl-name" placeholder="Воскресное богослужение"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal(&#39;modal-setlist&#39;)">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSetlist()">Сохранить</button></div></div></div>
-<div id="modal-edit-setlist" class="modal"><div class="modal-content"><h2>Редактировать сет-лист</h2><label>Дата:</label><input type="date" id="edit-sl-date"><label>Время:</label><input type="time" id="edit-sl-time"><label>Название:</label><input type="text" id="edit-sl-name"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal(&#39;modal-edit-setlist&#39;)">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveEditSetlist()">Сохранить</button></div></div></div>
-<div id="modal-add-song" class="modal"><div class="modal-content"><h2>Добавить песню в сет-лист</h2><input type="text" class="search-box" id="add-song-search" placeholder="🔍 Поиск..." oninput="renderAddSongList()" autocomplete="off"><div id="add-song-list" class="add-song-list"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal(&#39;modal-add-song&#39;)" style="width: 100%;">Закрыть</button></div></div></div>
-<div id="modal-delete-confirm" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">⚠️ Внимание!</h2><p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Вы точно хотите удалить?<br><b>Нельзя будет вернуть!</b></p><p id="delete-item-name" style="font-weight: bold; margin-bottom: 20px; color: #90caf9;"></p><div style="display: flex; gap: 10px; justify-content: center;"><button class="btn-cancel-confirm" onclick="closeModal(&#39;modal-delete-confirm&#39;)">Отмена</button><button class="btn-danger-confirm" id="btn-confirm-delete">Удалить</button></div></div></div>
-<div id="modal-delete-setlist-choice" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2><p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button><button class="btn-danger-confirm" onclick="deleteSetlistChoice()">🗑️ Удалить навсегда</button><button class="btn-cancel-confirm" onclick="closeModal(&#39;modal-delete-setlist-choice&#39;)">Отмена</button></div></div></div>
-<div id="modal-archive-setlist" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Восстановить сет-лист?</h2><p id="archive-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-main" onclick="restoreSetlistChoice()">✅ Восстановить</button><button class="btn-cancel-confirm" onclick="closeModal(&#39;modal-archive-setlist&#39;)">Отмена</button></div></div></div>
-<div id="modal-image-delete" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2><p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button><button class="btn-cancel-confirm" onclick="closeModal(&#39;modal-image-delete&#39;)">Отмена</button></div></div></div>
+<div id="modal-section-edit" class="modal"><div class="modal-content"><h2>Редактировать блок</h2><label style="font-weight: bold; margin-bottom: 5px; display: block;">Название секции</label><input type="text" id="section-edit-label" placeholder="Например: КУПЛЕТ 1"><label style="font-weight: bold; margin-bottom: 5px; display: block;">Содержимое блока</label><textarea id="section-edit-content" style="min-height: 200px;"></textarea><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-section-edit')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSectionEdit()">Сохранить</button></div></div></div>
+<div id="modal-setlist" class="modal"><div class="modal-content"><h2>Новый сет-лист</h2><label>Дата:</label><input type="date" id="sl-date"><label>Время:</label><input type="time" id="sl-time"><label>Название мероприятия:</label><input type="text" id="sl-name" placeholder="Воскресное богослужение"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-setlist')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveSetlist()">Сохранить</button></div></div></div>
+<div id="modal-edit-setlist" class="modal"><div class="modal-content"><h2>Редактировать сет-лист</h2><label>Дата:</label><input type="date" id="edit-sl-date"><label>Время:</label><input type="time" id="edit-sl-time"><label>Название:</label><input type="text" id="edit-sl-name"><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-edit-setlist')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="saveEditSetlist()">Сохранить</button></div></div></div>
+<div id="modal-add-song" class="modal"><div class="modal-content"><h2>Добавить песню в сет-лист</h2><input type="text" class="search-box" id="add-song-search" placeholder="🔍 Поиск..." oninput="renderAddSongList()" autocomplete="off"><div id="add-song-list" class="add-song-list"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-add-song')" style="width: 100%;">Закрыть</button></div></div></div>
+<div id="modal-delete-confirm" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">⚠️ Внимание!</h2><p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Вы точно хотите удалить?<br><b>Нельзя будет вернуть!</b></p><p id="delete-item-name" style="font-weight: bold; margin-bottom: 20px; color: #90caf9;"></p><div style="display: flex; gap: 10px; justify-content: center;"><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-confirm')">Отмена</button><button class="btn-danger-confirm" id="btn-confirm-delete">Удалить</button></div></div></div>
+<div id="modal-delete-setlist-choice" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #ef5350; margin-bottom: 15px;">Что сделать с сет-листом?</h2><p id="delete-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-archive-sl" onclick="archiveSetlistChoice()">📦 Отправить в архив</button><button class="btn-danger-confirm" onclick="deleteSetlistChoice()">🗑️ Удалить навсегда</button><button class="btn-cancel-confirm" onclick="closeModal('modal-delete-setlist-choice')">Отмена</button></div></div></div>
+<div id="modal-archive-setlist" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Восстановить сет-лист?</h2><p id="archive-setlist-name" style="font-weight: bold; margin-bottom: 25px; color: #90caf9; font-size: 18px;"></p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-main" onclick="restoreSetlistChoice()">✅ Восстановить</button><button class="btn-cancel-confirm" onclick="closeModal('modal-archive-setlist')">Отмена</button></div></div></div>
+<div id="modal-image-delete" class="modal"><div class="modal-content" style="text-align: center;"><h2 style="color: #90caf9; margin-bottom: 15px;">Управление изображением</h2><p style="font-size: 14px; margin-bottom: 20px;">Что сделать с изображением?</p><div style="display: flex; flex-direction: column; gap: 12px;"><button class="btn-danger-confirm" id="btn-confirm-delete-image">🗑️ Удалить изображение</button><button class="btn-cancel-confirm" onclick="closeModal('modal-image-delete')">Отмена</button></div></div></div>
 <div id="modal-team-edit" class="modal"><div class="modal-content">
 <h2 id="team-modal-title">Создать команду</h2>
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Название команды <span class="required-star">*</span></label>
@@ -638,7 +590,7 @@ C G Am F
 <div id="team-avatar-preview-container" style="text-align: center; margin: 10px 0;"></div>
 <input type="file" id="team-edit-avatar" accept="image/*" style="margin-top: 5px;">
 <div class="modal-actions">
-<button class="btn-secondary" onclick="closeModal(&#39;modal-team-edit&#39;)">Отмена</button>
+<button class="btn-secondary" onclick="closeModal('modal-team-edit')">Отмена</button>
 <button class="btn-main" style="width: auto; margin:0;" onclick="saveTeamEdit()">Сохранить</button>
 </div>
 </div></div>
@@ -650,14 +602,14 @@ C G Am F
 <p style="font-size: 13px; color: #888; margin-bottom: 10px;">ID команды:</p>
 <div id="team-invite-id" style="background: rgba(179, 157, 219, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(179, 157, 219, 0.4); word-break: break-all; font-size: 12px; color: #b39ddb; margin-bottom: 10px; user-select: all; font-family: monospace;"></div>
 <button class="btn-pastel" style="width: 100%;" onclick="copyTeamInviteId()">📋 Скопировать ID</button>
-<button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal(&#39;modal-team-invite&#39;)">Закрыть</button>
+<button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('modal-team-invite')">Закрыть</button>
 </div></div>
 <!-- Модалка списка участников команды -->
 <div id="modal-team-members" class="modal">
 <div class="modal-content" style="max-width: 560px; position: relative;">
 <!-- Шапка с кнопкой Назад -->
 <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-<button class="btn-back" onclick="closeModal(&#39;modal-team-members&#39;)" style="padding:8px 12px; min-width:40px; min-height:40px; font-size:18px;">←</button>
+<button class="btn-back" onclick="closeModal('modal-team-members')" style="padding:8px 12px; min-width:40px; min-height:40px; font-size:18px;">←</button>
 <h2 id="team-members-title" style="color:#90caf9; margin:0; flex:1; font-size:18px; text-align:center;">
 👥 Участники команды
 </h2>
@@ -666,8 +618,8 @@ C G Am F
 <!-- Переключатель сортировки -->
 <div id="team-members-sort" style="display:none; margin-bottom:15px;">
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-<button id="sort-alpha-btn" class="btn-pastel" style="margin:0; padding:8px; font-size:13px;" onclick="changeMembersSort(&#39;alpha&#39;)">🔤 По алфавиту</button>
-<button id="sort-date-btn" class="btn-pastel" style="margin:0; padding:8px; font-size:13px;" onclick="changeMembersSort(&#39;date&#39;)">📅 По дате добавления</button>
+<button id="sort-alpha-btn" class="btn-pastel" style="margin:0; padding:8px; font-size:13px;" onclick="changeMembersSort('alpha')">🔤 По алфавиту</button>
+<button id="sort-date-btn" class="btn-pastel" style="margin:0; padding:8px; font-size:13px;" onclick="changeMembersSort('date')">📅 По дате добавления</button>
 </div>
 </div>
 <div id="team-members-loading" style="text-align:center; padding:20px; color:#888;">
@@ -676,7 +628,7 @@ C G Am F
 <div id="team-members-list" style="display:none;"></div>
 </div>
 </div>
-<div id="modal-join-team-link" class="modal"><div class="modal-content"><h2> Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal(&#39;modal-join-team-link&#39;)">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
+<div id="modal-join-team-link" class="modal"><div class="modal-content"><h2> Присоединиться к команде</h2><label style="font-weight: bold; display: block; margin-bottom: 5px;">Ссылка-приглашение</label><input type="text" id="join-team-link-input" placeholder="Вставьте ссылку или ID команды" oninput="onJoinLinkInput()"><div id="join-team-password-row" style="display: none;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">🔐 Пароль команды</label><input type="password" id="join-team-password-input" placeholder="Введите пароль"></div><div class="modal-actions"><button class="btn-secondary" onclick="closeModal('modal-join-team-link')">Отмена</button><button class="btn-main" style="width: auto; margin:0;" onclick="submitJoinTeam()">Присоединиться</button></div></div></div>
 <!-- Модальное окно авторизации -->
 <div id="modal-auth" class="modal">
 <div class="modal-content" style="max-width: 400px;">
@@ -684,8 +636,8 @@ C G Am F
 
 <div id="auth-login-form">
 <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-  <button type="button" class="auth-tab active" id="tab-email" onclick="switchAuthTab(&#39;email&#39;)">📧 Email</button>
-  <button type="button" class="auth-tab" id="tab-login" onclick="switchAuthTab(&#39;login&#39;)">👤 Логин</button>
+  <button type="button" class="auth-tab active" id="tab-email" onclick="switchAuthTab('email')">📧 Email</button>
+  <button type="button" class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">👤 Логин</button>
 </div>
 <div style="margin-bottom: 10px;">
   <input type="email" id="auth-email" placeholder="Email" autocomplete="email">
@@ -693,14 +645,14 @@ C G Am F
 </div>
 <div style="position: relative; margin-bottom: 15px;">
   <input type="password" id="auth-password" placeholder="Пароль" autocomplete="current-password" style="padding-right: 44px;">
-  <button type="button" class="pwd-toggle" onclick="togglePassword(&#39;auth-password&#39;, this)" title="Показать пароль">👁️</button>
+  <button type="button" class="pwd-toggle" onclick="togglePassword('auth-password', this)" title="Показать пароль">👁️</button>
 </div>
 <button class="btn-main" onclick="loginWithEmail()">Войти</button>
 <button class="btn-secondary" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 8px; font-size: 13px;">📧 Повторно отправить письмо подтверждения</button>
 <p style="text-align: center; margin: 15px 0; color: #888;">или</p>
 <button class="btn-pastel" onclick="loginWithGoogle()" style="width: 100%;">🔵 Войти через Google</button>
 <p style="text-align: center; margin-top: 15px;">
-Нет аккаунта? <a href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
+Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
 </p>
 </div>
 
@@ -743,19 +695,19 @@ C G Am F
 </div>
 <div style="position: relative; margin-bottom: 10px;">
 <input type="password" id="auth-reg-password" placeholder="Пароль (мин. 6 символов) *" autocomplete="new-password" style="padding-right: 44px;">
-<button type="button" class="pwd-toggle" onclick="togglePassword(&#39;auth-reg-password&#39;, this)">👁️</button>
+<button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password', this)">👁️</button>
 </div>
 <div style="position: relative; margin-bottom: 15px;">
 <input type="password" id="auth-reg-password-confirm" placeholder="Повторите пароль *" autocomplete="new-password" style="padding-right: 44px;">
-<button type="button" class="pwd-toggle" onclick="togglePassword(&#39;auth-reg-password-confirm&#39;, this)">👁️</button>
+<button type="button" class="pwd-toggle" onclick="togglePassword('auth-reg-password-confirm', this)">👁️</button>
 </div>
 <button class="btn-main" onclick="registerWithEmail()">Зарегистрироваться</button>
 <p style="text-align: center; margin-top: 15px;">
-Уже есть аккаунт? <a href="https://newset-hwlbp1a39-worship-clc-s-projects.vercel.app/#" onclick="showLoginForm(); return false;" style="color: #90caf9;">Войти</a>
+Уже есть аккаунт? <a href="#" onclick="showLoginForm(); return false;" style="color: #90caf9;">Войти</a>
 </p>
 </div>
 
-<button class="btn-secondary" onclick="closeModal(&#39;modal-auth&#39;)" style="width: 100%; margin-top: 10px;">Отмена</button>
+<button class="btn-secondary" onclick="closeModal('modal-auth')" style="width: 100%; margin-top: 10px;">Отмена</button>
 </div>
 </div>
 
@@ -808,7 +760,7 @@ C G Am F
 </div>
 </div>
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
-<input type="email" id="profile-email" autocomplete="email" disabled="" style="opacity: 0.7;">
+<input type="email" id="profile-email" autocomplete="email" disabled style="opacity: 0.7;">
 <div style="display: flex; gap: 8px;">
 <div style="flex: 1;">
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Пол</label>
@@ -824,12 +776,12 @@ C G Am F
 <div style="position: relative; margin-bottom: 10px;">
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Новый пароль</label>
 <input type="password" id="profile-new-password" placeholder="Новый пароль" style="padding-right: 44px;">
-<button type="button" class="pwd-toggle" onclick="togglePassword(&#39;profile-new-password&#39;, this)">👁️</button>
+<button type="button" class="pwd-toggle" onclick="togglePassword('profile-new-password', this)">👁️</button>
 </div>
 <div style="position: relative; margin-bottom: 10px;">
 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Повторите пароль</label>
 <input type="password" id="profile-confirm-password" placeholder="Повторите" style="padding-right: 44px;">
-<button type="button" class="pwd-toggle" onclick="togglePassword(&#39;profile-confirm-password&#39;, this)">👁️</button>
+<button type="button" class="pwd-toggle" onclick="togglePassword('profile-confirm-password', this)">👁️</button>
 </div>
 <hr style="margin: 15px 0; border: none; border-top: 1px solid #444;">
 <div>
@@ -840,7 +792,7 @@ C G Am F
 </div>
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn-main" onclick="saveProfile()" style="flex: 1; margin: 0; padding: 12px 8px;">💾 Сохранить</button>
-<button class="btn-secondary" onclick="closeModal(&#39;modal-profile&#39;)" style="flex: 1; margin: 0; padding: 12px 8px;">Отмена</button>
+<button class="btn-secondary" onclick="closeModal('modal-profile')" style="flex: 1; margin: 0; padding: 12px 8px;">Отмена</button>
 <button class="btn-danger" onclick="logout()" style="flex: 1; margin: 0; padding: 12px 8px;">🚪 Выйти</button>
 </div>
 </div>
@@ -853,7 +805,7 @@ C G Am F
     <div style="width: 36px;"></div>
   </div>
   <div class="cropper-canvas-wrap" id="cropper-wrap">
-    <canvas id="cropper-canvas" style="cursor: grab; touch-action: none;"></canvas>
+    <canvas id="cropper-canvas"></canvas>
     <div class="cropper-circle-mask"></div>
   </div>
   <div class="cropper-controls">
@@ -870,7 +822,7 @@ C G Am F
 </div>
 <!-- ⬆️ КОНЕЦ КРОППЕРА ⬆️ -->
 
-<div id="modal-share-setlist" class="modal"><div class="modal-content"><h2>📤 Поделиться сет-листом</h2><p style="color: #888; margin-bottom: 15px;">Выберите способ:</p><div style="display: flex; flex-direction: column; gap: 10px;"><button class="btn-main" onclick="exportSetlistAsFile()">📁 Сохранить файл (.clcsetlist)</button><button class="btn-main" onclick="shareSetlistViaAPI()">📤 Отправить через систему</button><div id="share-to-team-section"></div></div><button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeModal(&#39;modal-share-setlist&#39;)">Отмена</button></div></div>
+<div id="modal-share-setlist" class="modal"><div class="modal-content"><h2>📤 Поделиться сет-листом</h2><p style="color: #888; margin-bottom: 15px;">Выберите способ:</p><div style="display: flex; flex-direction: column; gap: 10px;"><button class="btn-main" onclick="exportSetlistAsFile()">📁 Сохранить файл (.clcsetlist)</button><button class="btn-main" onclick="shareSetlistViaAPI()">📤 Отправить через систему</button><div id="share-to-team-section"></div></div><button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeModal('modal-share-setlist')">Отмена</button></div></div>
 <script>
 // Firebase конфигурация
 const firebaseConfig = {
@@ -2149,43 +2101,42 @@ function confirmJoinTeam(teamId, password) {
 
 // Новая функция: добавить себя в members команды в Firestore
 async function addSelfToTeamMembers(teamId) {
-    if (!db || !currentUser) return;
-    try {
-        const teamRef = db.collection('teams').doc(teamId);
-        await db.runTransaction(async (transaction) => {
-            const doc = await transaction.get(teamRef);
-            if (!doc.exists) return;
-            const data = doc.data();
+if (!db || !currentUser) return;
+try {
+const teamRef = db.collection('teams').doc(teamId);
+await db.runTransaction(async (transaction) => {
+const doc = await transaction.get(teamRef);
+if (!doc.exists) return;
+const data = doc.data();
 const members = data.members || [];
-
-// Проверяем, есть ли уже этот пользователь в members (новый формат)
-const existingMember = members.find(m => 
-  (typeof m === 'string' && m === currentUser.uid) || 
-  (typeof m === 'object' && m.uid === currentUser.uid)
+const memberUids = data.memberUids || [];
+const existingMember = members.find(m =>
+(typeof m === 'string' && m === currentUser.uid) ||
+(typeof m === 'object' && m.uid === currentUser.uid)
 );
-
 if (!existingMember) {
-  // Мигрируем старые данные если нужно
-  const newMembers = members.map(m => {
-    if (typeof m === 'string') {
-      return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
-    }
-    return m;
-  });
-  
-  // Добавляем нового участника
-  newMembers.push({
-    uid: currentUser.uid,
-    role: 'member',
-    joinedAt: Date.now()
-  });
-  
-  transaction.update(teamRef, { members: newMembers });
+const newMembers = members.map(m => {
+if (typeof m === 'string') {
+return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
 }
-        });
-    } catch (e) {
-        console.error('Ошибка добавления в members:', e);
-    }
+return m;
+});
+newMembers.push({
+uid: currentUser.uid,
+role: 'member',
+joinedAt: Date.now()
+});
+const newMemberUids = [...memberUids, currentUser.uid];
+transaction.update(teamRef, {
+members: newMembers,
+memberUids: newMemberUids,
+updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+}
+});
+} catch (e) {
+console.error('Ошибка добавления в members:', e);
+}
 }
 function openSetlistModalForTeam(teamId) {
 document.getElementById('sl-date').value = getCurrentDate();
@@ -3539,51 +3490,90 @@ function getCachedAuthState() {
 }
 
 // Флаг завершения инициализации авторизации
-let authInitResolved = false;
-
+let authInitializationComplete = false;
+let authCheckTimeout = null;
+let isHandlingAuth = false;  // Защита от повторных вызовов onAuthStateChanged
 auth.onAuthStateChanged(async (user) => {
+    // Защита от параллельных вызовов
+    if (isHandlingAuth) {
+        console.log('⏳ Обработка авторизации уже идёт, пропускаем');
+        return;
+    }
+    isHandlingAuth = true;
+    
+    // Кэшируем состояние авторизации
     cacheAuthState(user);
-    authChecked = true;
     
     try {
-        if (user) {
-            // ✅ Мягкая проверка email — ТОЛЬКО предупреждение, БЕЗ signOut
-            if (!user.emailVerified && isOnline()) {
-                const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-                if (!isGoogleUser) {
-                    const warningShown = sessionStorage.getItem('email_warning_shown');
-                    if (!warningShown) {
-                        console.warn('⚠️ Email не подтверждён, но вход разрешён');
-                        sessionStorage.setItem('email_warning_shown', 'true');
-                    }
-                }
+        authChecked = true;
+        
+if (user) {
+    // 🔧 ИСПРАВЛЕНО: проверка email ТОЛЬКО при первом входе в сессии
+    const cached = getCachedAuthState();
+    const isFirstLogin = !cached || (Date.now() - cached.timestamp > 60000); // 1 минута
+    
+    if (isFirstLogin && !user.emailVerified && isOnline()) {
+        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+        if (!isGoogleUser) {
+            const warningShown = sessionStorage.getItem('email_warning_shown');
+            if (!warningShown) {
+                alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+                sessionStorage.setItem('email_warning_shown', 'true');
+                await auth.signOut();
+                return;
             }
+        }
+    }
             
-            // Проверка лимита устройств
+            // 🔧 НОВОЕ: проверка лимита устройств — НЕБЛОКИРУЮЩАЯ
+            // Если офлайн — функция сама вернёт true
             let allowed = true;
             try {
                 allowed = await checkDeviceLimit(user);
             } catch (e) {
                 console.error('⚠️ checkDeviceLimit упал:', e);
-                allowed = true;
+                allowed = true; // 🔧 НОВОЕ: при любой ошибке — разрешаем вход
             }
-            if (!allowed) return;
+            
+            if (!allowed) {
+                // Пользователь отменил вход или ещё выбирает устройство
+                return;
+            }
             
             currentUser = user;
             isAuthenticated = true;
             
-            registerDeviceInFirestore(user).catch(e => console.error('⚠️ registerDevice:', e.message));
-            loadUserProfileFromFirestore(user).catch(e => console.error('⚠️ loadProfile:', e.message));
+            // 🔧 НОВОЕ: регистрация устройства — В ФОНЕ, не блокируем UI
+            registerDeviceInFirestore(user).catch(e => {
+                console.error('⚠️ registerDevice в фоне:', e.message);
+            });
             
+            // 🔧 НОВОЕ: загрузка профиля — НО с кэшем внутри (мгновенно)
+            loadUserProfileFromFirestore(user).catch(e => {
+                console.error('⚠️ loadProfile в фоне:', e.message);
+            });
+
+// 🔧 НОВОЕ: миграция старых команд
+if (isOnline()) {
+migrateTeamsAddMemberUids().catch(e => {
+console.error('⚠️ migrateTeams в фоне:', e);
+});
+}            
+            // 🔧 НОВОЕ: синхронизация команд — только при онлайне
             if (isOnline() && typeof syncTeamsFromCloud === 'function') {
-                syncTeamsFromCloud().catch(e => console.error('⚠️ syncTeams:', e));
+                syncTeamsFromCloud().catch(e => {
+                    console.error('⚠️ syncTeams в фоне:', e);
+                });
             }
             
             closeModal('modal-auth');
             updateUserAvatar();
+            
+            // Перестраиваем карусель с командами
             buildCarouselItems();
             renderCarousel();
             
+            // Восстанавливаем позицию карусели
             const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
             if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
                 carouselActiveIndex = savedState.carouselIdx;
@@ -3593,73 +3583,85 @@ auth.onAuthStateChanged(async (user) => {
             activateCarouselItem(carouselActiveIndex);
             
         } else {
-            // ✅ Ждём 500мс — Firebase должен восстановить сессию из IndexedDB
-            if (!authInitResolved) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                authInitResolved = true;
-                
-                if (auth.currentUser) {
-                    console.log('✅ Сессия Firebase восстановлена');
-                    return;
-                }
-            }
-            
             currentUser = null;
             isAuthenticated = false;
             updateUserAvatar();
+            
             buildCarouselItems();
             renderCarousel();
+            
             carouselActiveIndex = 0;
             activateCarouselItem(0);
             
-            // ✅ Показываем модалку ТОЛЬКО когда Firebase ТОЧНО сказал user = null
+            // Проверяем кэшированное состояние
             const cached = getCachedAuthState();
             const hasCachedAuth = cached !== null;
             
+            // 🔧 НОВОЕ: показываем модалку ТОЛЬКО если:
+            // 1. Нет кэша
+            // 2. Есть интернет (иначе — работаем офлайн с кэшем)
+            // 3. Модалка ещё не показывалась в этой сессии
             if (!hasCachedAuth && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
-                showAuthModal();
-                sessionStorage.setItem('clc_auth_modal_shown', 'true');
+                authCheckTimeout = setTimeout(() => {
+                    if (!isAuthenticated && !authInitializationComplete) {
+                        showAuthModal();
+                        sessionStorage.setItem('clc_auth_modal_shown', 'true');
+                    }
+                }, 3000);
+            } else if (hasCachedAuth && !isOnline()) {
+                // 🔧 НОВОЕ: при офлайне с кэшем — НЕ показываем модалку, работаем с кэшем
+                console.log('📴 Офлайн + есть кэш — молча работаем');
             }
         }
     } catch (e) {
         console.error('Ошибка в onAuthStateChanged:', e);
+    } finally {
+        isHandlingAuth = false;
+        authInitializationComplete = true;
+        if (authCheckTimeout) {
+            clearTimeout(authCheckTimeout);
+            authCheckTimeout = null;
+        }
     }
 });
 
+let profileUnsubscribe = null;
 async function loadUserProfileFromFirestore(user) {
-    if (!db) return;
-    
-    // 🔧 НОВОЕ: сначала пытаемся взять из кэша (для мгновенного UI)
-    const cachedProfile = localStorage.getItem('clc_profile_' + user.uid);
-    if (cachedProfile) {
-        try {
-            currentUser.profileData = JSON.parse(cachedProfile);
-            console.log('✅ Профиль загружен из кэша');
-        } catch (e) {}
-    }
-    
-    // 🔧 НОВОЕ: при офлайне — не делаем запрос
-    if (!isOnline()) {
-        console.log('📴 Офлайн — используем кэшированный профиль');
-        return;
-    }
-    
-    try {
-        const doc = await Promise.race([
-            db.collection('users').doc(user.uid).get(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-        ]);
-        if (doc.exists) {
-            currentUser.profileData = doc.data();
-            // 🔧 НОВОЕ: сохраняем в кэш
-            localStorage.setItem('clc_profile_' + user.uid, JSON.stringify(doc.data()));
-        } else {
-            await saveUserProfile(user);
-        }
-    } catch (e) {
-        console.error('⚠️ Ошибка загрузки профиля:', e.message);
-        // 🔧 НОВОЕ: при ошибке оставляем кэшированный профиль
-    }
+if (!db) return;
+if (profileUnsubscribe) {
+profileUnsubscribe();
+profileUnsubscribe = null;
+}
+const cachedProfile = localStorage.getItem('clc_profile_' + user.uid);
+if (cachedProfile) {
+try {
+currentUser.profileData = JSON.parse(cachedProfile);
+console.log('✅ Профиль загружен из кэша');
+updateUserAvatar();
+} catch (e) {}
+}
+if (!isOnline()) {
+console.log('📴 Офлайн — используем кэшированный профиль');
+return;
+}
+try {
+const profileRef = db.collection('users').doc(user.uid);
+profileUnsubscribe = profileRef.onSnapshot(async (doc) => {
+if (doc.exists) {
+const profileData = doc.data();
+currentUser.profileData = profileData;
+localStorage.setItem('clc_profile_' + user.uid, JSON.stringify(profileData));
+updateUserAvatar();
+console.log('✅ Профиль обновлён из облака');
+} else {
+await saveUserProfile(user);
+}
+}, (error) => {
+console.error('⚠️ Ошибка подписки на профиль:', error);
+});
+} catch (e) {
+console.error('⚠️ Ошибка загрузки профиля:', e.message);
+}
 }
 
 function showAuthModal() {
@@ -3961,18 +3963,20 @@ function resendVerificationEmail() {
 }
 
 function logout() {
-    if (confirm('Выйти из аккаунта?')) {
-        // ⬇️ НОВОЕ: Останавливаем realtime-подписки на команды
-        if (typeof stopTeamsRealtimeSync === 'function') {
-            stopTeamsRealtimeSync();
-        }
-        auth.signOut();
-        // Очищаем кэш авторизации при выходе
-        localStorage.removeItem('clc_cached_auth');
-        sessionStorage.removeItem('clc_auth_modal_shown');
-        closeModal('modal-profile');
-        location.reload();
-    }
+if (confirm('Выйти из аккаунта?')) {
+if (profileUnsubscribe) {
+profileUnsubscribe();
+profileUnsubscribe = null;
+}
+if (typeof stopTeamsRealtimeSync === 'function') {
+stopTeamsRealtimeSync();
+}
+auth.signOut();
+localStorage.removeItem('clc_cached_auth');
+sessionStorage.removeItem('clc_auth_modal_shown');
+closeModal('modal-profile');
+location.reload();
+}
 }
 
 async function saveUserProfile(user) {
@@ -3988,40 +3992,37 @@ async function saveUserProfile(user) {
 
 // === СИНХРОНИЗАЦИЯ КОМАНД ЧЕРЕZ FIRESTORE ===
 
-// Сохранить команду в Firestore
 async function saveTeamToFirestore(team) {
 if (!db || !currentUser) return;
 try {
-// Гарантируем, что members в новом формате (с ролями)
 const membersData = (team.members || []).map(m => {
-  if (typeof m === 'string') {
-    // Старый формат - конвертируем
-    return { 
-      uid: m, 
-      role: (m === team.ownerId) ? 'owner' : 'member', 
-      joinedAt: Date.now() 
-    };
-  }
-  return m;
-});
-
-// Если владелец отсутствует в списке - добавляем
-if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
-  membersData.unshift({
-    uid: team.ownerId,
-    role: 'owner',
-    joinedAt: team.createdAt || Date.now()
-  });
+if (typeof m === 'string') {
+return {
+uid: m,
+role: (m === team.ownerId) ? 'owner' : 'member',
+joinedAt: Date.now()
+};
 }
-
+return m;
+});
+if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
+membersData.unshift({
+uid: team.ownerId,
+role: 'owner',
+joinedAt: team.createdAt || Date.now()
+});
+}
+const memberUids = membersData.map(m => m.uid);
 await db.collection('teams').doc(team.id).set({
-  id: team.id,
-  name: team.name,
-  password: team.password || '',
-  avatar: team.avatar || null,
-  ownerId: team.ownerId || currentUser.uid,
-  members: membersData,
-  createdAt: team.createdAt || Date.now()
+id: team.id,
+name: team.name,
+password: team.password || '',
+avatar: team.avatar || null,
+ownerId: team.ownerId || currentUser.uid,
+members: membersData,
+memberUids: memberUids,
+createdAt: team.createdAt || Date.now(),
+updatedAt: firebase.firestore.FieldValue.serverTimestamp()
 }, { merge: true });
 } catch (e) { console.error('Ошибка сохранения команды:', e); }
 }
@@ -4132,21 +4133,29 @@ async function saveTeamSetlistToFirestore(teamId, setlist) {
 // ⬇️ Вставьте эту функцию
 let syncTimeouts = {};
 function syncTeamSetlistToCloud(sl) {
-    if (!sl || !sl.teamId || !isAuthenticated || !db) return;
-    
-    // Обновляем метку времени, чтобы сработала защита от конфликтов
-    sl.updatedAt = Date.now(); 
-    
-    // Очищаем предыдущий таймер для этого сет-листа
-    if (syncTimeouts[sl.id]) clearTimeout(syncTimeouts[sl.id]);
-    
-    // Ставим новый таймер: ждем 1.5 сек и сохраняем в облако
-    syncTimeouts[sl.id] = setTimeout(() => {
-        saveTeamSetlistToFirestore(sl.teamId, sl).catch(e => {
-            console.error('⚠️ Ошибка синхронизации сет-листа в облако:', e);
-        });
-        delete syncTimeouts[sl.id];
-    }, 1500); 
+if (!sl || !sl.teamId || !isAuthenticated || !db) return;
+sl.updatedAt = Date.now();
+if (syncTimeouts[sl.id]) clearTimeout(syncTimeouts[sl.id]);
+syncTimeouts[sl.id] = setTimeout(async () => {
+try {
+await db.collection('teams').doc(sl.teamId)
+.collection('setlists').doc(String(sl.id)).set({
+id: sl.id,
+date: sl.date,
+time: sl.time || '',
+name: sl.name,
+isArchived: sl.isArchived || false,
+songs: sl.songs || [],
+sharedAt: sl.sharedAt || null,
+hasChanges: sl.hasChanges || false,
+updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+}, { merge: true });
+console.log('✅ Сет-лист синхронизирован:', sl.id);
+} catch (e) {
+console.error('⚠️ Ошибка синхронизации сет-листа в облако:', e);
+}
+delete syncTimeouts[sl.id];
+}, 1500);
 }
 
 // Удалить сет-лист команды из Firestore
@@ -4164,43 +4173,35 @@ let teamSetlistsUnsubscribers = [];
 let subscribedTeamIds = new Set();
 
 async function syncTeamsFromCloud() {
-    if (!db || !currentUser) return;
-    
-    // Отписываемся от старых подписок
-    stopTeamsRealtimeSync();
-    
-    try {
-        // Подписка на все команды пользователя (владелец или участник)
-        const teamsQuery = db.collection('teams')
-            .where('members', 'array-contains', currentUser.uid);
-        
-        const teamsUnsub = teamsQuery.onSnapshot((snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                const teamData = change.doc.data();
-                
-                if (change.type === 'added' || change.type === 'modified') {
-                    handleTeamUpsert(teamData);
-                    subscribeToTeamSetlists(teamData.id);
-                } else if (change.type === 'removed') {
-                    handleTeamDelete(teamData.id);
-                }
-            });
-            
-            buildCarouselItems();
-            renderCarousel();
-            if (currentHomeView === 'teams') showTeamsView();
-            else if (currentHomeView?.startsWith('team_')) {
-                const teamId = currentHomeView.replace('team_', '');
-                showTeamDetailView(teamId);
-            }
-        }, (error) => {
-            console.error('Ошибка подписки на команды:', error);
-        });
-        
-        teamsUnsubscribers.push(teamsUnsub);
-    } catch (e) {
-        console.error('Ошибка запуска realtime синхронизации:', e);
-    }
+if (!db || !currentUser) return;
+stopTeamsRealtimeSync();
+try {
+const teamsQuery = db.collection('teams')
+.where('memberUids', 'array-contains', currentUser.uid);
+const teamsUnsub = teamsQuery.onSnapshot((snapshot) => {
+snapshot.docChanges().forEach((change) => {
+const teamData = change.doc.data();
+if (change.type === 'added' || change.type === 'modified') {
+handleTeamUpsert(teamData);
+subscribeToTeamSetlists(teamData.id);
+} else if (change.type === 'removed') {
+handleTeamDelete(teamData.id);
+}
+});
+buildCarouselItems();
+renderCarousel();
+if (currentHomeView === 'teams') showTeamsView();
+else if (currentHomeView?.startsWith('team_')) {
+const teamId = currentHomeView.replace('team_', '');
+showTeamDetailView(teamId);
+}
+}, (error) => {
+console.error('Ошибка подписки на команды:', error);
+});
+teamsUnsubscribers.push(teamsUnsub);
+} catch (e) {
+console.error('Ошибка запуска realtime синхронизации:', e);
+}
 }
 
 function stopTeamsRealtimeSync() {
@@ -4286,23 +4287,20 @@ function subscribeToTeamSetlists(teamId) {
 
 // Обновление/добавление сет-листа из облака
 function handleSetlistUpsert(slObj) {
-    const localIdx = setlists.findIndex(s => s.id === slObj.id && s.teamId === slObj.teamId);
-    
-    if (localIdx !== -1) {
-        const local = setlists[localIdx];
-        const localUpdated = local.updatedAt || 0;
-        const cloudUpdated = slObj.updatedAt || 0;
-        
-        // Если локальная версия новее на > 2 сек — это наши несохранённые изменения
-        if (localUpdated > cloudUpdated + 2000) {
-            return;
-        }
-        
-        setlists[localIdx] = { ...local, ...slObj };
-    } else {
-        setlists.push(slObj);
-    }
-    saveToStorage();
+const localIdx = setlists.findIndex(s => s.id === slObj.id && s.teamId === slObj.teamId);
+if (localIdx !== -1) {
+const local = setlists[localIdx];
+const localUpdated = local.updatedAt || 0;
+const cloudUpdated = slObj.updatedAt || 0;
+if (localUpdated > cloudUpdated + 5000) {
+console.log('⏭️ Пропускаем обновление: локальная версия новее');
+return;
+}
+setlists[localIdx] = { ...local, ...slObj };
+} else {
+setlists.push(slObj);
+}
+saveToStorage();
 }
 
 // Удаление сет-листа из облака
@@ -4767,6 +4765,26 @@ if (!navigator.onLine) {
         console.log('✅ Используем кэшированную авторизацию');
     }
 }
+async function migrateTeamsAddMemberUids() {
+if (!db || !currentUser) return;
+try {
+const teamsSnap = await db.collection('teams')
+.where('memberUids', '==', null)
+.get();
+if (teamsSnap.empty) return;
+const batch = db.batch();
+teamsSnap.forEach(doc => {
+const data = doc.data();
+const members = data.members || [];
+const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
+batch.update(doc.ref, { memberUids: memberUids });
+});
+await batch.commit();
+console.log(`✅ Мигрировано ${teamsSnap.size} команд`);
+} catch (e) {
+console.error('Ошибка миграции:', e);
+}
+}
 loadFromStorage();
 buildCarouselItems();
 renderCarousel();
@@ -4844,6 +4862,5 @@ track.style.transform = `translateX(${translateX}px)`;
 });
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => console.log('SW:', r.scope)).catch(console.error));
 </script>
-
 </body>
 </html>
