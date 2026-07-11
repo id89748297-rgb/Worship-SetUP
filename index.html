@@ -4208,11 +4208,8 @@ function subscribeToTeamSongs(teamId) {
             snapshot.docChanges().forEach((change) => {
                 const songData = change.doc.data();
                 if (change.type === 'added' || change.type === 'modified') {
-    handleTeamUpsert(teamData);
-    subscribeToTeamSetlists(teamData.id);
-    subscribeToTeamSongs(teamData.id);
-    migrateTeamSongs(teamData.id);
-}
+                    handleTeamSongUpsert(songData, teamId);
+                }
             });
         }, (error) => {
             console.error('Ошибка подписки на песни команды:', error);
@@ -4284,18 +4281,19 @@ function syncTeamSetlistToCloud(sl) {
     syncTimeouts[sl.id] = setTimeout(async () => {
         try {
             const songsData = sl.songs.map(item => {
-                const s = songs.find(x => x.id === item.id);
-                if (!s) return item;
-                return {
-                    ...item,
-                    cloudId: s.cloudId || null,
-                    title: s.title,
-                    author: s.author || '',
-                    originalKey: s.key,
-                    bpm: s.bpm || '',
-                    category: s.category || ''
-                };
-            });
+    const s = songs.find(x => x.id === item.id);
+    if (!s) return item;
+    return {
+        ...item,
+        cloudId: s.cloudId || null,
+        title: s.title,
+        author: s.author || '',
+        originalKey: s.key,
+        bpm: s.bpm || '',
+        category: s.category || '',
+        chordpro: item.chordpro || s.chordpro || ''
+    };
+});
             await db.collection('teams').doc(sl.teamId)
                 .collection('setlists').doc(String(sl.id)).set({
                     id: sl.id,
