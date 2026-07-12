@@ -858,19 +858,76 @@ function isOnline() {
     return navigator.onLine !== false;
 }
 
-// Явно указываем, что сессия должна сохраняться локально
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
-        console.log('✅ Firebase persistence установлен в LOCAL');
-    })
-    .catch((error) => {
-        console.error('❌ Ошибка установки persistence:', error);
-    });
-
 // Глобальные переменные для авторизации
 let currentUser = null;
 let isAuthenticated = false;
 let authChecked = false;
+let authInitializationComplete = false;
+
+// Явно указываем, что сессия должна сохраняться локально
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+.then(() => {
+    console.log('✅ Firebase persistence установлен в LOCAL');
+    
+    auth.onAuthStateChanged(async (user) => {
+        console.log('🔄 onAuthStateChanged:', user ? user.email : 'null');
+        
+        cacheAuthState(user);
+        
+        if (user) {
+            currentUser = user;
+            isAuthenticated = true;
+            authInitializationComplete = true;
+            
+            closeModal('modal-auth');
+            updateUserAvatar();
+            
+            loadUserProfileFromFirestore(user).catch(e => console.error('⚠️ loadProfile:', e));
+            
+            if (isOnline() && typeof syncTeamsFromCloud === 'function') {
+                syncTeamsFromCloud().catch(e => console.error('⚠️ syncTeams:', e));
+            }
+            
+            buildCarouselItems();
+            renderCarousel();
+            activateCarouselItem(0);
+            
+            console.log('✅ Авторизация подтверждена');
+            
+        } else {
+            if (!authInitializationComplete) {
+                console.log('⏳ Первый вызов, ждём...');
+                authInitializationComplete = true;
+                return;
+            }
+            
+            currentUser = null;
+            isAuthenticated = false;
+            
+            updateUserAvatar();
+            buildCarouselItems();
+            renderCarousel();
+            activateCarouselItem(0);
+            
+            const cached = getCachedAuthState();
+            
+            if (!cached && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
+                setTimeout(() => {
+                    if (!isAuthenticated) {
+                        showAuthModal();
+                        sessionStorage.setItem('clc_auth_modal_shown', 'true');
+                    }
+                }, 1000);
+            }
+            
+            console.log('👋 Пользователь вышел');
+        }
+    });
+})
+.catch((error) => {
+    console.error('❌ Ошибка установки persistence:', error);
+});
+
 // === УПРАВЛЕНИЕ УСТРОЙСТВАМИ ===
 const MAX_DEVICES = 2;
 
@@ -2064,14 +2121,27 @@ confirmJoinTeam(parsed.teamId, pwd);
 confirmJoinTeam(parsed.teamId, '');
 }
 }
-function confirmJoinTeam(teamId, password) {
+async function confirmJoinTeam(teamId, password) {
     if (teams.length >= MAX_TEAMS) {
         alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
         return;
     }
+    
     const name = prompt('Название команды (уточните у отправителя):');
     if (!name || !name.trim()) return;
     
+    // Сначала проверяем и добавляем в Firestore
+    if (isAuthenticated && currentUser && db) {
+        try {
+            await addSelfToTeamMembers(teamId, password);
+        } catch (e) {
+            console.error('Ошибка добавления в команду:', e);
+            alert('❌ Не удалось присоединиться: ' + e.message);
+            return;
+        }
+    }
+    
+    // Только после успеха — сохраняем локально
     const newTeam = {
         id: teamId,
         name: name.trim(),
@@ -2079,86 +2149,69 @@ function confirmJoinTeam(teamId, password) {
         avatar: null,
         ownerId: null,
         members: currentUser ? [{
-  uid: currentUser.uid,
-  role: 'member',
-  joinedAt: Date.now()
-}] : [],
+            uid: currentUser.uid,
+            role: 'member',
+            joinedAt: Date.now()
+        }] : [],
         createdAt: Date.now(),
         joinedByLink: true
     };
     
-    // Добавляем локально
     teams.push(newTeam);
     saveToStorage();
-    
-// ⬇️ ИСПРАВЛЕНО: Добавляем себя с проверкой пароля
-if (isAuthenticated && currentUser && db) {
-  addSelfToTeamMembers(teamId, password).catch(e => {
-    console.error('Ошибка добавления в members:', e);
-    alert('❌ Не удалось присоединиться: ' + e.message);
-    // Убираем локальную команду, если не получилось
-    teams = teams.filter(t => t.id !== teamId);
-    saveToStorage();
-    renderCarousel();
-    showTeamsView();
-  });
-}
+    subscribeToTeamSetlists(teamId);
     
     closeModal('modal-join-team-link');
     renderCarousel();
     showTeamsView();
     alert(`✅ Вы присоединились к команде «${name}»!`);
 }
-
-// Новая функция: добавить себя в members команды в Firestore
 async function addSelfToTeamMembers(teamId, password = '') {
-  if (!db || !currentUser) return;
-  try {
+    if (!db || !currentUser) {
+        throw new Error('Нет подключения к базе данных');
+    }
+    
     const teamRef = db.collection('teams').doc(teamId);
-    await db.runTransaction(async (transaction) => {
-      const doc = await transaction.get(teamRef);
-      if (!doc.exists) {
-        throw new Error('Команда не найдена');
-      }
-      const data = doc.data();
-      
-      // 🔒 ПРОВЕРКА ПАРОЛЯ
-      if (data.password && data.password !== password) {
-        throw new Error('Неверный пароль команды');
-      }
-      
-      const members = data.members || [];
-      const memberUids = data.memberUids || [];
-      const existingMember = members.find(m =>
-        (typeof m === 'string' && m === currentUser.uid) ||
-        (typeof m === 'object' && m.uid === currentUser.uid)
-      );
-      
-      // Уже в команде — выходим
-      if (existingMember) return;
-      
-      const newMembers = members.map(m => {
-        if (typeof m === 'string') {
-          return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
+    
+    try {
+        const doc = await teamRef.get();
+        
+        if (!doc.exists) {
+            throw new Error('Команда не найдена. Проверьте ссылку.');
         }
-        return m;
-      });
-      newMembers.push({
-        uid: currentUser.uid,
-        role: 'member',
-        joinedAt: Date.now()
-      });
-      const newMemberUids = [...memberUids, currentUser.uid];
-      transaction.update(teamRef, {
-        members: newMembers,
-        memberUids: newMemberUids,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    });
-  } catch (e) {
-    console.error('Ошибка добавления в members:', e);
-    throw e;
-  }
+        
+        const data = doc.data();
+        
+        if (data.password && data.password !== password) {
+            throw new Error('Неверный пароль команды');
+        }
+        
+        const members = data.members || [];
+        const alreadyMember = members.some(m => {
+            if (typeof m === 'string') return m === currentUser.uid;
+            return m.uid === currentUser.uid;
+        });
+        
+        if (alreadyMember) {
+            throw new Error('Вы уже состоите в этой команде');
+        }
+        
+        await teamRef.update({
+            members: firebase.firestore.FieldValue.arrayUnion({
+                uid: currentUser.uid,
+                role: 'member',
+                joinedAt: Date.now()
+            }),
+            memberUids: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        console.log('✅ Участник добавлен в Firestore:', currentUser.uid);
+        
+    } catch (e) {
+        console.error('❌ Ошибка в addSelfToTeamMembers:', e);
+        throw e;
+    }
 }
 function openSetlistModalForTeam(teamId) {
 document.getElementById('sl-date').value = getCurrentDate();
@@ -2391,9 +2444,10 @@ return;
 existingSl.songs = sl.songs.map(item => ({...item}));
 existingSl.time = sl.time || '';
 existingSl.sharedAt = Date.now();
-existingSl.hasChanges = false;
-saveToStorage();
-closeModal('modal-share-setlist');
+        existingSl.hasChanges = false;
+        saveToStorage();
+        saveTeamSetlistToFirestore(teamId, existingSl);  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+        closeModal('modal-share-setlist');
 renderSetlists();
 renderCarousel();
 alert(`✅ Сет-лист «${sl.name}» обновлён в команде «${team.name}»!`);
@@ -2410,10 +2464,12 @@ originalId: sl.id,
 sharedAt: Date.now(),
 songs: sl.songs.map(item => ({...item}))
 });
-sl.sharedToTeams = sl.sharedToTeams || [];
-if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
-saveToStorage();
-closeModal('modal-share-setlist');
+        sl.sharedToTeams = sl.sharedToTeams || [];
+        if (!sl.sharedToTeams.includes(teamId)) sl.sharedToTeams.push(teamId);
+        saveToStorage();
+        const newSl = setlists.find(s => s.id === newSlId);  // ← ДОБАВИТЬ
+        if (newSl) saveTeamSetlistToFirestore(teamId, newSl);  // ← ДОБАВИТЬ
+        closeModal('modal-share-setlist');
 renderSetlists();
 renderCarousel();
 alert(`✅ Сет-лист отправлен в команду «${team.name}»!\nТеперь он доступен во вкладке «${team.name}».`);
@@ -2533,7 +2589,45 @@ if (chordMatches && chordMatches.length > 2) return false;
 return true;
 }
 function loadFromStorage() {
-try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]'); sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}'); inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}'); teams = JSON.parse(localStorage.getItem('clc_teams') || '[]').map(migrateTeamMembers); } catch { songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = []; }
+try {
+    const uid = currentUser ? currentUser.uid : null;
+    
+    if (uid) {
+        // Загружаем данные текущего пользователя
+        songs = JSON.parse(localStorage.getItem('clc_' + uid + '_songs') || '[]');
+        setlists = JSON.parse(localStorage.getItem('clc_' + uid + '_setlists') || '[]');
+        sectionNotes = JSON.parse(localStorage.getItem('clc_' + uid + '_section_notes') || '{}');
+        inlineComments = JSON.parse(localStorage.getItem('clc_' + uid + '_inline_comments') || '{}');
+        teams = JSON.parse(localStorage.getItem('clc_' + uid + '_teams') || '[]').map(migrateTeamMembers);
+        
+        // Миграция старых данных (первый запуск после обновления)
+        if (songs.length === 0 && localStorage.getItem('clc_songs')) {
+            songs = JSON.parse(localStorage.getItem('clc_songs') || '[]');
+            setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]');
+            sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}');
+            inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}');
+            teams = JSON.parse(localStorage.getItem('clc_teams') || '[]').map(migrateTeamMembers);
+            saveToStorage();
+            localStorage.removeItem('clc_songs');
+            localStorage.removeItem('clc_setlists');
+            localStorage.removeItem('clc_section_notes');
+            localStorage.removeItem('clc_inline_comments');
+            localStorage.removeItem('clc_teams');
+        }
+    } else {
+        songs = [];
+        setlists = [];
+        sectionNotes = {};
+        inlineComments = {};
+        teams = [];
+    }
+} catch {
+    songs = [];
+    setlists = [];
+    sectionNotes = {};
+    inlineComments = {};
+    teams = [];
+}
 const savedTheme = localStorage.getItem('clc_theme');
 if (savedTheme === 'light') {
     document.body.classList.remove('dark');
@@ -2566,9 +2660,15 @@ if (savedSort) { const sel = document.getElementById('songs-sort'); if (sel) sel
 const savedCategoryFilter = localStorage.getItem('clc_category_filter');
 if (savedCategoryFilter) { const sel = document.getElementById('category-filter'); if (sel) sel.value = savedCategoryFilter; }
 }
-function saveToStorage() { localStorage.setItem('clc_songs', JSON.stringify(songs)); localStorage.setItem('clc_setlists', JSON.stringify(setlists)); localStorage.setItem('clc_section_notes', JSON.stringify(sectionNotes)); localStorage.setItem('clc_inline_comments', JSON.stringify(inlineComments)); localStorage.setItem('clc_teams', JSON.stringify(teams)); }
-function updateThemeButtons(icon) {
-    document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon);
+function saveToStorage() {
+    if (!currentUser) return;
+    const uid = currentUser.uid;
+    localStorage.setItem(`clc_${uid}_songs`, JSON.stringify(songs));
+    localStorage.setItem(`clc_${uid}_setlists`, JSON.stringify(setlists));
+    localStorage.setItem(`clc_${uid}_section_notes`, JSON.stringify(sectionNotes));
+    localStorage.setItem(`clc_${uid}_inline_comments`, JSON.stringify(inlineComments));
+    localStorage.setItem(`clc_${uid}_teams`, JSON.stringify(teams));
+    localStorage.setItem('clc_lastUid', uid);
 }
 function saveAppState() { const activePage = document.querySelector('.page.active'); localStorage.setItem('clc_state', JSON.stringify({ page: activePage ? activePage.id : 'page-home', songId: currentSongId, slId: currentSlId, homeView: currentHomeView, tab: currentTab, carouselIdx: carouselActiveIndex })); }
 function saveDefaultSettings() { localStorage.setItem('clc_defaults', JSON.stringify({ fontSize, columns: currentColumns })); }
@@ -2856,7 +2956,15 @@ div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 
 list.appendChild(div); });
 }
 function confirmRemoveFromSl(songId, songName) { showDeleteConfirm('remove', songId, `Песню "${songName}" из сет-листа`, () => { const sl = setlists.find(x => x.id === currentSlId); sl.songs = sl.songs.filter(x => x.id !== songId); saveToStorage(); syncTeamSetlistToCloud(sl); renderSlSongs(); }); }
-function changeSongKeyInSetlist(songId, newKey) { const sl = setlists.find(x => x.id === currentSlId); const item = sl.songs.find(x => x.id === songId); if (item) { item.key = newKey; saveToStorage(); syncTeamSetlistToCloud(sl); } }
+function changeSongKeyInSetlist(songId, newKey) {
+const sl = setlists.find(x => x.id === currentSlId);
+const item = sl.songs.find(x => x.id === songId);
+if (item) {
+item.key = newKey;
+saveToStorage();
+syncTeamSetlistToCloud(sl);
+}
+}
 function openAddSongToSlModal() { document.getElementById('add-song-search').value = ''; renderAddSongList(); document.getElementById('modal-add-song').classList.add('show'); }
 function renderAddSongList() {
 const q = document.getElementById('add-song-search').value.toLowerCase(); const sl = setlists.find(x => x.id === currentSlId); const list = document.getElementById('add-song-list'); list.innerHTML = '';
@@ -3521,141 +3629,7 @@ function getCachedAuthState() {
     }
 }
 
-// Флаг завершения инициализации авторизации
-let authInitializationComplete = false;
-let authCheckTimeout = null;
-let isHandlingAuth = false;  // Защита от повторных вызовов onAuthStateChanged
-auth.onAuthStateChanged(async (user) => {
-    // Защита от параллельных вызовов
-    if (isHandlingAuth) {
-        console.log('⏳ Обработка авторизации уже идёт, пропускаем');
-        return;
-    }
-    isHandlingAuth = true;
     
-    // Кэшируем состояние авторизации
-    cacheAuthState(user);
-    
-    try {
-        authChecked = true;
-        
-if (user) {
-    // 🔧 ИСПРАВЛЕНО: проверка email ТОЛЬКО при первом входе в сессии
-    const cached = getCachedAuthState();
-    const isFirstLogin = !cached || (Date.now() - cached.timestamp > 60000); // 1 минута
-    
-    if (isFirstLogin && !user.emailVerified && isOnline()) {
-        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-        if (!isGoogleUser) {
-            const warningShown = sessionStorage.getItem('email_warning_shown');
-            if (!warningShown) {
-                alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-                sessionStorage.setItem('email_warning_shown', 'true');
-                await auth.signOut();
-                return;
-            }
-        }
-    }
-            
-            // 🔧 НОВОЕ: проверка лимита устройств — НЕБЛОКИРУЮЩАЯ
-            // Если офлайн — функция сама вернёт true
-            let allowed = true;
-            try {
-                allowed = await checkDeviceLimit(user);
-            } catch (e) {
-                console.error('⚠️ checkDeviceLimit упал:', e);
-                allowed = true; // 🔧 НОВОЕ: при любой ошибке — разрешаем вход
-            }
-            
-            if (!allowed) {
-                // Пользователь отменил вход или ещё выбирает устройство
-                return;
-            }
-            
-            currentUser = user;
-            isAuthenticated = true;
-            
-            // 🔧 НОВОЕ: регистрация устройства — В ФОНЕ, не блокируем UI
-            registerDeviceInFirestore(user).catch(e => {
-                console.error('⚠️ registerDevice в фоне:', e.message);
-            });
-            
-            // 🔧 НОВОЕ: загрузка профиля — НО с кэшем внутри (мгновенно)
-            loadUserProfileFromFirestore(user).catch(e => {
-                console.error('⚠️ loadProfile в фоне:', e.message);
-            });
-
-// 🔧 НОВОЕ: миграция старых команд
-if (isOnline()) {
-migrateTeamsAddMemberUids().catch(e => {
-console.error('⚠️ migrateTeams в фоне:', e);
-});
-}            
-            // 🔧 НОВОЕ: синхронизация команд — только при онлайне
-            if (isOnline() && typeof syncTeamsFromCloud === 'function') {
-                syncTeamsFromCloud().catch(e => {
-                    console.error('⚠️ syncTeams в фоне:', e);
-                });
-            }
-            
-            closeModal('modal-auth');
-            updateUserAvatar();
-            
-            // Перестраиваем карусель с командами
-            buildCarouselItems();
-            renderCarousel();
-            
-            // Восстанавливаем позицию карусели
-            const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
-            if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
-                carouselActiveIndex = savedState.carouselIdx;
-            } else {
-                carouselActiveIndex = 0;
-            }
-            activateCarouselItem(carouselActiveIndex);
-            
-        } else {
-            currentUser = null;
-            isAuthenticated = false;
-            updateUserAvatar();
-            
-            buildCarouselItems();
-            renderCarousel();
-            
-            carouselActiveIndex = 0;
-            activateCarouselItem(0);
-            
-            // Проверяем кэшированное состояние
-            const cached = getCachedAuthState();
-            const hasCachedAuth = cached !== null;
-            
-            // 🔧 НОВОЕ: показываем модалку ТОЛЬКО если:
-            // 1. Нет кэша
-            // 2. Есть интернет (иначе — работаем офлайн с кэшем)
-            // 3. Модалка ещё не показывалась в этой сессии
-            if (!hasCachedAuth && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
-                authCheckTimeout = setTimeout(() => {
-                    if (!isAuthenticated && !authInitializationComplete) {
-                        showAuthModal();
-                        sessionStorage.setItem('clc_auth_modal_shown', 'true');
-                    }
-                }, 3000);
-            } else if (hasCachedAuth && !isOnline()) {
-                // 🔧 НОВОЕ: при офлайне с кэшем — НЕ показываем модалку, работаем с кэшем
-                console.log('📴 Офлайн + есть кэш — молча работаем');
-            }
-        }
-    } catch (e) {
-        console.error('Ошибка в onAuthStateChanged:', e);
-    } finally {
-        isHandlingAuth = false;
-        authInitializationComplete = true;
-        if (authCheckTimeout) {
-            clearTimeout(authCheckTimeout);
-            authCheckTimeout = null;
-        }
-    }
-});
 
 let profileUnsubscribe = null;
 async function loadUserProfileFromFirestore(user) {
@@ -4256,7 +4230,7 @@ function handleTeamSongUpsert(songData, teamId) {
         if (cloudUpdated > localUpdated) {
             localSong.title = songData.title;
             localSong.author = songData.author || '';
-            localSong.key = songData.key || localSong.key;
+            // key не обновляем из облака — оригинальная тональность песни не должна меняться из сет-листа
             localSong.bpm = songData.bpm || '';
             localSong.category = songData.category || '';
             if (songData.chordpro) localSong.chordpro = songData.chordpro;
@@ -4273,7 +4247,7 @@ function handleTeamSongUpsert(songData, teamId) {
             cloudId: songData.cloudId,
             title: songData.title || 'Без названия',
             author: songData.author || '',
-            key: songData.key || 'C',
+            key: songData.originalKey || songData.key || 'C',
             bpm: songData.bpm || '',
             category: songData.category || '',
             chordpro: songData.chordpro || '',
@@ -4336,9 +4310,9 @@ function syncTeamSetlistToCloud(sl) {
                     hasChanges: sl.hasChanges || false,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
-            console.log('✅ Сет-лист синхронизирован:', sl.id);
-            syncTeamSongsFromSetlist(sl);
-        } catch (e) {
+                    console.log('✅ Сет-лист синхронизирован:', sl.id);
+        // Песни не отправляем в базу команды — они хранятся только внутри сет-листа
+    } catch (e) {
             console.error('⚠️ Ошибка синхронизации сет-листа в облако:', e);
         }
         delete syncTimeouts[sl.id];
