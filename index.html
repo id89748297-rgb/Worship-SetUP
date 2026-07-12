@@ -2069,8 +2069,6 @@ async function confirmJoinTeam(teamId, password) {
         alert('❌ Достигнут лимит команд (' + MAX_TEAMS + ')');
         return;
     }
-    var name = prompt('Название команды (уточните у отправителя):');
-    if (!name || !name.trim()) return;
 
     try {
         await addSelfToTeamMembers(teamId, password);
@@ -2079,9 +2077,18 @@ async function confirmJoinTeam(teamId, password) {
         return;
     }
 
+    // Получаем название команды из Firestore
+    var teamName = teamId;
+    try {
+        var doc = await db.collection('teams').doc(teamId).get();
+        if (doc.exists) {
+            teamName = doc.data().name || teamId;
+        }
+    } catch (e) {}
+
     var newTeam = {
         id: teamId,
-        name: name.trim(),
+        name: teamName,
         password: password,
         avatar: null,
         ownerId: null,
@@ -2096,7 +2103,7 @@ async function confirmJoinTeam(teamId, password) {
     closeModal('modal-join-team-link');
     renderCarousel();
     showTeamsView();
-    alert('✅ Вы присоединились к команде «' + name + '»!');
+    alert('✅ Вы присоединились к команде «' + teamName + '»!');
 }
 
 async function addSelfToTeamMembers(teamId, password) {
@@ -4984,24 +4991,25 @@ if (!navigator.onLine) {
     }
 }
 async function migrateTeamsAddMemberUids() {
-if (!db || !currentUser) return;
-try {
-const teamsSnap = await db.collection('teams')
-.where('memberUids', '==', null)
-.get();
-if (teamsSnap.empty) return;
-const batch = db.batch();
-teamsSnap.forEach(doc => {
-const data = doc.data();
-const members = data.members || [];
-const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
-batch.update(doc.ref, { memberUids: memberUids });
-});
-await batch.commit();
-console.log(`✅ Мигрировано ${teamsSnap.size} команд`);
-} catch (e) {
-console.error('Ошибка миграции:', e);
-}
+    if (!db || !currentUser) return;
+    try {
+        const teamsSnap = await db.collection('teams')
+            .where('memberUids', '==', null)
+            .get();
+        if (teamsSnap.empty) return;
+        const batch = db.batch();
+        teamsSnap.forEach(doc => {
+            const data = doc.data();
+            if (data.ownerId !== currentUser.uid) return;
+            const members = data.members || [];
+            const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
+            batch.update(doc.ref, { memberUids: memberUids });
+        });
+        await batch.commit();
+        console.log('✅ Миграция завершена');
+    } catch (e) {
+        console.warn('⚠️ Миграция пропущена (нет прав):', e.message);
+    }
 }
 loadFromStorage();
 buildCarouselItems();
