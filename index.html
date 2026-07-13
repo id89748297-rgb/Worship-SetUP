@@ -45,6 +45,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; ba
   opacity: 0.75;
 }
 .btn-icon:active { transform: scale(0.85); }
+/* Индикатор оффлайн-режима (постоянный, сверху) */
+#offline-indicator { display: none; background: #ef5350; color: white; text-align: center; padding: 6px; font-size: 12px; font-weight: bold; position: fixed; top: 0; left: 0; width: 100%; z-index: 10000; }
+body.light #offline-indicator { background: #d32f2f; }
+body.dark-white #offline-indicator { background: #ef5350; }
 @media (hover: hover) and (pointer: fine) and (min-width: 769px) {
 body { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; cursor: default; }
 .chords-above, .lyrics-below, .section-label, .song-section, .song-content, .right-note, .song-image-comment, .section-note-input, .inline-comment-input, .pdf-body, .instruction-card-text { -webkit-user-select: text !important; user-select: text !important; cursor: text; }
@@ -379,6 +383,9 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </style>
 </head>
 <body class="dark">
+
+<!-- Индикатор автономности (показывается при отсутствии интернета) -->
+<div id="offline-indicator">📴 Оффлайн-режим. Данные загружаются из памяти устройства.</div>
 <div id="page-home" class="page active">
 <div class="header">
 <div class="header-left">
@@ -789,6 +796,16 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <div id="profile-devices-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
 <div style="color: #888; font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>
 </div>
+</div>
+<!-- КНОПКА ОЧИСТКИ КЭША -->
+<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
+    <h3 style="color: #ef5350; font-size: 15px; margin-bottom: 10px;">💾 Хранилище устройства</h3>
+    <p style="color: #888; font-size: 12px; margin-bottom: 10px;">
+        Освободите место на телефоне. Команды и профиль останутся, сет-листы команд загрузятся заново при наличии интернета.
+    </p>
+    <button class="btn-secondary" onclick="clearAppCache()" style="width: 100%; background: rgba(239, 83, 80, 0.15); color: #ef5350; border: 1px solid rgba(239, 83, 80, 0.4);">
+        🗑️ Очистить кэш (оставить команды)
+    </button>
 </div>
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn-main" onclick="saveProfile()" style="flex: 1; margin: 0; padding: 12px 8px;">💾 Сохранить</button>
@@ -4947,7 +4964,9 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+
 window.addEventListener('online', () => {
+    updateNetworkStatus(); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
     console.log('🌐 Интернет восстановлен');
     showOnlineNotification();
     
@@ -4985,6 +5004,7 @@ window.addEventListener('online', () => {
 });
 
 window.addEventListener('offline', () => {
+    updateNetworkStatus(); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
     console.log('📴 Интернет отключен');
     showOfflineNotification();
 });
@@ -4996,6 +5016,93 @@ if (!navigator.onLine) {
     const cached = getCachedAuthState();
     if (cached) {
         console.log('✅ Используем кэшированную авторизацию');
+    }
+}
+// === УМНАЯ ОЧИСТКА КЭША (КАК В TELEGRAM) ===
+async function clearAppCache() {
+    if (!confirm(
+        "⚠️ Очистить кэш данных приложения?\n\n" +
+        "✅ Сохранится:\n" +
+        "• Ваш аккаунт и аватарка\n" +
+        "• Команды (названия, участники)\n" +
+        "• Настройки интерфейса\n\n" +
+        "🗑️ Будет удалено:\n" +
+        "• Все песни\n" +
+        "• Все сет-листы (и личные, и командные)\n" +
+        "• Заметки и комментарии\n" +
+        "• Картинки песен\n\n" +
+        "🌐 При подключении к интернету:\n" +
+        "• Песни и сет-листы команд загрузятся из облака\n" +
+        "• Личные сет-листы будут потеряны навсегда!\n\n" +
+        "Продолжить?"
+    )) {
+        return;
+    }
+
+    try {
+        // 1. Очищаем кэш Firestore (IndexedDB)
+        await db.clearPersistence();
+        console.log("✅ Firestore кэш очищен");
+
+        // 2. Читаем текущие команды ДО очистки, чтобы их восстановить
+        const savedTeams = JSON.parse(localStorage.getItem('clc_teams') || '[]');
+
+        // 3. Очищаем данные приложения из LocalStorage
+        const keysToRemove = [
+            'clc_songs',           // Песни
+            'clc_setlists',        // ВСЕ сет-листы (и личные, и командные)
+            'clc_section_notes',   // Заметки на секциях
+            'clc_inline_comments', // Комментарии к строкам
+            'clc_state',           // Состояние интерфейса
+            'clc_defaults',        // Настройки по умолчанию
+            'clc_songs_sort',      // Сортировка песен
+            'clc_category_filter', // Фильтр категорий
+            'clc_hide_arrows',     // Скрытие стрелок
+            'clc_hide_comments'    // Скрытие комментариев
+        ];
+        
+        // Удаляем кэшированные картинки песен (НО НЕ профиль!)
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('img_')) {
+                keysToRemove.push(key);
+            }
+        });
+
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log("✅ LocalStorage данные приложения очищены");
+
+        // 4. 🎯 ВОССТАНАВЛИВАЕМ КОМАНДЫ (без их сет-листов)
+        const teamsOnly = savedTeams.map(t => ({
+            id: t.id,
+            name: t.name,
+            password: t.password || '',
+            avatar: t.avatar || null,
+            ownerId: t.ownerId || null,
+            members: t.members || [],
+            createdAt: t.createdAt || Date.now()
+        }));
+        localStorage.setItem('clc_teams', JSON.stringify(teamsOnly));
+        console.log("✅ Команды сохранены (без сет-листов)");
+
+        // 5. ✅ ПРОФИЛЬ И АВТОРИЗАЦИЯ ОСТАЮТСЯ НЕТРОНУТЫМИ
+        // Ключи 'clc_profile_*' и 'clc_cached_auth' НЕ удаляются
+        console.log("✅ Профиль и авторизация сохранены");
+
+        alert(
+            "✅ Кэш успешно очищен!\n\n" +
+            "• Аккаунт и аватарка сохранены\n" +
+            "• Команды сохранены\n" +
+            "• Песни и сет-листы удалены\n" +
+            "• Приложение перезагрузится\n\n" +
+            "При наличии интернета данные команд загрузятся из облака автоматически."
+        );
+        
+        // Перезагружаем страницу
+        window.location.reload();
+        
+    } catch (error) {
+        console.error("❌ Ошибка очистки кэша:", error);
+        alert("Не удалось полностью очистить кэш: " + error.message);
     }
 }
 async function migrateTeamsAddMemberUids() {
