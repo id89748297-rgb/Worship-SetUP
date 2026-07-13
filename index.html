@@ -939,6 +939,41 @@ async function registerDeviceInFirestore(user) {
     }
 }
 
+// === ПРИНУДИТЕЛЬНЫЙ ВЫХОД ПРИ УДАЛЕНИИ УСТРОЙСТВА ===
+// Слушаем в реальном времени свой документ пользователя: если это устройство
+// пропало из списка devices (его удалили — из профиля или через окно лимита
+// на другом устройстве) — разлогиниваем.
+let deviceRemovalUnsub = null;
+
+function watchDeviceRemoval(user) {
+    if (!db || !user) return;
+    stopWatchingDeviceRemoval();
+    const myDeviceId = getDeviceId();
+    deviceRemovalUnsub = db.collection('users').doc(user.uid)
+        .onSnapshot((doc) => {
+            if (!doc.exists) return;
+            const devices = (doc.data() || {}).devices || [];
+            // Пока список пуст (ещё не подгрузился/не зарегистрировались) — не трогаем
+            if (devices.length === 0) return;
+            const stillPresent = devices.some(d => d.id === myDeviceId);
+            if (!stillPresent) {
+                console.warn('🚫 Это устройство удалено из аккаунта — принудительный выход');
+                stopWatchingDeviceRemoval();
+                alert('⚠️ Это устройство было удалено из аккаунта.\nВойдите заново, чтобы продолжить.');
+                auth.signOut();
+            }
+        }, (err) => {
+            console.error('⚠️ Ошибка отслеживания устройства:', err.message);
+        });
+}
+
+function stopWatchingDeviceRemoval() {
+    if (deviceRemovalUnsub) {
+        deviceRemovalUnsub();
+        deviceRemovalUnsub = null;
+    }
+}
+
 // Удалить устройство из Firestore
 async function removeDeviceFromFirestore(userId, deviceId) {
   if (!db) return [];
@@ -2064,84 +2099,84 @@ confirmJoinTeam(parsed.teamId, pwd);
 confirmJoinTeam(parsed.teamId, '');
 }
 }
-async function confirmJoinTeam(teamId, password) {
+function confirmJoinTeam(teamId, password) {
     if (teams.length >= MAX_TEAMS) {
-        alert('❌ Достигнут лимит команд (' + MAX_TEAMS + ')');
+        alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
         return;
     }
-
-    try {
-        await addSelfToTeamMembers(teamId, password);
-    } catch (e) {
-        alert('❌ Не удалось присоединиться: ' + e.message);
-        return;
-    }
-
-    // Получаем название команды из Firestore
-    var teamName = teamId;
-    try {
-        var doc = await db.collection('teams').doc(teamId).get();
-        if (doc.exists) {
-            teamName = doc.data().name || teamId;
-        }
-    } catch (e) {}
-
-    var newTeam = {
+    const name = prompt('Название команды (уточните у отправителя):');
+    if (!name || !name.trim()) return;
+    
+    const newTeam = {
         id: teamId,
-        name: teamName,
+        name: name.trim(),
         password: password,
         avatar: null,
         ownerId: null,
-        members: currentUser ? [{ uid: currentUser.uid, role: 'member', joinedAt: Date.now() }] : [],
+        members: currentUser ? [{
+  uid: currentUser.uid,
+  role: 'member',
+  joinedAt: Date.now()
+}] : [],
         createdAt: Date.now(),
         joinedByLink: true
     };
+    
+    // Добавляем локально
     teams.push(newTeam);
     saveToStorage();
-    subscribeToTeamSetlists(teamId);
+    
+    // ⬇️ НОВОЕ: Добавляем себя в members команды в Firestore
+    if (isAuthenticated && currentUser && db) {
+        addSelfToTeamMembers(teamId).catch(e => {
+            console.error('Ошибка добавления в members:', e);
+        });
+    }
     
     closeModal('modal-join-team-link');
     renderCarousel();
     showTeamsView();
-    alert('✅ Вы присоединились к команде «' + teamName + '»!');
+    alert(`✅ Вы присоединились к команде «${name}»!`);
 }
 
-async function addSelfToTeamMembers(teamId, password) {
-    if (!db || !currentUser) {
-        throw new Error('Нет подключения к базе данных');
-    }
-    var teamRef = db.collection('teams').doc(teamId);
-    
-    var doc = await teamRef.get();
-    if (!doc.exists) {
-        throw new Error('Команда не найдена. Проверьте ссылку.');
-    }
-    var data = doc.data();
-    
-    if (data.password && data.password !== password) {
-        throw new Error('Неверный пароль команды');
-    }
-    
-    var members = data.members || [];
-    var alreadyMember = members.some(function(m) {
-        if (typeof m === 'string') return m === currentUser.uid;
-        return m.uid === currentUser.uid;
-    });
-    if (alreadyMember) {
-        throw new Error('Вы уже состоите в этой команде');
-    }
-    
-    await teamRef.update({
-        members: firebase.firestore.FieldValue.arrayUnion({
-            uid: currentUser.uid,
-            role: 'member',
-            joinedAt: Date.now()
-        }),
-        memberUids: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    console.log('✅ Участник добавлен в Firestore:', currentUser.uid);
+// Новая функция: добавить себя в members команды в Firestore
+async function addSelfToTeamMembers(teamId) {
+if (!db || !currentUser) return;
+try {
+const teamRef = db.collection('teams').doc(teamId);
+await db.runTransaction(async (transaction) => {
+const doc = await transaction.get(teamRef);
+if (!doc.exists) return;
+const data = doc.data();
+const members = data.members || [];
+const memberUids = data.memberUids || [];
+const existingMember = members.find(m =>
+(typeof m === 'string' && m === currentUser.uid) ||
+(typeof m === 'object' && m.uid === currentUser.uid)
+);
+if (!existingMember) {
+const newMembers = members.map(m => {
+if (typeof m === 'string') {
+return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
+}
+return m;
+});
+newMembers.push({
+uid: currentUser.uid,
+role: 'member',
+joinedAt: Date.now()
+});
+const newMemberUids = [...memberUids, currentUser.uid];
+transaction.update(teamRef, {
+members: newMembers,
+memberUids: newMemberUids,
+updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+}
+});
+} catch (e) {
+console.error('Ошибка добавления в members:', e);
+}
 }
 function openSetlistModalForTeam(teamId) {
 document.getElementById('sl-date').value = getCurrentDate();
@@ -2516,20 +2551,7 @@ if (chordMatches && chordMatches.length > 2) return false;
 return true;
 }
 function loadFromStorage() {
-    try {
-        const uid = currentUser ? currentUser.uid : null;
-        if (uid) {
-            songs = JSON.parse(localStorage.getItem('clc_' + uid + '_songs') || '[]');
-            setlists = JSON.parse(localStorage.getItem('clc_' + uid + '_setlists') || '[]');
-            sectionNotes = JSON.parse(localStorage.getItem('clc_' + uid + '_section_notes') || '{}');
-            inlineComments = JSON.parse(localStorage.getItem('clc_' + uid + '_inline_comments') || '{}');
-            teams = JSON.parse(localStorage.getItem('clc_' + uid + '_teams') || '[]').map(migrateTeamMembers);
-        } else {
-            songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = [];
-        }
-    } catch {
-        songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = [];
-    }
+try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]'); sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}'); inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}'); teams = JSON.parse(localStorage.getItem('clc_teams') || '[]').map(migrateTeamMembers); } catch { songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = []; }
 const savedTheme = localStorage.getItem('clc_theme');
 if (savedTheme === 'light') {
     document.body.classList.remove('dark');
@@ -2562,15 +2584,7 @@ if (savedSort) { const sel = document.getElementById('songs-sort'); if (sel) sel
 const savedCategoryFilter = localStorage.getItem('clc_category_filter');
 if (savedCategoryFilter) { const sel = document.getElementById('category-filter'); if (sel) sel.value = savedCategoryFilter; }
 }
-function saveToStorage() {
-    if (!currentUser) return;
-    const uid = currentUser.uid;
-    localStorage.setItem('clc_' + uid + '_songs', JSON.stringify(songs));
-    localStorage.setItem('clc_' + uid + '_setlists', JSON.stringify(setlists));
-    localStorage.setItem('clc_' + uid + '_section_notes', JSON.stringify(sectionNotes));
-    localStorage.setItem('clc_' + uid + '_inline_comments', JSON.stringify(inlineComments));
-    localStorage.setItem('clc_' + uid + '_teams', JSON.stringify(teams));
-}
+function saveToStorage() { localStorage.setItem('clc_songs', JSON.stringify(songs)); localStorage.setItem('clc_setlists', JSON.stringify(setlists)); localStorage.setItem('clc_section_notes', JSON.stringify(sectionNotes)); localStorage.setItem('clc_inline_comments', JSON.stringify(inlineComments)); localStorage.setItem('clc_teams', JSON.stringify(teams)); }
 function updateThemeButtons(icon) {
     document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon);
 }
@@ -3537,6 +3551,10 @@ auth.onAuthStateChanged(async (user) => {
     }
     isHandlingAuth = true;
     
+    // 🔧 ИСПРАВЛЕНО: запоминаем, была ли сессия закэширована ДО того,
+    // как cacheAuthState() ниже перезапишет/сотрёт этот кэш
+    const hadCachedAuthBefore = getCachedAuthState() !== null;
+    
     // Кэшируем состояние авторизации
     cacheAuthState(user);
     
@@ -3580,7 +3598,9 @@ if (user) {
             isAuthenticated = true;
             
             // 🔧 НОВОЕ: регистрация устройства — В ФОНЕ, не блокируем UI
-            registerDeviceInFirestore(user).catch(e => {
+            registerDeviceInFirestore(user).then(() => {
+                watchDeviceRemoval(user);
+            }).catch(e => {
                 console.error('⚠️ registerDevice в фоне:', e.message);
             });
             
@@ -3619,6 +3639,7 @@ console.error('⚠️ migrateTeams в фоне:', e);
             activateCarouselItem(carouselActiveIndex);
             
         } else {
+            stopWatchingDeviceRemoval();
             currentUser = null;
             isAuthenticated = false;
             updateUserAvatar();
@@ -3629,9 +3650,8 @@ console.error('⚠️ migrateTeams в фоне:', e);
             carouselActiveIndex = 0;
             activateCarouselItem(0);
             
-            // Проверяем кэшированное состояние
-            const cached = getCachedAuthState();
-            const hasCachedAuth = cached !== null;
+            // Проверяем кэшированное состояние (до того, как его стёрли выше)
+            const hasCachedAuth = hadCachedAuthBefore;
             
             // 🔧 НОВОЕ: показываем модалку ТОЛЬКО если:
             // 1. Нет кэша
@@ -4007,6 +4027,7 @@ profileUnsubscribe = null;
 if (typeof stopTeamsRealtimeSync === 'function') {
 stopTeamsRealtimeSync();
 }
+stopWatchingDeviceRemoval();
 auth.signOut();
 localStorage.removeItem('clc_cached_auth');
 sessionStorage.removeItem('clc_auth_modal_shown');
@@ -4029,51 +4050,38 @@ async function saveUserProfile(user) {
 // === СИНХРОНИЗАЦИЯ КОМАНД ЧЕРЕZ FIRESTORE ===
 
 async function saveTeamToFirestore(team) {
-  if (!db || !currentUser) return;
-  try {
-    // 🔒 Проверяем роль: только владелец/админ могут менять участников
-    const isOwner = team.ownerId === currentUser.uid;
-    const isAdmin = (team.members || []).some(m => 
-      (typeof m === 'object' && m.uid === currentUser.uid && m.role === 'admin')
-    );
-    const canManageMembers = isOwner || isAdmin;
-    
-    const updateData = {
-      id: team.id,
-      name: team.name,
-      password: team.password || '',
-      avatar: team.avatar || null,
-      ownerId: team.ownerId || currentUser.uid,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    
-    // 🔒 Обновляем members/memberUids ТОЛЬКО если есть права
-    if (canManageMembers) {
-      const membersData = (team.members || []).map(m => {
-        if (typeof m === 'string') {
-          return {
-            uid: m,
-            role: (m === team.ownerId) ? 'owner' : 'member',
-            joinedAt: Date.now()
-          };
-        }
-        return m;
-      });
-      if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
-        membersData.unshift({
-          uid: team.ownerId,
-          role: 'owner',
-          joinedAt: team.createdAt || Date.now()
-        });
-      }
-      updateData.members = membersData;
-      updateData.memberUids = membersData.map(m => m.uid);
-    }
-    
-    await db.collection('teams').doc(team.id).set(updateData, { merge: true });
-  } catch (e) { 
-    console.error('Ошибка сохранения команды:', e); 
-  }
+if (!db || !currentUser) return;
+try {
+const membersData = (team.members || []).map(m => {
+if (typeof m === 'string') {
+return {
+uid: m,
+role: (m === team.ownerId) ? 'owner' : 'member',
+joinedAt: Date.now()
+};
+}
+return m;
+});
+if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
+membersData.unshift({
+uid: team.ownerId,
+role: 'owner',
+joinedAt: team.createdAt || Date.now()
+});
+}
+const memberUids = membersData.map(m => m.uid);
+await db.collection('teams').doc(team.id).set({
+id: team.id,
+name: team.name,
+password: team.password || '',
+avatar: team.avatar || null,
+ownerId: team.ownerId || currentUser.uid,
+members: membersData,
+memberUids: memberUids,
+createdAt: team.createdAt || Date.now(),
+updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+}, { merge: true });
+} catch (e) { console.error('Ошибка сохранения команды:', e); }
 }
 
 // Удалить команду из Firestore
@@ -4991,25 +4999,24 @@ if (!navigator.onLine) {
     }
 }
 async function migrateTeamsAddMemberUids() {
-    if (!db || !currentUser) return;
-    try {
-        const teamsSnap = await db.collection('teams')
-            .where('memberUids', '==', null)
-            .get();
-        if (teamsSnap.empty) return;
-        const batch = db.batch();
-        teamsSnap.forEach(doc => {
-            const data = doc.data();
-            if (data.ownerId !== currentUser.uid) return;
-            const members = data.members || [];
-            const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
-            batch.update(doc.ref, { memberUids: memberUids });
-        });
-        await batch.commit();
-        console.log('✅ Миграция завершена');
-    } catch (e) {
-        console.warn('⚠️ Миграция пропущена (нет прав):', e.message);
-    }
+if (!db || !currentUser) return;
+try {
+const teamsSnap = await db.collection('teams')
+.where('memberUids', '==', null)
+.get();
+if (teamsSnap.empty) return;
+const batch = db.batch();
+teamsSnap.forEach(doc => {
+const data = doc.data();
+const members = data.members || [];
+const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
+batch.update(doc.ref, { memberUids: memberUids });
+});
+await batch.commit();
+console.log(`✅ Мигрировано ${teamsSnap.size} команд`);
+} catch (e) {
+console.error('Ошибка миграции:', e);
+}
 }
 loadFromStorage();
 buildCarouselItems();
