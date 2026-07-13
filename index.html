@@ -959,29 +959,56 @@ async function registerDeviceInFirestore(user) {
 // === ПРИНУДИТЕЛЬНЫЙ ВЫХОД ПРИ УДАЛЕНИИ УСТРОЙСТВА ===
 // Слушаем в реальном времени свой документ пользователя: если это устройство
 // пропало из списка devices (его удалили — из профиля или через окно лимита
-// на другом устройстве) — разлогиниваем.
+// на другом устройстве) — разлогиниваем и полностью очищаем кэш.
 let deviceRemovalUnsub = null;
-
 function watchDeviceRemoval(user) {
     if (!db || !user) return;
     stopWatchingDeviceRemoval();
     const myDeviceId = getDeviceId();
+    
     deviceRemovalUnsub = db.collection('users').doc(user.uid)
-        .onSnapshot((doc) => {
-            if (!doc.exists) return;
-            const devices = (doc.data() || {}).devices || [];
-            // Пока список пуст (ещё не подгрузился/не зарегистрировались) — не трогаем
-            if (devices.length === 0) return;
-            const stillPresent = devices.some(d => d.id === myDeviceId);
-            if (!stillPresent) {
-                console.warn('🚫 Это устройство удалено из аккаунта — принудительный выход');
-                stopWatchingDeviceRemoval();
-                alert('⚠️ Это устройство было удалено из аккаунта.\nВойдите заново, чтобы продолжить.');
-                auth.signOut();
+    .onSnapshot((doc) => {
+        if (!doc.exists) return;
+        const devices = (doc.data() || {}).devices || [];
+        // Пока список пуст (ещё не подгрузился) — не трогаем
+        if (devices.length === 0) return;
+        
+        const stillPresent = devices.some(d => d.id === myDeviceId);
+        if (!stillPresent) {
+            console.warn('🚫 Это устройство удалено из аккаунта — принудительный выход');
+            stopWatchingDeviceRemoval();
+            
+            // 🔧 ПОЛНАЯ ОЧИСТКА КЭША АВТОРИЗАЦИИ
+            // Удаляем кэш авторизации
+            localStorage.removeItem('clc_cached_auth');
+            
+            // Удаляем флаги показа модалки авторизации
+            localStorage.removeItem('clc_auth_modal_shown');
+            sessionStorage.removeItem('clc_auth_modal_shown');
+            sessionStorage.removeItem('email_warning_shown');
+            
+            // Удаляем кэш профиля этого пользователя
+            if (currentUser) {
+                localStorage.removeItem('clc_profile_' + currentUser.uid);
             }
-        }, (err) => {
-            console.error('⚠️ Ошибка отслеживания устройства:', err.message);
-        });
+            
+            // Показываем уведомление
+            alert('⚠️ Это устройство было удалено из аккаунта.\n\nДля продолжения работы необходимо войти заново с логином/паролем.');
+            
+            // Разлогиниваемся из Firebase
+            auth.signOut().then(() => {
+                console.log('✅ Принудительный выход выполнен');
+                // Перезагружаем страницу, чтобы сбросить всё состояние
+                window.location.reload();
+            }).catch((error) => {
+                console.error('❌ Ошибка принудительного выхода:', error);
+                // Всё равно перезагружаем, даже если signOut упал
+                window.location.reload();
+            });
+        }
+    }, (err) => {
+        console.error('⚠️ Ошибка отслеживания устройства:', err.message);
+    });
 }
 
 function stopWatchingDeviceRemoval() {
