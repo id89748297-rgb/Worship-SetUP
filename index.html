@@ -656,8 +656,12 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </div>
 <button class="btn-main" onclick="loginWithEmail()">Войти</button>
 <button class="btn-secondary" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 8px; font-size: 13px;">📧 Повторно отправить письмо подтверждения</button>
-<p style="text-align: center; margin: 15px 0; color: #888;">или</p>
-<button class="btn-pastel" onclick="loginWithGoogle()" style="width: 100%;">🔵 Войти через Google</button>
+<button class="btn-secondary" onclick="showResetPasswordModal()" style="width: 100%; margin-top: 8px; font-size: 13px; background: transparent; color: #90caf9; border: 1px solid rgba(144, 202, 249, 0.4);">
+🔑 Забыли пароль? Восстановить доступ
+</button>
+<p style="text-align: center; margin-top: 15px;">
+Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
+</p>
 <p style="text-align: center; margin-top: 15px;">
 Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
 </p>
@@ -812,6 +816,20 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <button class="btn-secondary" onclick="closeModal('modal-profile')" style="flex: 1; margin: 0; padding: 12px 8px;">Отмена</button>
 <button class="btn-danger" onclick="logout()" style="flex: 1; margin: 0; padding: 12px 8px;">🚪 Выйти</button>
 </div>
+</div>
+</div>
+<!-- Модальное окно восстановления пароля -->
+<div id="modal-reset-password" class="modal">
+<div class="modal-content" style="max-width: 400px;">
+<h2 style="text-align:center; color: #90caf9; margin-bottom: 20px;">🔑 Восстановление пароля</h2>
+<p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+Введите email, указанный при регистрации.<br>
+Мы отправим ссылку для сброса пароля.
+</p>
+<input type="email" id="reset-email" placeholder="Ваш email" autocomplete="email" style="margin-bottom: 15px;">
+<div id="reset-message" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;"></div>
+<button class="btn-main" onclick="resetPassword()" style="margin-bottom: 10px;">📧 Отправить ссылку</button>
+<button class="btn-secondary" onclick="backToLoginFromReset()" style="width: 100%;">← Назад ко входу</button>
 </div>
 </div>
 <!-- ⬇️ СЮДА ВСТАВЛЯЕТЕ КРОППЕР ⬇️ -->
@@ -3980,59 +3998,88 @@ alert('Ошибка сохранения: ' + e.message);
 }
 }
 
-function loginWithGoogle() {
-const provider = new firebase.auth.GoogleAuthProvider();
-auth.signInWithPopup(provider)
-.then(async (result) => {
-const user = result.user;
-try {
-const userDoc = await db.collection('users').doc(user.uid).get();
-if (!userDoc.exists) {
-const autoUsername = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
-let uniqueUsername = autoUsername;
-let counter = 1;
-
-while (true) {
-const usernameDoc = await db.collection('usernames').doc(uniqueUsername).get();
-if (!usernameDoc.exists) break;
-uniqueUsername = autoUsername + counter;
-counter++;
+// === ВОССТАНОВЛЕНИЕ ПАРОЛЯ ===
+function showResetPasswordModal() {
+    closeModal('modal-auth');
+    document.getElementById('reset-email').value = '';
+    document.getElementById('reset-message').style.display = 'none';
+    document.getElementById('modal-reset-password').classList.add('show');
 }
 
-await db.collection('usernames').doc(uniqueUsername).set({
-uid: user.uid,
-email: user.email,
-createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
+function backToLoginFromReset() {
+    closeModal('modal-reset-password');
+    showAuthModal();
+}
 
-await db.collection('users').doc(user.uid).set({
-username: uniqueUsername,
-firstName: user.displayName?.split(' ')[0] || '',
-lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-displayName: user.displayName || '',
-email: user.email,
-photoURL: user.photoURL || null,
-birthdayMonth: null,
-birthdayDay: null,
-gender: null,
-createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-});
-}
-} catch (e) {
-console.error('Ошибка создания профиля:', e);
-}
-})
-.catch((error) => {
-console.error('Ошибка входа через Google:', error);
-let errorMsg = 'Ошибка входа';
-if (error.code === 'auth/popup-blocked') errorMsg = 'Всплывающее окно заблокировано. Разрешите всплывающие окна для этого сайта.';
-else if (error.code === 'auth/popup-closed-by-user') errorMsg = 'Окно закрыто';
-else if (error.code === 'auth/cancelled-popup-request') errorMsg = 'Запрос отменен';
-else if (error.code === 'auth/network-request-failed') errorMsg = 'Ошибка сети';
-else errorMsg = error.message;
-alert('❌ ' + errorMsg);
-});
+async function resetPassword() {
+    const email = document.getElementById('reset-email').value.trim();
+    const messageDiv = document.getElementById('reset-message');
+    
+    if (!email) {
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = 'rgba(239, 83, 80, 0.15)';
+        messageDiv.style.color = '#ef5350';
+        messageDiv.style.border = '1px solid rgba(239, 83, 80, 0.4)';
+        messageDiv.innerHTML = '❌ Введите email';
+        return;
+    }
+    
+    // Проверка формата email
+    if (!email.includes('@') || !email.includes('.')) {
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = 'rgba(239, 83, 80, 0.15)';
+        messageDiv.style.color = '#ef5350';
+        messageDiv.style.border = '1px solid rgba(239, 83, 80, 0.4)';
+        messageDiv.innerHTML = '❌ Неверный формат email';
+        return;
+    }
+    
+    // Блокируем кнопку на время отправки
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Отправка...';
+    
+    try {
+        await auth.sendPasswordResetEmail(email);
+        
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = 'rgba(76, 175, 80, 0.15)';
+        messageDiv.style.color = '#4caf50';
+        messageDiv.style.border = '1px solid rgba(76, 175, 80, 0.4)';
+        messageDiv.innerHTML = `✅ Письмо отправлено на <b>${email}</b><br><br>Проверьте почту (включая папку "Спам") и перейдите по ссылке для сброса пароля.<br><br><span style="font-size: 12px; opacity: 0.8;">Через 5 секунд вы вернётесь ко входу...</span>`;
+        
+        btn.innerHTML = '✅ Отправлено!';
+        
+        // Через 5 секунд закрываем модалку и возвращаем ко входу
+        setTimeout(() => {
+            closeModal('modal-reset-password');
+            showAuthModal();
+        }, 5000);
+        
+    } catch (error) {
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = 'rgba(239, 83, 80, 0.15)';
+        messageDiv.style.color = '#ef5350';
+        messageDiv.style.border = '1px solid rgba(239, 83, 80, 0.4)';
+        
+        let errorMsg = 'Не удалось отправить письмо';
+        if (error.code === 'auth/user-not-found') {
+            errorMsg = '❌ Пользователь с таким email не найден.<br><span style="font-size: 12px;">Проверьте правильность ввода или зарегистрируйтесь.</span>';
+        } else if (error.code === 'auth/invalid-email') {
+            errorMsg = '❌ Неверный формат email';
+        } else if (error.code === 'auth/too-many-requests') {
+            errorMsg = '❌ Слишком много попыток. Попробуйте через несколько минут.';
+        } else if (error.code === 'auth/network-request-failed') {
+            errorMsg = '❌ Ошибка сети. Проверьте интернет.';
+        } else {
+            errorMsg = '❌ Ошибка: ' + error.message;
+        }
+        
+        messageDiv.innerHTML = errorMsg;
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
 }
 
 function resendVerificationEmail() {
@@ -5133,24 +5180,46 @@ async function clearAppCache() {
     }
 }
 async function migrateTeamsAddMemberUids() {
-if (!db || !currentUser) return;
-try {
-const teamsSnap = await db.collection('teams')
-.where('memberUids', '==', null)
-.get();
-if (teamsSnap.empty) return;
-const batch = db.batch();
-teamsSnap.forEach(doc => {
-const data = doc.data();
-const members = data.members || [];
-const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
-batch.update(doc.ref, { memberUids: memberUids });
-});
-await batch.commit();
-console.log(`✅ Мигрировано ${teamsSnap.size} команд`);
-} catch (e) {
-console.error('Ошибка миграции:', e);
-}
+  if (!db || !currentUser) return;
+  try {
+    // 1. Безопасно ищем команды, где текущий пользователь уже состоит
+    const teamsSnap = await db.collection('teams')
+      .where('memberUids', 'array-contains', currentUser.uid)
+      .get();
+
+    if (teamsSnap.empty) return;
+
+    const batch = db.batch();
+    let migratedCount = 0;
+
+    teamsSnap.forEach(doc => {
+      const data = doc.data();
+      
+      // 2. Мигрируем только если поле memberUids отсутствует или пусто
+      if (!data.memberUids || data.memberUids.length === 0) {
+        const members = data.members || [];
+        
+        // Извлекаем только валидные UID (защита от битых данных)
+        const memberUids = members.map(m => 
+          typeof m === 'string' ? m : (m.uid || null)
+        ).filter(uid => uid !== null);
+
+        if (memberUids.length > 0) {
+          batch.update(doc.ref, { memberUids: memberUids });
+          migratedCount++;
+        }
+      }
+    });
+
+    // 3. Сохраняем в базу только если были реальные изменения
+    if (migratedCount > 0) {
+      await batch.commit();
+      console.log(`✅ Фоновая миграция: обновлено ${migratedCount} команд`);
+    }
+  } catch (e) {
+    // 4. ВАЖНО: Ловим ошибку, логируем её, но НЕ ломаем загрузку приложения
+    console.error('⚠️ Ошибка фоновой миграции команд (не критично, приложение продолжит работу):', e);
+  }
 }
 loadFromStorage();
 buildCarouselItems();
