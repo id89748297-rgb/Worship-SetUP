@@ -3670,13 +3670,7 @@ if (user) {
             loadUserProfileFromFirestore(user).catch(e => {
                 console.error('⚠️ loadProfile в фоне:', e.message);
             });
-
-// 🔧 НОВОЕ: миграция старых команд
-if (isOnline()) {
-migrateTeamsAddMemberUids().catch(e => {
-console.error('⚠️ migrateTeams в фоне:', e);
-});
-}            
+      
             // 🔧 НОВОЕ: синхронизация команд — только при онлайне
             if (isOnline() && typeof syncTeamsFromCloud === 'function') {
                 syncTeamsFromCloud().catch(e => {
@@ -5178,48 +5172,6 @@ async function clearAppCache() {
         console.error("❌ Ошибка очистки кэша:", error);
         alert("Не удалось полностью очистить кэш: " + error.message);
     }
-}
-async function migrateTeamsAddMemberUids() {
-  if (!db || !currentUser) return;
-  try {
-    // 1. Безопасно ищем команды, где текущий пользователь уже состоит
-    const teamsSnap = await db.collection('teams')
-      .where('memberUids', 'array-contains', currentUser.uid)
-      .get();
-
-    if (teamsSnap.empty) return;
-
-    const batch = db.batch();
-    let migratedCount = 0;
-
-    teamsSnap.forEach(doc => {
-      const data = doc.data();
-      
-      // 2. Мигрируем только если поле memberUids отсутствует или пусто
-      if (!data.memberUids || data.memberUids.length === 0) {
-        const members = data.members || [];
-        
-        // Извлекаем только валидные UID (защита от битых данных)
-        const memberUids = members.map(m => 
-          typeof m === 'string' ? m : (m.uid || null)
-        ).filter(uid => uid !== null);
-
-        if (memberUids.length > 0) {
-          batch.update(doc.ref, { memberUids: memberUids });
-          migratedCount++;
-        }
-      }
-    });
-
-    // 3. Сохраняем в базу только если были реальные изменения
-    if (migratedCount > 0) {
-      await batch.commit();
-      console.log(`✅ Фоновая миграция: обновлено ${migratedCount} команд`);
-    }
-  } catch (e) {
-    // 4. ВАЖНО: Ловим ошибку, логируем её, но НЕ ломаем загрузку приложения
-    console.error('⚠️ Ошибка фоновой миграции команд (не критично, приложение продолжит работу):', e);
-  }
 }
 loadFromStorage();
 buildCarouselItems();
