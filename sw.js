@@ -1,3 +1,4 @@
+self.addEventListener('fetch', (event) => {
 const CACHE_VERSION = 'worship-setup-v1';
  
 // Всё, что нужно, чтобы приложение стартовало без сети:
