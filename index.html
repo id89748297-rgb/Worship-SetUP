@@ -4040,7 +4040,8 @@ stopTeamsRealtimeSync();
 }
 auth.signOut();
 localStorage.removeItem('clc_cached_auth');
-sessionStorage.removeItem('clc_auth_modal_shown');
+localStorage.removeItem('clc_auth_modal_shown');
+localStorage.removeItem('email_warning_shown');
 closeModal('modal-profile');
 location.reload();
 }
