@@ -45,10 +45,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; ba
   opacity: 0.75;
 }
 .btn-icon:active { transform: scale(0.85); }
-/* Индикатор оффлайн-режима (постоянный, сверху) */
-#offline-indicator { display: none; background: #ef5350; color: white; text-align: center; padding: 6px; font-size: 12px; font-weight: bold; position: fixed; top: 0; left: 0; width: 100%; z-index: 10000; }
-body.light #offline-indicator { background: #d32f2f; }
-body.dark-white #offline-indicator { background: #ef5350; }
 @media (hover: hover) and (pointer: fine) and (min-width: 769px) {
 body { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; cursor: default; }
 .chords-above, .lyrics-below, .section-label, .song-section, .song-content, .right-note, .song-image-comment, .section-note-input, .inline-comment-input, .pdf-body, .instruction-card-text { -webkit-user-select: text !important; user-select: text !important; cursor: text; }
@@ -383,9 +379,6 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </style>
 </head>
 <body class="dark">
-
-<!-- Индикатор автономности (показывается при отсутствии интернета) -->
-<div id="offline-indicator">📴 Оффлайн-режим. Данные загружаются из памяти устройства.</div>
 <div id="page-home" class="page active">
 <div class="header">
 <div class="header-left">
@@ -656,9 +649,8 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 </div>
 <button class="btn-main" onclick="loginWithEmail()">Войти</button>
 <button class="btn-secondary" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 8px; font-size: 13px;">📧 Повторно отправить письмо подтверждения</button>
-<button class="btn-secondary" onclick="showResetPasswordModal()" style="width: 100%; margin-top: 8px; font-size: 13px; background: transparent; color: #90caf9; border: 1px solid rgba(144, 202, 249, 0.4);">
-🔑 Забыли пароль? Восстановить доступ
-</button>
+<p style="text-align: center; margin: 15px 0; color: #888;">или</p>
+<button class="btn-pastel" onclick="loginWithGoogle()" style="width: 100%;">🔵 Войти через Google</button>
 <p style="text-align: center; margin-top: 15px;">
 Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
 </p>
@@ -798,35 +790,11 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <div style="color: #888; font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>
 </div>
 </div>
-<!-- КНОПКА ОЧИСТКИ КЭША -->
-<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
-    <h3 style="color: #ef5350; font-size: 15px; margin-bottom: 10px;">💾 Хранилище устройства</h3>
-    <p style="color: #888; font-size: 12px; margin-bottom: 10px;">
-        Освободите место на телефоне. Команды и профиль останутся, сет-листы команд загрузятся заново при наличии интернета.
-    </p>
-    <button class="btn-secondary" onclick="clearAppCache()" style="width: 100%; background: rgba(239, 83, 80, 0.15); color: #ef5350; border: 1px solid rgba(239, 83, 80, 0.4);">
-        🗑️ Очистить кэш (оставить команды)
-    </button>
-</div>
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn-main" onclick="saveProfile()" style="flex: 1; margin: 0; padding: 12px 8px;">💾 Сохранить</button>
 <button class="btn-secondary" onclick="closeModal('modal-profile')" style="flex: 1; margin: 0; padding: 12px 8px;">Отмена</button>
 <button class="btn-danger" onclick="logout()" style="flex: 1; margin: 0; padding: 12px 8px;">🚪 Выйти</button>
 </div>
-</div>
-</div>
-<!-- Модальное окно восстановления пароля -->
-<div id="modal-reset-password" class="modal">
-<div class="modal-content" style="max-width: 400px;">
-<h2 style="text-align:center; color: #90caf9; margin-bottom: 20px;">🔑 Восстановление пароля</h2>
-<p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-Введите email, указанный при регистрации.<br>
-Мы отправим ссылку для сброса пароля.
-</p>
-<input type="email" id="reset-email" placeholder="Ваш email" autocomplete="email" style="margin-bottom: 15px;">
-<div id="reset-message" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;"></div>
-<button class="btn-main" onclick="resetPassword()" style="margin-bottom: 10px;">📧 Отправить ссылку</button>
-<button class="btn-secondary" onclick="backToLoginFromReset()" style="width: 100%;">← Назад ко входу</button>
 </div>
 </div>
 <!-- ⬇️ СЮДА ВСТАВЛЯЕТЕ КРОППЕР ⬇️ -->
@@ -872,17 +840,13 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Инициализация Firestore с новым API кэширования
-const dbSettings = {
-    cache: firebase.firestore.cacheSizeUnlimited
-};
-
-try {
-    firebase.firestore().settings(dbSettings);
-    console.log('✅ Firestore: кэширование включено (новый API)');
-} catch (err) {
-    console.warn('⚠️ Firestore: ошибка настройки кэша:', err.message);
-}
+firebase.firestore().enablePersistence().catch((err) => {
+    if (err.code === 'failed-precondition') {
+        console.warn('⚠️ Firestore: множественный доступ не поддерживается');
+    } else if (err.code === 'unimplemented') {
+        console.warn('⚠️ Firestore: браузер не поддерживает офлайн-режим');
+    }
+});
 
 // === ГЕНЕРАЦИЯ УНИКАЛЬНОГО ID ДЛЯ ПЕСЕН ===
 function generateCloudId() {
@@ -907,6 +871,22 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 let currentUser = null;
 let isAuthenticated = false;
 let authChecked = false;
+
+// ⚡ БЫСТРЫЙ СТАРТ: Загружаем UI из кэша до ответа Firebase
+const bootCache = getCachedAuthState();
+if (bootCache) {
+    currentUser = { 
+        uid: bootCache.uid, 
+        email: bootCache.email, 
+        displayName: bootCache.displayName,
+        photoURL: bootCache.photoURL 
+    };
+    isAuthenticated = true;
+    console.log('⚡ Быстрый старт: UI отображается мгновенно из кэша');
+    // Здесь можно вызвать функцию отрисовки UI, если она есть, например:
+    // updateUserAvatar(); 
+    // showMainApp();
+}
 // === УПРАВЛЕНИЕ УСТРОЙСТВАМИ ===
 const MAX_DEVICES = 2;
 
@@ -972,68 +952,6 @@ async function registerDeviceInFirestore(user) {
     } catch (e) {
         console.error('⚠️ Ошибка регистрации устройства:', e.message);
         return [];
-    }
-}
-
-// === ПРИНУДИТЕЛЬНЫЙ ВЫХОД ПРИ УДАЛЕНИИ УСТРОЙСТВА ===
-// Слушаем в реальном времени свой документ пользователя: если это устройство
-// пропало из списка devices (его удалили — из профиля или через окно лимита
-// на другом устройстве) — разлогиниваем и полностью очищаем кэш.
-let deviceRemovalUnsub = null;
-function watchDeviceRemoval(user) {
-    if (!db || !user) return;
-    stopWatchingDeviceRemoval();
-    const myDeviceId = getDeviceId();
-    
-    deviceRemovalUnsub = db.collection('users').doc(user.uid)
-    .onSnapshot((doc) => {
-        if (!doc.exists) return;
-        const devices = (doc.data() || {}).devices || [];
-        // Пока список пуст (ещё не подгрузился) — не трогаем
-        if (devices.length === 0) return;
-        
-        const stillPresent = devices.some(d => d.id === myDeviceId);
-        if (!stillPresent) {
-            console.warn('🚫 Это устройство удалено из аккаунта — принудительный выход');
-            stopWatchingDeviceRemoval();
-            
-            // 🔧 ПОЛНАЯ ОЧИСТКА КЭША АВТОРИЗАЦИИ
-            // Удаляем кэш авторизации
-            localStorage.removeItem('clc_cached_auth');
-            
-            // Удаляем флаги показа модалки авторизации
-            localStorage.removeItem('clc_auth_modal_shown');
-            sessionStorage.removeItem('clc_auth_modal_shown');
-            sessionStorage.removeItem('email_warning_shown');
-            
-            // Удаляем кэш профиля этого пользователя
-            if (currentUser) {
-                localStorage.removeItem('clc_profile_' + currentUser.uid);
-            }
-            
-            // Показываем уведомление
-            alert('⚠️ Это устройство было удалено из аккаунта.\n\nДля продолжения работы необходимо войти заново с логином/паролем.');
-            
-            // Разлогиниваемся из Firebase
-            auth.signOut().then(() => {
-                console.log('✅ Принудительный выход выполнен');
-                // Перезагружаем страницу, чтобы сбросить всё состояние
-                window.location.reload();
-            }).catch((error) => {
-                console.error('❌ Ошибка принудительного выхода:', error);
-                // Всё равно перезагружаем, даже если signOut упал
-                window.location.reload();
-            });
-        }
-    }, (err) => {
-        console.error('⚠️ Ошибка отслеживания устройства:', err.message);
-    });
-}
-
-function stopWatchingDeviceRemoval() {
-    if (deviceRemovalUnsub) {
-        deviceRemovalUnsub();
-        deviceRemovalUnsub = null;
     }
 }
 
@@ -2162,84 +2080,84 @@ confirmJoinTeam(parsed.teamId, pwd);
 confirmJoinTeam(parsed.teamId, '');
 }
 }
-function confirmJoinTeam(teamId, password) {
+async function confirmJoinTeam(teamId, password) {
     if (teams.length >= MAX_TEAMS) {
-        alert(`❌ Достигнут лимит команд (${MAX_TEAMS})`);
+        alert('❌ Достигнут лимит команд (' + MAX_TEAMS + ')');
         return;
     }
-    const name = prompt('Название команды (уточните у отправителя):');
-    if (!name || !name.trim()) return;
-    
-    const newTeam = {
+
+    try {
+        await addSelfToTeamMembers(teamId, password);
+    } catch (e) {
+        alert('❌ Не удалось присоединиться: ' + e.message);
+        return;
+    }
+
+    // Получаем название команды из Firestore
+    var teamName = teamId;
+    try {
+        var doc = await db.collection('teams').doc(teamId).get();
+        if (doc.exists) {
+            teamName = doc.data().name || teamId;
+        }
+    } catch (e) {}
+
+    var newTeam = {
         id: teamId,
-        name: name.trim(),
+        name: teamName,
         password: password,
         avatar: null,
         ownerId: null,
-        members: currentUser ? [{
-  uid: currentUser.uid,
-  role: 'member',
-  joinedAt: Date.now()
-}] : [],
+        members: currentUser ? [{ uid: currentUser.uid, role: 'member', joinedAt: Date.now() }] : [],
         createdAt: Date.now(),
         joinedByLink: true
     };
-    
-    // Добавляем локально
     teams.push(newTeam);
     saveToStorage();
-    
-    // ⬇️ НОВОЕ: Добавляем себя в members команды в Firestore
-    if (isAuthenticated && currentUser && db) {
-        addSelfToTeamMembers(teamId).catch(e => {
-            console.error('Ошибка добавления в members:', e);
-        });
-    }
+    subscribeToTeamSetlists(teamId);
     
     closeModal('modal-join-team-link');
     renderCarousel();
     showTeamsView();
-    alert(`✅ Вы присоединились к команде «${name}»!`);
+    alert('✅ Вы присоединились к команде «' + teamName + '»!');
 }
 
-// Новая функция: добавить себя в members команды в Firestore
-async function addSelfToTeamMembers(teamId) {
-if (!db || !currentUser) return;
-try {
-const teamRef = db.collection('teams').doc(teamId);
-await db.runTransaction(async (transaction) => {
-const doc = await transaction.get(teamRef);
-if (!doc.exists) return;
-const data = doc.data();
-const members = data.members || [];
-const memberUids = data.memberUids || [];
-const existingMember = members.find(m =>
-(typeof m === 'string' && m === currentUser.uid) ||
-(typeof m === 'object' && m.uid === currentUser.uid)
-);
-if (!existingMember) {
-const newMembers = members.map(m => {
-if (typeof m === 'string') {
-return { uid: m, role: (m === data.ownerId) ? 'owner' : 'member', joinedAt: Date.now() };
-}
-return m;
-});
-newMembers.push({
-uid: currentUser.uid,
-role: 'member',
-joinedAt: Date.now()
-});
-const newMemberUids = [...memberUids, currentUser.uid];
-transaction.update(teamRef, {
-members: newMembers,
-memberUids: newMemberUids,
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-}
-});
-} catch (e) {
-console.error('Ошибка добавления в members:', e);
-}
+async function addSelfToTeamMembers(teamId, password) {
+    if (!db || !currentUser) {
+        throw new Error('Нет подключения к базе данных');
+    }
+    var teamRef = db.collection('teams').doc(teamId);
+    
+    var doc = await teamRef.get();
+    if (!doc.exists) {
+        throw new Error('Команда не найдена. Проверьте ссылку.');
+    }
+    var data = doc.data();
+    
+    if (data.password && data.password !== password) {
+        throw new Error('Неверный пароль команды');
+    }
+    
+    var members = data.members || [];
+    var alreadyMember = members.some(function(m) {
+        if (typeof m === 'string') return m === currentUser.uid;
+        return m.uid === currentUser.uid;
+    });
+    if (alreadyMember) {
+        throw new Error('Вы уже состоите в этой команде');
+    }
+    
+    await teamRef.update({
+        members: firebase.firestore.FieldValue.arrayUnion({
+            uid: currentUser.uid,
+            role: 'member',
+            joinedAt: Date.now()
+        }),
+        memberUids: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    console.log('✅ Участник добавлен в Firestore:', currentUser.uid);
 }
 function openSetlistModalForTeam(teamId) {
 document.getElementById('sl-date').value = getCurrentDate();
@@ -2614,7 +2532,20 @@ if (chordMatches && chordMatches.length > 2) return false;
 return true;
 }
 function loadFromStorage() {
-try { songs = JSON.parse(localStorage.getItem('clc_songs') || '[]'); setlists = JSON.parse(localStorage.getItem('clc_setlists') || '[]'); sectionNotes = JSON.parse(localStorage.getItem('clc_section_notes') || '{}'); inlineComments = JSON.parse(localStorage.getItem('clc_inline_comments') || '{}'); teams = JSON.parse(localStorage.getItem('clc_teams') || '[]').map(migrateTeamMembers); } catch { songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = []; }
+    try {
+        const uid = currentUser ? currentUser.uid : null;
+        if (uid) {
+            songs = JSON.parse(localStorage.getItem('clc_' + uid + '_songs') || '[]');
+            setlists = JSON.parse(localStorage.getItem('clc_' + uid + '_setlists') || '[]');
+            sectionNotes = JSON.parse(localStorage.getItem('clc_' + uid + '_section_notes') || '{}');
+            inlineComments = JSON.parse(localStorage.getItem('clc_' + uid + '_inline_comments') || '{}');
+            teams = JSON.parse(localStorage.getItem('clc_' + uid + '_teams') || '[]').map(migrateTeamMembers);
+        } else {
+            songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = [];
+        }
+    } catch {
+        songs = []; setlists = []; sectionNotes = {}; inlineComments = {}; teams = [];
+    }
 const savedTheme = localStorage.getItem('clc_theme');
 if (savedTheme === 'light') {
     document.body.classList.remove('dark');
@@ -2647,7 +2578,15 @@ if (savedSort) { const sel = document.getElementById('songs-sort'); if (sel) sel
 const savedCategoryFilter = localStorage.getItem('clc_category_filter');
 if (savedCategoryFilter) { const sel = document.getElementById('category-filter'); if (sel) sel.value = savedCategoryFilter; }
 }
-function saveToStorage() { localStorage.setItem('clc_songs', JSON.stringify(songs)); localStorage.setItem('clc_setlists', JSON.stringify(setlists)); localStorage.setItem('clc_section_notes', JSON.stringify(sectionNotes)); localStorage.setItem('clc_inline_comments', JSON.stringify(inlineComments)); localStorage.setItem('clc_teams', JSON.stringify(teams)); }
+function saveToStorage() {
+    if (!currentUser) return;
+    const uid = currentUser.uid;
+    localStorage.setItem('clc_' + uid + '_songs', JSON.stringify(songs));
+    localStorage.setItem('clc_' + uid + '_setlists', JSON.stringify(setlists));
+    localStorage.setItem('clc_' + uid + '_section_notes', JSON.stringify(sectionNotes));
+    localStorage.setItem('clc_' + uid + '_inline_comments', JSON.stringify(inlineComments));
+    localStorage.setItem('clc_' + uid + '_teams', JSON.stringify(teams));
+}
 function updateThemeButtons(icon) {
     document.querySelectorAll('.theme-toggle').forEach(b => b.innerText = icon);
 }
@@ -3614,10 +3553,6 @@ auth.onAuthStateChanged(async (user) => {
     }
     isHandlingAuth = true;
     
-    // 🔧 ИСПРАВЛЕНО: запоминаем, была ли сессия закэширована ДО того,
-    // как cacheAuthState() ниже перезапишет/сотрёт этот кэш
-    const hadCachedAuthBefore = getCachedAuthState() !== null;
-    
     // Кэшируем состояние авторизации
     cacheAuthState(user);
     
@@ -3627,19 +3562,20 @@ auth.onAuthStateChanged(async (user) => {
 if (user) {
     // 🔧 ИСПРАВЛЕНО: проверка email ТОЛЬКО при первом входе в сессии
     const cached = getCachedAuthState();
-    const isFirstLogin = !cached || (Date.now() - cached.timestamp > 60000); // 1 минута
-    
-    if (isFirstLogin && !user.emailVerified && isOnline()) {
-        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-        if (!isGoogleUser) {
-            const warningShown = sessionStorage.getItem('email_warning_shown');
-            if (!warningShown) {
-                alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-                sessionStorage.setItem('email_warning_shown', 'true');
-                return;
-            }
-        }
+    // Проверяем, показывали ли предупреждение в ЭТОЙ сессии (sessionStorage сохраняется при F5)
+const warningShownInSession = sessionStorage.getItem('email_warning_shown');
+if (!user.emailVerified && isOnline() && !warningShownInSession) {
+    const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+    if (!isGoogleUser) {
+        // Показываем предупреждение ТОЛЬКО при первом входе в сессии
+        sessionStorage.setItem('email_warning_shown', 'true');
+        alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
+        // НЕ разлогиниваем — просто предупреждаем
+        // Если хотите разлогинивать — раскомментируйте:
+        // await auth.signOut();
+        // return;
     }
+}
             
             // 🔧 НОВОЕ: проверка лимита устройств — НЕБЛОКИРУЮЩАЯ
             // Если офлайн — функция сама вернёт true
@@ -3660,9 +3596,7 @@ if (user) {
             isAuthenticated = true;
             
             // 🔧 НОВОЕ: регистрация устройства — В ФОНЕ, не блокируем UI
-            registerDeviceInFirestore(user).then(() => {
-                watchDeviceRemoval(user);
-            }).catch(e => {
+            registerDeviceInFirestore(user).catch(e => {
                 console.error('⚠️ registerDevice в фоне:', e.message);
             });
             
@@ -3670,7 +3604,13 @@ if (user) {
             loadUserProfileFromFirestore(user).catch(e => {
                 console.error('⚠️ loadProfile в фоне:', e.message);
             });
-      
+
+// 🔧 НОВОЕ: миграция старых команд
+if (isOnline()) {
+migrateTeamsAddMemberUids().catch(e => {
+console.error('⚠️ migrateTeams в фоне:', e);
+});
+}            
             // 🔧 НОВОЕ: синхронизация команд — только при онлайне
             if (isOnline() && typeof syncTeamsFromCloud === 'function') {
                 syncTeamsFromCloud().catch(e => {
@@ -3694,37 +3634,52 @@ if (user) {
             }
             activateCarouselItem(carouselActiveIndex);
             
-        } else {
-            stopWatchingDeviceRemoval();
-            currentUser = null;
-            isAuthenticated = false;
-            updateUserAvatar();
-            
-            buildCarouselItems();
-            renderCarousel();
-            
-            carouselActiveIndex = 0;
-            activateCarouselItem(0);
-            
-            // Проверяем кэшированное состояние (до того, как его стёрли выше)
-            const hasCachedAuth = hadCachedAuthBefore;
-            
-            // 🔧 НОВОЕ: показываем модалку ТОЛЬКО если:
-            // 1. Нет кэша
-            // 2. Есть интернет (иначе — работаем офлайн с кэшем)
-            // 3. Модалка ещё не показывалась в этой сессии
-            if (!hasCachedAuth && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
-                authCheckTimeout = setTimeout(() => {
-                    if (!isAuthenticated && !authInitializationComplete) {
-                        showAuthModal();
-                        sessionStorage.setItem('clc_auth_modal_shown', 'true');
-                    }
-                }, 3000);
-            } else if (hasCachedAuth && !isOnline()) {
-                // 🔧 НОВОЕ: при офлайне с кэшем — НЕ показываем модалку, работаем с кэшем
-                console.log('📴 Офлайн + есть кэш — молча работаем');
+      } else {
+    currentUser = null;
+    isAuthenticated = false;
+    authInitializationComplete = true;
+    
+    // Если мы использовали "Быстрый старт", но Firebase сказал "нет юзера" (ошибка токена),
+    // нужно сбросить UI к экрану входа, если кэш протух или невалиден.
+    // Но если кэш валиден и нет сети - мы должны остаться в UI (см. ниже).
+    
+    const cached = getCachedAuthState();
+    const hasCachedAuth = cached !== null;
+    
+    //  ИСПРАВЛЕНИЕ ОФЛАЙНА
+    if (hasCachedAuth && !isOnline()) {
+        console.log('📴 Офлайн + есть кэш — восстанавливаем сессию принудительно');
+        currentUser = { 
+            uid: cached.uid, 
+            email: cached.email, 
+            displayName: cached.displayName,
+            photoURL: cached.photoURL 
+        };
+        isAuthenticated = true;
+        // Помечаем, что мы в офлайне, чтобы не пытаться писать в базу
+        currentUser.isOffline = true; 
+        
+        // Важно: обновить UI, так как мы изменили currentUser
+        updateUserAvatar();
+        // loadLocalData(); // Если есть функция загрузки локальных данных
+    } 
+    // Если онлайн и нет кэша - показываем модалку через 3 сек
+    else if (!hasCachedAuth && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
+        authCheckTimeout = setTimeout(() => {
+            if (!isAuthenticated && !authInitializationComplete) {
+                showAuthModal();
+                sessionStorage.setItem('clc_auth_modal_shown', 'true');
             }
-        }
+        }, 3000);
+    }
+    // Если онлайн, есть кэш, но Firebase вернул null (токен протух)
+    else if (hasCachedAuth && isOnline()) {
+        // Токен протух, нужно разлогинить и показать вход
+        console.log('⚠️ Кэш есть, но сессия Firebase невалидна (онлайн)');
+        localStorage.removeItem('clc_cached_auth'); // Очищаем старый кэш
+        showAuthModal();
+    }
+}
     } catch (e) {
         console.error('Ошибка в onAuthStateChanged:', e);
     } finally {
@@ -3992,88 +3947,59 @@ alert('Ошибка сохранения: ' + e.message);
 }
 }
 
-// === ВОССТАНОВЛЕНИЕ ПАРОЛЯ ===
-function showResetPasswordModal() {
-    closeModal('modal-auth');
-    document.getElementById('reset-email').value = '';
-    document.getElementById('reset-message').style.display = 'none';
-    document.getElementById('modal-reset-password').classList.add('show');
+function loginWithGoogle() {
+const provider = new firebase.auth.GoogleAuthProvider();
+auth.signInWithPopup(provider)
+.then(async (result) => {
+const user = result.user;
+try {
+const userDoc = await db.collection('users').doc(user.uid).get();
+if (!userDoc.exists) {
+const autoUsername = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
+let uniqueUsername = autoUsername;
+let counter = 1;
+
+while (true) {
+const usernameDoc = await db.collection('usernames').doc(uniqueUsername).get();
+if (!usernameDoc.exists) break;
+uniqueUsername = autoUsername + counter;
+counter++;
 }
 
-function backToLoginFromReset() {
-    closeModal('modal-reset-password');
-    showAuthModal();
-}
+await db.collection('usernames').doc(uniqueUsername).set({
+uid: user.uid,
+email: user.email,
+createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 
-async function resetPassword() {
-    const email = document.getElementById('reset-email').value.trim();
-    const messageDiv = document.getElementById('reset-message');
-    
-    if (!email) {
-        messageDiv.style.display = 'block';
-        messageDiv.style.background = 'rgba(239, 83, 80, 0.15)';
-        messageDiv.style.color = '#ef5350';
-        messageDiv.style.border = '1px solid rgba(239, 83, 80, 0.4)';
-        messageDiv.innerHTML = '❌ Введите email';
-        return;
-    }
-    
-    // Проверка формата email
-    if (!email.includes('@') || !email.includes('.')) {
-        messageDiv.style.display = 'block';
-        messageDiv.style.background = 'rgba(239, 83, 80, 0.15)';
-        messageDiv.style.color = '#ef5350';
-        messageDiv.style.border = '1px solid rgba(239, 83, 80, 0.4)';
-        messageDiv.innerHTML = '❌ Неверный формат email';
-        return;
-    }
-    
-    // Блокируем кнопку на время отправки
-    const btn = event.target;
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Отправка...';
-    
-    try {
-        await auth.sendPasswordResetEmail(email);
-        
-        messageDiv.style.display = 'block';
-        messageDiv.style.background = 'rgba(76, 175, 80, 0.15)';
-        messageDiv.style.color = '#4caf50';
-        messageDiv.style.border = '1px solid rgba(76, 175, 80, 0.4)';
-        messageDiv.innerHTML = `✅ Письмо отправлено на <b>${email}</b><br><br>Проверьте почту (включая папку "Спам") и перейдите по ссылке для сброса пароля.<br><br><span style="font-size: 12px; opacity: 0.8;">Через 5 секунд вы вернётесь ко входу...</span>`;
-        
-        btn.innerHTML = '✅ Отправлено!';
-        
-        // Через 5 секунд закрываем модалку и возвращаем ко входу
-        setTimeout(() => {
-            closeModal('modal-reset-password');
-            showAuthModal();
-        }, 5000);
-        
-    } catch (error) {
-        messageDiv.style.display = 'block';
-        messageDiv.style.background = 'rgba(239, 83, 80, 0.15)';
-        messageDiv.style.color = '#ef5350';
-        messageDiv.style.border = '1px solid rgba(239, 83, 80, 0.4)';
-        
-        let errorMsg = 'Не удалось отправить письмо';
-        if (error.code === 'auth/user-not-found') {
-            errorMsg = '❌ Пользователь с таким email не найден.<br><span style="font-size: 12px;">Проверьте правильность ввода или зарегистрируйтесь.</span>';
-        } else if (error.code === 'auth/invalid-email') {
-            errorMsg = '❌ Неверный формат email';
-        } else if (error.code === 'auth/too-many-requests') {
-            errorMsg = '❌ Слишком много попыток. Попробуйте через несколько минут.';
-        } else if (error.code === 'auth/network-request-failed') {
-            errorMsg = '❌ Ошибка сети. Проверьте интернет.';
-        } else {
-            errorMsg = '❌ Ошибка: ' + error.message;
-        }
-        
-        messageDiv.innerHTML = errorMsg;
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
+await db.collection('users').doc(user.uid).set({
+username: uniqueUsername,
+firstName: user.displayName?.split(' ')[0] || '',
+lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+displayName: user.displayName || '',
+email: user.email,
+photoURL: user.photoURL || null,
+birthdayMonth: null,
+birthdayDay: null,
+gender: null,
+createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+});
+}
+} catch (e) {
+console.error('Ошибка создания профиля:', e);
+}
+})
+.catch((error) => {
+console.error('Ошибка входа через Google:', error);
+let errorMsg = 'Ошибка входа';
+if (error.code === 'auth/popup-blocked') errorMsg = 'Всплывающее окно заблокировано. Разрешите всплывающие окна для этого сайта.';
+else if (error.code === 'auth/popup-closed-by-user') errorMsg = 'Окно закрыто';
+else if (error.code === 'auth/cancelled-popup-request') errorMsg = 'Запрос отменен';
+else if (error.code === 'auth/network-request-failed') errorMsg = 'Ошибка сети';
+else errorMsg = error.message;
+alert('❌ ' + errorMsg);
+});
 }
 
 function resendVerificationEmail() {
@@ -4112,7 +4038,6 @@ profileUnsubscribe = null;
 if (typeof stopTeamsRealtimeSync === 'function') {
 stopTeamsRealtimeSync();
 }
-stopWatchingDeviceRemoval();
 auth.signOut();
 localStorage.removeItem('clc_cached_auth');
 sessionStorage.removeItem('clc_auth_modal_shown');
@@ -4135,38 +4060,51 @@ async function saveUserProfile(user) {
 // === СИНХРОНИЗАЦИЯ КОМАНД ЧЕРЕZ FIRESTORE ===
 
 async function saveTeamToFirestore(team) {
-if (!db || !currentUser) return;
-try {
-const membersData = (team.members || []).map(m => {
-if (typeof m === 'string') {
-return {
-uid: m,
-role: (m === team.ownerId) ? 'owner' : 'member',
-joinedAt: Date.now()
-};
-}
-return m;
-});
-if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
-membersData.unshift({
-uid: team.ownerId,
-role: 'owner',
-joinedAt: team.createdAt || Date.now()
-});
-}
-const memberUids = membersData.map(m => m.uid);
-await db.collection('teams').doc(team.id).set({
-id: team.id,
-name: team.name,
-password: team.password || '',
-avatar: team.avatar || null,
-ownerId: team.ownerId || currentUser.uid,
-members: membersData,
-memberUids: memberUids,
-createdAt: team.createdAt || Date.now(),
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-}, { merge: true });
-} catch (e) { console.error('Ошибка сохранения команды:', e); }
+  if (!db || !currentUser) return;
+  try {
+    // 🔒 Проверяем роль: только владелец/админ могут менять участников
+    const isOwner = team.ownerId === currentUser.uid;
+    const isAdmin = (team.members || []).some(m => 
+      (typeof m === 'object' && m.uid === currentUser.uid && m.role === 'admin')
+    );
+    const canManageMembers = isOwner || isAdmin;
+    
+    const updateData = {
+      id: team.id,
+      name: team.name,
+      password: team.password || '',
+      avatar: team.avatar || null,
+      ownerId: team.ownerId || currentUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    // 🔒 Обновляем members/memberUids ТОЛЬКО если есть права
+    if (canManageMembers) {
+      const membersData = (team.members || []).map(m => {
+        if (typeof m === 'string') {
+          return {
+            uid: m,
+            role: (m === team.ownerId) ? 'owner' : 'member',
+            joinedAt: Date.now()
+          };
+        }
+        return m;
+      });
+      if (team.ownerId && !membersData.find(m => m.uid === team.ownerId)) {
+        membersData.unshift({
+          uid: team.ownerId,
+          role: 'owner',
+          joinedAt: team.createdAt || Date.now()
+        });
+      }
+      updateData.members = membersData;
+      updateData.memberUids = membersData.map(m => m.uid);
+    }
+    
+    await db.collection('teams').doc(team.id).set(updateData, { merge: true });
+  } catch (e) { 
+    console.error('Ошибка сохранения команды:', e); 
+  }
 }
 
 // Удалить команду из Firestore
@@ -5032,9 +4970,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-
 window.addEventListener('online', () => {
-    updateNetworkStatus(); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
     console.log('🌐 Интернет восстановлен');
     showOnlineNotification();
     
@@ -5072,7 +5008,6 @@ window.addEventListener('online', () => {
 });
 
 window.addEventListener('offline', () => {
-    updateNetworkStatus(); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
     console.log('📴 Интернет отключен');
     showOfflineNotification();
 });
@@ -5086,91 +5021,25 @@ if (!navigator.onLine) {
         console.log('✅ Используем кэшированную авторизацию');
     }
 }
-// === УМНАЯ ОЧИСТКА КЭША (КАК В TELEGRAM) ===
-async function clearAppCache() {
-    if (!confirm(
-        "⚠️ Очистить кэш данных приложения?\n\n" +
-        "✅ Сохранится:\n" +
-        "• Ваш аккаунт и аватарка\n" +
-        "• Команды (названия, участники)\n" +
-        "• Настройки интерфейса\n\n" +
-        "🗑️ Будет удалено:\n" +
-        "• Все песни\n" +
-        "• Все сет-листы (и личные, и командные)\n" +
-        "• Заметки и комментарии\n" +
-        "• Картинки песен\n\n" +
-        "🌐 При подключении к интернету:\n" +
-        "• Песни и сет-листы команд загрузятся из облака\n" +
-        "• Личные сет-листы будут потеряны навсегда!\n\n" +
-        "Продолжить?"
-    )) {
-        return;
-    }
-
+async function migrateTeamsAddMemberUids() {
+    if (!db || !currentUser) return;
     try {
-        // 1. Очищаем кэш Firestore (IndexedDB)
-        await db.clearPersistence();
-        console.log("✅ Firestore кэш очищен");
-
-        // 2. Читаем текущие команды ДО очистки, чтобы их восстановить
-        const savedTeams = JSON.parse(localStorage.getItem('clc_teams') || '[]');
-
-        // 3. Очищаем данные приложения из LocalStorage
-        const keysToRemove = [
-            'clc_songs',           // Песни
-            'clc_setlists',        // ВСЕ сет-листы (и личные, и командные)
-            'clc_section_notes',   // Заметки на секциях
-            'clc_inline_comments', // Комментарии к строкам
-            'clc_state',           // Состояние интерфейса
-            'clc_defaults',        // Настройки по умолчанию
-            'clc_songs_sort',      // Сортировка песен
-            'clc_category_filter', // Фильтр категорий
-            'clc_hide_arrows',     // Скрытие стрелок
-            'clc_hide_comments'    // Скрытие комментариев
-        ];
-        
-        // Удаляем кэшированные картинки песен (НО НЕ профиль!)
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('img_')) {
-                keysToRemove.push(key);
-            }
+        const teamsSnap = await db.collection('teams')
+            .where('memberUids', '==', null)
+            .get();
+        if (teamsSnap.empty) return;
+        const batch = db.batch();
+        teamsSnap.forEach(doc => {
+            const data = doc.data();
+            if (data.ownerId !== currentUser.uid) return;
+            const members = data.members || [];
+            const memberUids = members.map(m => typeof m === 'string' ? m : m.uid);
+            batch.update(doc.ref, { memberUids: memberUids });
         });
-
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-        console.log("✅ LocalStorage данные приложения очищены");
-
-        // 4. 🎯 ВОССТАНАВЛИВАЕМ КОМАНДЫ (без их сет-листов)
-        const teamsOnly = savedTeams.map(t => ({
-            id: t.id,
-            name: t.name,
-            password: t.password || '',
-            avatar: t.avatar || null,
-            ownerId: t.ownerId || null,
-            members: t.members || [],
-            createdAt: t.createdAt || Date.now()
-        }));
-        localStorage.setItem('clc_teams', JSON.stringify(teamsOnly));
-        console.log("✅ Команды сохранены (без сет-листов)");
-
-        // 5. ✅ ПРОФИЛЬ И АВТОРИЗАЦИЯ ОСТАЮТСЯ НЕТРОНУТЫМИ
-        // Ключи 'clc_profile_*' и 'clc_cached_auth' НЕ удаляются
-        console.log("✅ Профиль и авторизация сохранены");
-
-        alert(
-            "✅ Кэш успешно очищен!\n\n" +
-            "• Аккаунт и аватарка сохранены\n" +
-            "• Команды сохранены\n" +
-            "• Песни и сет-листы удалены\n" +
-            "• Приложение перезагрузится\n\n" +
-            "При наличии интернета данные команд загрузятся из облака автоматически."
-        );
-        
-        // Перезагружаем страницу
-        window.location.reload();
-        
-    } catch (error) {
-        console.error("❌ Ошибка очистки кэша:", error);
-        alert("Не удалось полностью очистить кэш: " + error.message);
+        await batch.commit();
+        console.log('✅ Миграция завершена');
+    } catch (e) {
+        console.warn('⚠️ Миграция пропущена (нет прав):', e.message);
     }
 }
 loadFromStorage();
