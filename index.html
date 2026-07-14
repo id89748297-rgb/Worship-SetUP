@@ -662,9 +662,6 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <p style="text-align: center; margin-top: 15px;">
 Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
 </p>
-<p style="text-align: center; margin-top: 15px;">
-Нет аккаунта? <a href="#" onclick="showRegisterForm(); return false;" style="color: #90caf9;">Зарегистрироваться</a>
-</p>
 </div>
 
 <div id="auth-register-form" style="display: none;">
@@ -3635,7 +3632,6 @@ if (user) {
             if (!warningShown) {
                 alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
                 sessionStorage.setItem('email_warning_shown', 'true');
-                await auth.signOut();
                 return;
             }
         }
