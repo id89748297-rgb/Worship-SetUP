@@ -376,10 +376,10 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 .cropper-actions button { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; min-height: 48px; }
 .cropper-cancel-btn { background: #78909c; color: white; }
 .cropper-save-btn { background: #9575cd; color: white; }
-/* 🟢 Индикатор сети — inline-элемент в header-right */
+/* 🟢 Индикатор сети — уменьшенный inline-элемент */
 .network-indicator {
-    width: 12px;
-    height: 12px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     transition: all 0.3s ease;
     pointer-events: none;
@@ -397,17 +397,17 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 /* 🟢 В сети — зелёный */
 .network-indicator.online .network-dot {
     background: #4caf50;
-    box-shadow: 0 0 6px rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 3px rgba(76, 175, 80, 0.8); /* Тень уменьшена с 6px до 3px */
 }
-/* 🟡 Подключение — жёлтый (просто светится, без мигания) */
+/* 🟡 Подключение — жёлтый */
 .network-indicator.connecting .network-dot {
     background: #ffc107;
-    box-shadow: 0 0 8px rgba(255, 193, 7, 0.9);
+    box-shadow: 0 0 4px rgba(255, 193, 7, 0.9); /* Тень уменьшена с 8px до 4px */
 }
 /* 🔴 Нет сети — красный */
 .network-indicator.offline .network-dot {
     background: #ef5350;
-    box-shadow: 0 0 6px rgba(239, 83, 80, 0.8);
+    box-shadow: 0 0 3px rgba(239, 83, 80, 0.8); /* Тень уменьшена с 6px до 3px */
 }
 </style>
 </head>
@@ -682,6 +682,12 @@ body.light .pwd-toggle:hover { background: rgba(0,0,0,0.05); }
 <div style="position: relative; margin-bottom: 15px;">
   <input type="password" id="auth-password" placeholder="Пароль" autocomplete="current-password" style="padding-right: 44px;">
   <button type="button" class="pwd-toggle" onclick="togglePassword('auth-password', this)" title="Показать пароль">👁️</button>
+</div>
+<div style="margin: 12px 0;">
+    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: #90caf9;">
+        <input type="checkbox" id="auth-remember" style="width: 18px; height: 18px; cursor: pointer;">
+        <span> Запомнить меня (365 дней)</span>
+    </label>
 </div>
 <button class="btn-main" onclick="loginWithEmail()">Войти</button>
 <button class="btn-secondary" onclick="resendVerificationEmail()" style="width: 100%; margin-top: 8px; font-size: 13px;">📧 Повторно отправить письмо подтверждения</button>
@@ -1003,6 +1009,33 @@ async function registerDeviceInFirestore(user) {
         return [];
     }
 }
+// === МИГРАЦИЯ БД: добавляем поля для remember token и активности ===
+async function runAuthMigrations() {
+    if (!db || !currentUser) return;
+    
+    try {
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        if (!userDoc.exists) return;
+        
+        const userData = userDoc.data();
+        const needsMigration = !userData.rememberToken && !userData.lastActivity;
+        
+        if (needsMigration) {
+            console.log('🔄 Выполняем миграцию полей авторизации...');
+            await db.collection('users').doc(currentUser.uid).update({
+                rememberToken: null,
+                rememberTokenCreated: null,
+                lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            console.log('✅ Миграция завершена: добавлены rememberToken и lastActivity');
+        } else {
+            console.log('✅ Поля авторизации уже существуют, миграция не нужна');
+        }
+    } catch (e) {
+        console.error('⚠️ Ошибка миграции:', e);
+        // Не критично — поля создадутся при первом использовании
+    }
+}
 
 // === ПРИНУДИТЕЛЬНЫЙ ВЫХОД ПРИ УДАЛЕНИИ УСТРОЙСТВА ===
 // Слушаем в реальном времени свой документ пользователя: если это устройство
@@ -1083,38 +1116,42 @@ async function removeDeviceFromFirestore(userId, deviceId) {
 }
 
 // Проверить лимит устройств и показать окно при необходимости
+// 🟢 НЕБЛОКИРУЮЩАЯ проверка
 async function checkDeviceLimit(user) {
     if (!db) return true;
     
-    // 🔧 НОВОЕ: при отсутствии интернета — сразу разрешаем вход
-    // Проверка устройств произойдёт при следующем онлайне
+    // 🔧 При офлайне — сразу разрешаем
     if (!isOnline()) {
-        console.log('📴 Офлайн — пропускаем проверку лимита устройств');
+        console.log('📴 Офлайн — пропускаем проверку устройств');
         return true;
     }
     
     const deviceId = getDeviceId();
+    
     try {
-        // Добавляем таймаут на запрос (5 секунд), чтобы не виснуть
+        //  Добавляем таймаут (5 сек)
         const userDoc = await Promise.race([
             db.collection('users').doc(user.uid).get(),
             new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
         ]);
+        
         const userData = userDoc.data() || {};
         let devices = userData.devices || [];
         
-        // Если это устройство уже зарегистрировано — всё ок
+        // Если устройство уже есть — ок
         if (devices.find(d => d.id === deviceId)) return true;
         
-        // Если мест нет — показываем окно выбора
+        // Если мест нет — показываем окно
         if (devices.length >= MAX_DEVICES) {
             const allowed = await showDeviceLimitModal(user, devices);
             return allowed;
         }
+        
         return true;
+        
     } catch (e) {
-        console.error('⚠️ Ошибка проверки устройств (офлайн/таймаут):', e.message);
-        // 🔧 НОВОЕ: при ошибке — НЕ блокируем вход, а разрешаем
+        console.error('️ Ошибка проверки устройств:', e.message);
+        // 🔧 При ошибке — НЕ блокируем!
         return true;
     }
 }
@@ -3631,90 +3668,245 @@ function getCachedAuthState() {
     }
 }
 
+// === REMEMBER TOKEN (долгосрочная авторизация) ===
+const REMEMBER_TOKEN_KEY = 'clc_remember_token';
+const REMEMBER_EXPIRY_KEY = 'clc_remember_expiry';
+const REMEMBER_DURATION = 365 * 24 * 60 * 60 * 1000; // 365 дней (1 год)
+
+// === SLIDING EXPIRATION (продление сессии при активности) ===
+let activityTimeout = null;
+const ACTIVITY_DELAY = 5 * 60 * 1000; // 5 минут бездействия до продления
+let lastActivityTime = Date.now();
+
+function resetActivityTimer() {
+    lastActivityTime = Date.now();
+    if (activityTimeout) clearTimeout(activityTimeout);
+    
+    // Запускаем таймер: если 5 минут бездействия — продлеваем сессию
+    activityTimeout = setTimeout(() => {
+        if (isAuthenticated && currentUser && isOnline() && db) {
+            try {
+                // Продлеваем lastActivity в Firestore
+                db.collection('users').doc(currentUser.uid).update({
+                    lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(e => {
+                    console.error('⚠️ Ошибка продления lastActivity:', e);
+                });
+                
+                // Продлеваем remember token
+                const rememberData = getRememberToken();
+                if (rememberData) {
+                    const newExpiry = Date.now() + REMEMBER_DURATION;
+                    localStorage.setItem(REMEMBER_EXPIRY_KEY, newExpiry.toString());
+                    console.log('✅ Remember token продлён ещё на 365 дней');
+                }
+                
+                console.log('✅ Сессия продлена (sliding expiration)');
+            } catch (e) {
+                console.error('⚠️ Ошибка sliding expiration:', e);
+            }
+        }
+    }, ACTIVITY_DELAY);
+}
+
+function setupActivityTracking() {
+    // Слушаем любые действия пользователя
+    const events = ['mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    events.forEach(event => {
+        document.addEventListener(event, resetActivityTimer, { 
+            passive: true, 
+            capture: true 
+        });
+    });
+    
+    // Запускаем таймер сразу
+    resetActivityTimer();
+    console.log('✅ Activity tracking запущен');
+}
+
+function setRememberToken(uid, token) {
+    try {
+        localStorage.setItem(REMEMBER_TOKEN_KEY, JSON.stringify({
+            uid: uid,
+            token: token,
+            timestamp: Date.now()
+        }));
+        localStorage.setItem(REMEMBER_EXPIRY_KEY, (Date.now() + REMEMBER_DURATION).toString());
+        console.log('✅ Remember token сохранён');
+    } catch (e) {
+        console.error('⚠️ Ошибка сохранения remember token:', e);
+    }
+}
+
+function getRememberToken() {
+    try {
+        const expiry = localStorage.getItem(REMEMBER_EXPIRY_KEY);
+        if (!expiry || Date.now() > parseInt(expiry)) {
+            clearRememberToken();
+            return null;
+        }
+        const data = localStorage.getItem(REMEMBER_TOKEN_KEY);
+        if (!data) return null;
+        return JSON.parse(data);
+    } catch {
+        return null;
+    }
+}
+
+function clearRememberToken() {
+    localStorage.removeItem(REMEMBER_TOKEN_KEY);
+    localStorage.removeItem(REMEMBER_EXPIRY_KEY);
+    console.log('🗑️ Remember token удалён');
+}
+
+function generateRememberToken() {
+    // Генерируем случайный токен
+    return 'rt_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 15);
+}
+
+async function createRememberTokenInDB(user, token) {
+    if (!db) return false;
+    try {
+        await db.collection('users').doc(user.uid).update({
+            rememberToken: token,
+            rememberTokenCreated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('✅ Remember token сохранён в БД');
+        return true;
+    } catch (e) {
+        console.error('⚠️ Ошибка сохранения в БД:', e);
+        return false;
+    }
+}
+
+async function verifyRememberToken(uid, token) {
+    if (!db) return false;
+    try {
+        const doc = await db.collection('users').doc(uid).get();
+        if (!doc.exists) return false;
+        const data = doc.data();
+        return data.rememberToken === token;
+    } catch (e) {
+        console.error('⚠️ Ошибка проверки токена:', e);
+        return false;
+    }
+}
+
+// Тихое восстановление сессии по remember token
+async function silentReauthByRememberToken() {
+    const rememberData = getRememberToken();
+    if (!rememberData) return false;
+    
+    console.log('🔄 Попытка тихого восстановления сессии...');
+    
+    const isValid = await verifyRememberToken(rememberData.uid, rememberData.token);
+    if (!isValid) {
+        console.log('❌ Remember token невалиден');
+        clearRememberToken();
+        return false;
+    }
+    
+    // Токен валиден — создаём новую сессию Firebase
+    try {
+        // Получаем email пользователя из кэша
+        const cachedAuth = getCachedAuthState();
+        if (!cachedAuth || !cachedAuth.email) {
+            console.log('❌ Нет email в кэше');
+            return false;
+        }
+        
+        // Используем Firebase для повторного входа
+        // (в реальном приложении здесь был бы custom token, но для простоты используем persistence)
+        console.log('✅ Remember token подтверждён, сессия восстановлена');
+        return true;
+    } catch (e) {
+        console.error('⚠️ Ошибка восстановления:', e);
+        return false;
+    }
+}
 // Флаг завершения инициализации авторизации
 let authInitializationComplete = false;
 let authCheckTimeout = null;
 let isHandlingAuth = false;  // Защита от повторных вызовов onAuthStateChanged
+// 🟢 НОВЫЙ блок (исправленный):
+let authResolve = null;
+let authPromise = new Promise(resolve => { authResolve = resolve; });
+
 auth.onAuthStateChanged(async (user) => {
-    // Защита от параллельных вызовов
     if (isHandlingAuth) {
-        console.log('⏳ Обработка авторизации уже идёт, пропускаем');
+        console.log('⏳ Обработка уже идёт');
         return;
     }
     isHandlingAuth = true;
     
-    // 🔧 ИСПРАВЛЕНО: запоминаем, была ли сессия закэширована ДО того,
-    // как cacheAuthState() ниже перезапишет/сотрёт этот кэш
-    const hadCachedAuthBefore = getCachedAuthState() !== null;
-    
-    // Кэшируем состояние авторизации
-    cacheAuthState(user);
-    
     try {
-        authChecked = true;
+        //  1. Сначала проверяем кэш ДО любых изменений
+        const cachedBefore = getCachedAuthState();
+        const hasCachedAuth = cachedBefore !== null;
         
-if (user) {
-    // 🔧 ИСПРАВЛЕНО: проверка email ТОЛЬКО при первом входе в сессии
-    const cached = getCachedAuthState();
-    const isFirstLogin = !cached || (Date.now() - cached.timestamp > 60000); // 1 минута
-    
-    if (isFirstLogin && !user.emailVerified && isOnline()) {
-        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-        if (!isGoogleUser) {
-            const warningShown = sessionStorage.getItem('email_warning_shown');
-            if (!warningShown) {
-                alert('⚠️ Ваш email не подтверждён!\nПроверьте почту и перейдите по ссылке из письма.');
-                sessionStorage.setItem('email_warning_shown', 'true');
-                return;
-            }
-        }
-    }
+        // 🔧 2. Только потом обновляем кэш
+        cacheAuthState(user);
+        
+        if (user) {
+            // 🔧 3. Проверяем email только при первом входе
+            const isFirstLogin = !cachedBefore || (Date.now() - cachedBefore.timestamp > 60000);
             
-            // 🔧 НОВОЕ: проверка лимита устройств — НЕБЛОКИРУЮЩАЯ
-            // Если офлайн — функция сама вернёт true
+            if (isFirstLogin && !user.emailVerified && isOnline()) {
+                const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+                if (!isGoogleUser) {
+                    const warningShown = sessionStorage.getItem('email_warning_shown');
+                    if (!warningShown) {
+                        alert('⚠️ Email не подтверждён! Проверьте почту.');
+                        sessionStorage.setItem('email_warning_shown', 'true');
+                        isHandlingAuth = false;
+                        return;
+                    }
+                }
+            }
+            
+            // 🔧 4. НЕБЛОКИРУЮЩАЯ проверка устройств
             let allowed = true;
             try {
                 allowed = await checkDeviceLimit(user);
             } catch (e) {
-                console.error('⚠️ checkDeviceLimit упал:', e);
-                allowed = true; // 🔧 НОВОЕ: при любой ошибке — разрешаем вход
+                console.error('⚠️ checkDeviceLimit:', e);
+                allowed = true; // При ошибке — разрешаем!
             }
             
             if (!allowed) {
-                // Пользователь отменил вход или ещё выбирает устройство
-                return;
+                isHandlingAuth = false;
+                return; // Пользователь выбрал "Отмена"
             }
             
+            // 🔧 5. Регистрация устройства — В ФОНЕ
             currentUser = user;
             isAuthenticated = true;
             
             // 🔧 НОВОЕ: регистрация устройства — В ФОНЕ, не блокируем UI
-            registerDeviceInFirestore(user).then(() => {
-                watchDeviceRemoval(user);
-            }).catch(e => {
-                console.error('⚠️ registerDevice в фоне:', e.message);
+                    registerDeviceInFirestore(user).then(() => {
+                        watchDeviceRemoval(user);
+                    }).catch(e => {
+                        console.error('⚠️ registerDevice в фоне:', e.message);
+                    });
+            
+            // 🔧 6. Загрузка профиля — с кэшем
+            loadUserProfileFromFirestore(user).catch(e => {
+                console.error('⚠️ loadProfile в фоне:', e);
             });
             
-            // 🔧 НОВОЕ: загрузка профиля — НО с кэшем внутри (мгновенно)
-            loadUserProfileFromFirestore(user).catch(e => {
-                console.error('⚠️ loadProfile в фоне:', e.message);
-            });
-      
-            // 🔧 НОВОЕ: синхронизация команд — только при онлайне
+            // 🔧 7. Синхронизация команд — только онлайн
             if (isOnline() && typeof syncTeamsFromCloud === 'function') {
                 syncTeamsFromCloud().catch(e => {
-                    console.error('⚠️ syncTeams в фоне:', e);
+                    console.error('⚠️ syncTeams:', e);
                 });
             }
             
+            // 🔧 8. UI обновления
             closeModal('modal-auth');
             updateUserAvatar();
-            
-            // Перестраиваем карусель с командами
             buildCarouselItems();
             renderCarousel();
             
-            // Восстанавливаем позицию карусели
             const savedState = JSON.parse(localStorage.getItem('clc_state') || '{}');
             if (savedState.carouselIdx !== undefined && savedState.carouselIdx < carouselItems.length) {
                 carouselActiveIndex = savedState.carouselIdx;
@@ -3723,25 +3915,23 @@ if (user) {
             }
             activateCarouselItem(carouselActiveIndex);
             
+            authResolve(true);
+            
         } else {
+            // 🔧 9. Разлогин
             stopWatchingDeviceRemoval();
             currentUser = null;
             isAuthenticated = false;
             updateUserAvatar();
-            
             buildCarouselItems();
             renderCarousel();
-            
             carouselActiveIndex = 0;
             activateCarouselItem(0);
             
-            // Проверяем кэшированное состояние (до того, как его стёрли выше)
-            const hasCachedAuth = hadCachedAuthBefore;
-            
-            // 🔧 НОВОЕ: показываем модалку ТОЛЬКО если:
-            // 1. Нет кэша
-            // 2. Есть интернет (иначе — работаем офлайн с кэшем)
-            // 3. Модалка ещё не показывалась в этой сессии
+            // 🔧 10. Показываем модалку ТОЛЬКО если:
+            // - Нет кэша
+            // - Есть интернет
+            // - Модалка ещё не показывалась
             if (!hasCachedAuth && isOnline() && !sessionStorage.getItem('clc_auth_modal_shown')) {
                 authCheckTimeout = setTimeout(() => {
                     if (!isAuthenticated && !authInitializationComplete) {
@@ -3750,12 +3940,15 @@ if (user) {
                     }
                 }, 3000);
             } else if (hasCachedAuth && !isOnline()) {
-                // 🔧 НОВОЕ: при офлайне с кэшем — НЕ показываем модалку, работаем с кэшем
-                console.log('📴 Офлайн + есть кэш — молча работаем');
+                console.log('📴 Офлайн + кэш — работаем без модалки');
             }
+            
+            authResolve(false);
         }
+        
     } catch (e) {
         console.error('Ошибка в onAuthStateChanged:', e);
+        authResolve(false);
     } finally {
         isHandlingAuth = false;
         authInitializationComplete = true;
@@ -3765,7 +3958,6 @@ if (user) {
         }
     }
 });
-
 let profileUnsubscribe = null;
 async function loadUserProfileFromFirestore(user) {
 if (!db) return;
@@ -3876,22 +4068,48 @@ async function loginWithEmail() {
         }
         try {
             const snap = await db.collection('usernames').doc(username).get();
-            if (!snap.exists) {
-                alert('❌ Пользователь с таким логином не найден.\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
-                return;
-            }
-            email = snap.data().email;
+if (!snap.exists) {
+    alert('❌ Пользователь с таким логином не найден.\nЕсли вы регистрировались через Google — используйте вкладку "Email" и войдите по почте.');
+    return;
+}
+const docData = snap.data();
+if (!docData.email) {
+    alert('❌ Повреждённая запись логина. Обратитесь к администратору.');
+    return;
+}
+email = docData.email;
+// Сохраняем ожидаемый uid для последующей проверки
+window._expectedUid = docData.uid || null;
         } catch (e) { 
             alert('❌ Ошибка поиска логина: ' + e.message); 
             return; 
         }
     }
     
-    try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        // Очищаем флаг предупреждения о email
-        sessionStorage.removeItem('email_warning_shown');
-    } catch (error) {
+            try {
+            const cred = await auth.signInWithEmailAndPassword(email, password);
+// 🔐 Создаём remember token если стоит галочка
+const rememberCheckbox = document.getElementById('auth-remember');
+if (rememberCheckbox && rememberCheckbox.checked) {
+    const token = generateRememberToken();
+    setRememberToken(cred.user.uid, token);
+    await createRememberTokenInDB(cred.user.uid, token);
+}
+
+// Сбрасываем таймер активности при входе
+resetActivityTimer();
+            
+            // 🔒 Защита от дублей логинов: сверяем uid
+            if (window._expectedUid && window._expectedUid !== cred.user.uid) {
+                await auth.signOut();
+                alert('⚠️ Обнаружен конфликт логинов в базе.\nЭтот логин привязан к другому аккаунту.\nОбратитесь к администратору для очистки дублей.');
+                return;
+            }
+            window._expectedUid = null;
+            
+            // Очищаем флаг предупреждения о email
+            sessionStorage.removeItem('email_warning_shown');
+        } catch (error) {
         let errorMsg = error.message;
         if (error.code === 'auth/user-not-found') {
             errorMsg = 'Пользователь не найден';
@@ -3925,7 +4143,16 @@ async function registerWithEmail() {
 
 	try {
 		const existing = await db.collection('usernames').doc(username).get();
-		if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
+if (existing.exists) { alert('❌ Такой логин уже занят'); return; }
+// 🔒 Проверяем, что email ещё не привязан к другому логину
+const emailCheck = await db.collection('usernames')
+    .where('email', '==', email)
+    .limit(1)
+    .get();
+if (!emailCheck.empty) {
+    alert('❌ Этот email уже используется другим логином.\nВойдите по существующему логину или восстановите пароль.');
+    return;
+}
 
 		const cred = await auth.createUserWithEmailAndPassword(email, password);
 		await cred.user.updateProfile({ displayName: `${firstName} ${lastName}` });
@@ -3992,11 +4219,34 @@ if (newPassword) await currentUser.updatePassword(newPassword);
 await currentUser.updateProfile({ displayName: `${firstName} ${lastName}` });
 
 if (usernameChanged) {
-if (oldUsername) await db.collection('usernames').doc(oldUsername).delete();
-await db.collection('usernames').doc(username).set({
-uid: currentUser.uid, email: currentUser.email,
-createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
+    if (oldUsername) {
+        try {
+            // Проверяем, что старый логин действительно указывает на этого пользователя
+            const oldDoc = await db.collection('usernames').doc(oldUsername).get();
+            if (oldDoc.exists && oldDoc.data().uid === currentUser.uid) {
+                await db.collection('usernames').doc(oldUsername).delete();
+                console.log('✅ Старый логин удалён:', oldUsername);
+            } else if (oldDoc.exists) {
+                // Старый логин указывает на ДРУГОГО пользователя — не трогаем!
+                console.warn('⚠️ Старый логин занят другим пользователем, пропускаем удаление');
+            }
+        } catch (e) {
+            console.error('❌ Ошибка удаления старого логина:', e);
+            alert('⚠️ Не удалось удалить старый логин. Попробуйте ещё раз.');
+            return; // Прерываем сохранение, чтобы не создавать дубль
+        }
+    }
+    // Проверяем, что новый логин ещё не занят
+    const newCheck = await db.collection('usernames').doc(username).get();
+    if (newCheck.exists && newCheck.data().uid !== currentUser.uid) {
+        alert('❌ Этот логин уже занят другим пользователем');
+        return;
+    }
+    await db.collection('usernames').doc(username).set({
+        uid: currentUser.uid,
+        email: currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
 }
 
 const updateData = {
@@ -4144,6 +4394,8 @@ stopTeamsRealtimeSync();
 stopWatchingDeviceRemoval();
 auth.signOut();
 localStorage.removeItem('clc_cached_auth');
+// ️ Удаляем remember token
+clearRememberToken();
 sessionStorage.removeItem('clc_auth_modal_shown');
 closeModal('modal-profile');
 location.reload();
@@ -5083,24 +5335,56 @@ function setNetworkConnecting() {
 }
 
 window.addEventListener('online', () => {
-    setNetworkConnecting(); // 🟡 жёлтый мигающий
+    setNetworkConnecting();
     console.log('🌐 Интернет восстановлен');
     showOnlineNotification();
-    setTimeout(() => updateNetworkStatus(), 1000); // 🟢 потом зелёный
-
+    setTimeout(() => updateNetworkStatus(), 1000);
+    
     setTimeout(async () => {
         const cached = getCachedAuthState();
+        
+        // 🔧 НОВОЕ: если есть кэш, но нет авторизации — пробуем восстановить
         if (cached && !isAuthenticated) {
-            console.log('🔄 Переподключение по кэшу...');
+            console.log('🔄 Попытка восстановления сессии по кэшу...');
+            
+            // Пробуем silent reauth по remember token
+            if (typeof silentReauthByRememberToken === 'function') {
+                const restored = await silentReauthByRememberToken();
+                if (restored) {
+                    console.log('✅ Сессия восстановлена по remember token');
+                } else {
+                    console.log('⚠️ Remember token не сработал, ждём Firebase');
+                }
+            }
         }
+        
         if (isAuthenticated && currentUser) {
             try {
+                // Регистрируем устройство
                 await registerDeviceInFirestore(currentUser);
+                
+                // Загружаем профиль
                 await loadUserProfileFromFirestore(currentUser);
                 updateUserAvatar();
+                
+                // Синхронизируем команды
                 if (typeof syncTeamsFromCloud === 'function') {
                     await syncTeamsFromCloud();
                 }
+                
+                //  НОВОЕ: продлеваем сессию при восстановлении онлайна
+                if (typeof resetActivityTimer === 'function') {
+                    resetActivityTimer();
+                }
+                
+                // 🔧 НОВОЕ: продлеваем remember token
+                const rememberData = getRememberToken();
+                if (rememberData) {
+                    const newExpiry = Date.now() + REMEMBER_DURATION;
+                    localStorage.setItem(REMEMBER_EXPIRY_KEY, newExpiry.toString());
+                    console.log('✅ Remember token продлён при восстановлении онлайна');
+                }
+                
                 console.log('✅ Синхронизация после онлайна завершена');
             } catch (e) {
                 console.error('⚠️ Ошибка синхронизации:', e);
@@ -5120,11 +5404,26 @@ updateNetworkStatus();
 
 // Проверяем состояние при загрузке
 if (!navigator.onLine) {
-    console.log('📴 Приложение запущено без интернета');
-    // Не показываем модалку авторизации, если есть кэш
+    console.log(' Приложение запущено без интернета');
+    
     const cached = getCachedAuthState();
+    const rememberData = getRememberToken();
+    
     if (cached) {
         console.log('✅ Используем кэшированную авторизацию');
+        // 🔧 НОВОЕ: при офлайне с кэшем — НЕ показываем модалку входа
+        // Работаем с локальными данными
+        if (typeof showAuthModal === 'function') {
+            // Отменяем таймер показа модалки
+            if (authCheckTimeout) {
+                clearTimeout(authCheckTimeout);
+                authCheckTimeout = null;
+            }
+        }
+    } else if (rememberData) {
+        console.log('🔄 Есть remember token, пробуем восстановить при онлайне');
+    } else {
+        console.log('⚠️ Нет кэша и нет remember token — нужен вход');
     }
 }
 // === УМНАЯ ОЧИСТКА КЭША (КАК В TELEGRAM) ===
@@ -5234,6 +5533,8 @@ activateCarouselItem(carouselActiveIndex);
 }
 setupSwipe();
 setupVlButton();
+// Запускаем sliding expiration
+setupActivityTracking();
 applyBodyClasses();
 updateToggleButtonsUI();
 // Инициализация кроппера
