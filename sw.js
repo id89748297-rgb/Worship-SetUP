@@ -1,85 +1,92 @@
-self.addEventListener('fetch', (event) => {
-const CACHE_VERSION = 'worship-setup-v1';
- 
-// Всё, что нужно, чтобы приложение стартовало без сети:
-// сама страница + 3 файла Firebase SDK с CDN.
-const PRECACHE_URLS = [
+const CACHE_NAME = 'worship-setup-v1';
+const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
-  'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'
+  './icon.svg'
+  // ВАЖНО: Если у вас есть статические JS/CSS файлы без хэшей в имени, 
+  // добавьте их сюда (например: './main.js', './styles.css')
 ];
- 
-// --- Установка: складываем всё в кэш заранее ---
+
+// 1. Установка — кэшируем базовые файлы
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => {
-      // addAll упадёт целиком, если хоть один запрос не удастся —
-      // поэтому кэшируем по одному, чтобы отсутствие сети на один файл
-      // не сорвало кэширование остальных.
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
+  self.skipWaiting(); // Активируем новый SW сразу, не дожидаясь закрытия вкладок
+});
+
+// 2. Активация — удаляем старые кэши
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
       return Promise.all(
-        PRECACHE_URLS.map((url) =>
-          cache.add(url).catch((err) => {
-            console.warn('[sw] Не удалось закэшировать при установке:', url, err);
-          })
-        )
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     })
   );
-  self.skipWaiting();
+  self.clients.claim(); // Берем под контроль все открытые страницы сразу
 });
- 
-// --- Активация: чистим старые версии кэша ---
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_VERSION)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
-});
- 
-// --- Стратегия запросов ---
-// Firebase SDK и статика приложения: "cache-first, network fallback"
-// (SDK версионирован в URL — если он есть в кэше, он точно актуален и без сети).
-// Всё остальное (динамические запросы к Firebase Auth/Firestore API)
-// НЕ трогаем — пусть идут в сеть напрямую, чтобы не кэшировать
-// устаревшие данные пользователя или ответы авторизации.
+
+// 3. Перехват запросов
 self.addEventListener('fetch', (event) => {
-  const url = event.request.url;
- 
-  const isAppShell = PRECACHE_URLS.some((cached) => url.endsWith(cached.replace('./', '')));
-  const isFirebaseSDK = url.includes('gstatic.com/firebasejs');
- 
-  if (!isAppShell && !isFirebaseSDK) {
-    return; // не наш случай — пропускаем, браузер сам сходит в сеть
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // ШАГ А: Игнорируем не-GET запросы (POST, PUT, DELETE и т.д.)
+  // Это критически важно для запросов авторизации/логина! 
+  // Они всегда должны идти в сеть, иначе вы получите кэшированный (устаревший) ответ.
+  if (request.method !== 'GET') {
+    return;
   }
- 
+
+  // ШАГ Б: Для API-запросов используем стратегию "Сначала сеть"
+  // Мы НЕ кэшируем ответы API, чтобы не показывать устаревший статус входа пользователя
+  if (url.pathname.startsWith('/api/') || url.pathname.includes('auth') || url.pathname.includes('login')) {
+    event.respondWith(
+      fetch(request).catch(() => {
+        // Если сети нет, позволяем приложению самому обработать ошибку офлайн-режима
+        // Можно вернуть кэш, но для авторизации это рискованно (может быть старый 401)
+        return new Response(JSON.stringify({ error: 'offline' }), { 
+          status: 503, 
+          headers: { 'Content-Type': 'application/json' } 
+        });
+      })
+    );
+    return;
+  }
+
+  // ШАГ В: Для статики (HTML, JS, CSS, картинки) используем "Сначала кэш, затем сеть с сохранением в кэш"
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) {
-        // Обновляем кэш в фоне, если сеть есть (stale-while-revalidate)
-        fetch(event.request)
-          .then((fresh) => {
-            if (fresh && fresh.ok) {
-              caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, fresh));
-            }
-          })
-          .catch(() => {}); // офлайн — просто отдаём то, что уже закэшировано
-        return cached;
+    caches.match(request).then((cachedResponse) => {
+      // Если есть в кэше – отдаем мгновенно (это убирает 3-секундную задержку)
+      if (cachedResponse) {
+        return cachedResponse;
       }
-      // В кэше нет — идём в сеть, и если получилось, кэшируем на будущее
-      return fetch(event.request).then((fresh) => {
-        if (fresh && fresh.ok) {
-          const clone = fresh.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
+
+      // Если нет в кэше – идем в сеть
+      return fetch(request).then((networkResponse) => {
+        // Проверяем, что ответ валидный (статус 200, тип basic)
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
         }
-        return fresh;
+
+        // Клонируем ответ, так как поток (stream) можно прочитать только один раз
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache); // Сохраняем в кэш для следующих запусков
+        });
+
+        return networkResponse;
+      }).catch((error) => {
+        // ШАГ Г: Если сети нет и ресурса нет в кэше
+        // Для навигации (запрос HTML) возвращаем заглушку или главную страницу
+        if (request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+        // Для остальных случаев пробрасываем ошибку, чтобы приложение могло её обработать
+        throw error;
       });
     })
   );
