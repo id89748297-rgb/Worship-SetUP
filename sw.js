@@ -1,55 +1,71 @@
-const sendToPage = (data, callback) => {
-    self.clients.matchAll().then(function (clients) {
-        if (clients && clients.length) {
-            let tab = null;
+const CACHE_NAME = 'worship-setup-v2';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-180.png'
+];
 
-            clients.forEach(client => {
-                if (client.url.indexOf('holychords.pro') > -1 && client.focused) {
-                    tab = client;
-                }
-            });
-
-            if (tab !== null) {
-                tab.postMessage(data);
-
-                callback(true);
-            } else {
-                callback(false);
-            }
-        } else {
-            callback(false);
-        }
-    });
-}
-
-self.addEventListener("install", function (event) {
-    self.skipWaiting();
-});
-
-self.addEventListener("activate", function (event) {
-    event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener("push", function (event) {
-    if (!(self.Notification && self.Notification.permission === 'granted')) {
-        return;
-    }
-
-    const payload = event.data ? event.data.json() : {};
-    
-    sendToPage(payload, (focused) => {
-        if (!focused) {
-            event.waitUntil(self.registration.showNotification(payload.title, payload));
-        }
+// Установка: сохраняем все файлы в кэш
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('Кэширование файлов...');
+      return cache.addAll(ASSETS);
+    }).catch(err => {
+      console.error('Ошибка кэширования:', err);
     })
+  );
+  // Активируем новый service worker сразу
+  self.skipWaiting();
 });
 
-self.addEventListener('notificationclick', function (event) {
-    event.notification.close();
+// Активация: удаляем старые кэши
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => {
+          console.log('Удаление старого кэша:', key);
+          return caches.delete(key);
+        })
+      );
+    })
+  );
+  // Берём контроль над всеми страницами сразу
+  self.clients.claim();
+});
 
-    if (event.notification?.data?.url) {
-        event.waitUntil(
-            clients.openWindow(event.notification.data.url)
-        );
-    }
+// Обработка запросов: сначала кэш, потом сеть
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) {
+        // Нашли в кэше - возвращаем
+        return cached;
+      }
+      
+      // Нет в кэше - загружаем из сети
+      return fetch(event.request).then(response => {
+        // Проверяем, что ответ валидный
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+        
+        // Клонируем ответ для сохранения в кэш
+        const responseToCache = response.clone();
+        
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
+        
+        return response;
+      }).catch(() => {
+        // Если сети нет и в кэше нет - возвращаем index.html
+        return caches.match('./index.html');
+      });
+    })
+  );
 });
